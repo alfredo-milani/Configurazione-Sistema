@@ -4,7 +4,7 @@
 ##### Configurazione JDK Oracle #####
 #####################################
 mod_="configurazione JDK Oracle";
-echo $mod_start $mod_;
+echo ++$mod_start $mod_;
 
 
 
@@ -77,4 +77,4 @@ fi
 
 
 mod_="configurazione JDK Oracle";
-echo $mod_end $mod_;
+echo --$mod_end $mod_;

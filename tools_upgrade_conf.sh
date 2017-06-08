@@ -4,7 +4,7 @@
 ##### Aggiornamento tools di sistema #####
 ##########################################
 mod_="aggiornamento sistema";
-echo $mod_start $mod_;
+echo ++$mod_start $mod_;
 
 
 
@@ -53,7 +53,12 @@ fi
 
 echo "Upgrade e update dei pacchetti del sistema. Attendere...";
 if check_connection; then
-	sudo apt-fast update -y; sudo apt-fast upgrade -y;
+	which apt-fast &> $null;
+	if [ $? -gt 0 ]; then
+		sudo apt-get update -y; sudo apt-get upgrade -y;
+	else
+		sudo apt-fast update -y; sudo apt-fast upgrade -y;
+	fi
 fi
 
 
@@ -136,4 +141,4 @@ fi
 
 
 mod_="aggiornamento sistema";
-echo $mod_end $mod_;
+echo --$mod_end $mod_;

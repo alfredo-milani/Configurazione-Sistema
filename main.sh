@@ -9,9 +9,9 @@
 export _dev_shm_="/dev/shm/";
 export null="/dev/null";
 # nome root script
+export current_script_name="`basename "$0"`";
 export mod_start="Avvio modulo";
 export mod_end="Fine modulo";
-export current_script_name="`basename "$0"`";
 export mount_point;
 export cmd="sudo /bin/su -c";
 export UUID_backup="A6B0EE5DB0EE3409";
@@ -57,14 +57,8 @@ if [ "$cmd_line1" = "$shell_to_not_use" ] || [ "$cmd_line2" = "$shell_to_not_use
 	printf "${R}Lo script $current_script_name deve essere eseguito da una shell bash e NON sh${NC}\n"
 	exit 1;
 fi
-
-# la shell sh non riconosce la sintassi ${string::-n}
-# path assoluto script corrente
-absolute_current_script_path=`realpath $0`;
-# l'operatore unario # restituisce la lunghezza della scringa/array
-lenght=${#current_script_name};
-# sintassi: ${string::-n} --> taglia gli ultimi (-n) n elementi di string
-absolute_script_path=${absolute_current_script_path::-$lenght};
+##### Fine controllo preliminare #####
+######################################
 
 
 
@@ -141,6 +135,15 @@ export -f check_error;
 export -f get_header;
 export -f check_connection;
 
+
+
+# la shell sh non riconosce la sintassi ${string::-n}
+# path assoluto script corrente
+absolute_current_script_path=`realpath $0`;
+# l'operatore unario # restituisce la lunghezza della scringa/array
+lenght=${#current_script_name};
+# sintassi: ${string::-n} --> taglia gli ultimi (-n) n elementi di string
+absolute_script_path=${absolute_current_script_path::-$lenght};
 # -gt --> greater than
 # il comando shift n sposta il parametro posizionale di n posti (default n = 1)
 # si possono usare pattern del tipo: -h|--help) per selezione multipla
@@ -150,18 +153,18 @@ export -f check_connection;
 # si usa l'operatore [xX] per avere scelte multiple
 while [ $# -gt 0 ]; do
     case "$1" in
-        --all|--ALL)
-            $absolute_script_path"/symbolic_link_conf.sh";
-            $absolute_script_path"/kb_shortcut_conf.sh";
-            $absolute_script_path"/appearance_conf.sh";
-            $absolute_script_path"/bashrc_conf.sh";
-            $absolute_script_path"/fstab_conf.sh";
-            $absolute_script_path"/network_conf.s";
-            $absolute_script_path"/tcp_conf.s";
-            $absolute_script_path"/repo_conf.sh";
-            $absolute_script_path"/tools_upgrade_conf.sh";
-            $absolute_script_path"/jdk_conf.sh";
-            $absolute_script_path"/tracker_disable_conf.sh";
+        --all | --ALL )
+            for script in $absolute_script_path/*; do
+                tmp_script=`basename $script`;
+                ext=".sh"; ext_lenght=${#ext}; lenght_tmp_script=${#script};
+                lenght=$(($lenght_tmp_script - $ext_lenght));
+                # l'estensione di $script deve essere .sh
+                # per effettuare operazioni aritmetiche si usa l'espressione: var3=$(($var1 + $var2));
+                tmp_ext=`echo $script | cut -c $(($lenght + 1))-$lenght_tmp_script`;
+                if [ "$tmp_ext" == "$ext" ] && [ "$current_script_name" != "$tmp_script" ]; then
+                    $script;
+                fi
+            done
             break
             ;;
 
@@ -183,7 +186,7 @@ while [ $# -gt 0 ]; do
             shift
             ;;
 
-        -[hH]|-help|-HELP|--[hH]|--help|--HELP )
+        -[hH] | -help | -HELP | --[hH] | --help | --HELP )
             echo "$current_script_name -options";
             echo "";
             echo -e "\t--all | --ALL )\t\tConfigurazione completa del sistema";
@@ -195,8 +198,8 @@ while [ $# -gt 0 ]; do
             echo -e "\t-n | -N )\t\tConfigurazione di rete";
             echo -e "\t-r | -R )\t\tConfigurazione dei repository";
             echo -e "\t-s | -S )\t\tConfigurazione dei keyboard shortcuts";
-            echo -e "\t-tcp | -TCP)\t\tConfigurazione impostazioni protocollo TCP";
-            echo -e "\t-tr | -TR)\t\tDisabilitazione tracker-* tools";
+            echo -e "\t-tcp | -TCP )\t\tConfigurazione impostazioni protocollo TCP";
+            echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
             echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
             exit 0
             ;;
@@ -231,13 +234,13 @@ while [ $# -gt 0 ]; do
             shift
             ;;
 
-        -tcp|-TCP)
+        -tcp | -TCP )
             # configurazione impostazioni protocollo TCP
             $absolute_script_path"/tcp_conf.sh";
             shift
             ;;
 
-        -tr|-TR )
+        -tr | -TR )
             # disabilitazione tracker-*
             $absolute_script_path"/tracker_disable_conf.sh";
             shift
@@ -249,8 +252,9 @@ while [ $# -gt 0 ]; do
             shift
             ;;
 
-        *)
+        * )
             printf "${R}Comando $1 non risconosciuto\n${NC}";
+            echo "Usa il flag -h per ottenere più informazioni";
             shift
             ;;
     esac

@@ -4,7 +4,7 @@
 ##### Configurazione impostazioni protocollo TCP #####
 ######################################################
 mod_="configurazione impostazioni protocollo TCP";
-echo $mod_start $mod_;
+echo ++$mod_start $mod_;
 
 
 
@@ -30,4 +30,4 @@ fi
 
 
 mod_="configurazione impostazioni protocollo TCP";
-echo $mod_end $mod_;
+echo --$mod_end $mod_;

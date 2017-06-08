@@ -4,7 +4,7 @@
 ##### Impostazione repository #####
 ###################################
 mod_="configurazione repository";
-echo $mod_start $mod_;
+echo ++$mod_start $mod_;
 
 
 
@@ -31,4 +31,4 @@ read -n1 ready;
 
 
 mod_="configurazione repository";
-echo $mod_end $mod_;
+echo --$mod_end $mod_;
