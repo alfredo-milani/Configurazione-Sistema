@@ -3,8 +3,8 @@
 ###################################
 ##### Impostazione repository #####
 ###################################
-mod_="configurazione repository";
-echo ++$mod_start $mod_;
+mod_="configurazione repository\n";
+printf "${Y}++${NC}$mod_start $mod_";
 
 
 
@@ -30,5 +30,4 @@ read -n1 ready;
 
 
 
-mod_="configurazione repository";
-echo --$mod_end $mod_;
+printf "${Y}--${NC}$mod_end $mod_";

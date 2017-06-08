@@ -3,8 +3,8 @@
 ####################################
 ##### Creazione link simbolici #####
 ####################################
-mod_="configurazione link simbolici";
-echo ++$mod_start $mod_;
+mod_="configurazione link simbolici\n";
+printf "${Y}++${NC}$mod_start $mod_";
 
 
 
@@ -48,5 +48,4 @@ fi
 
 
 
-mod_="configurazione link simbolici";
-echo --$mod_end $mod_;
+printf "${Y}--${NC}$mod_end $mod_";

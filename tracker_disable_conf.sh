@@ -3,8 +3,8 @@
 ####################################
 ##### Disabilitazione tracker* #####
 ####################################
-mod_="disabilitazione tracker-*";
-echo ++$mod_start $mod_;
+mod_="disabilitazione tracker-*\n";
+printf "${Y}++${NC}$mod_start $mod_";
 
 
 
@@ -27,5 +27,4 @@ fi
 
 
 
-mod_="disabilitazione tracker-*";
-echo --$mod_end $mod_;
+printf "${Y}--${NC}$mod_end $mod_";

@@ -10,6 +10,7 @@ export _dev_shm_="/dev/shm/";
 export null="/dev/null";
 # nome root script
 export current_script_name="`basename "$0"`";
+export mod_;
 export mod_start="Avvio modulo";
 export mod_end="Fine modulo";
 export mount_point;
@@ -79,6 +80,7 @@ function check_mount {
             sudo mount UUID=$1 $mount_point;
         else
             printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
+            printf "${R}--${NC}$mod_end $mod_";
             exit 1;
         fi
     fi
@@ -99,6 +101,7 @@ function check_tool {
 
     	if [ $? != 0 ]; then
     		printf "${R}Tool '%s' necessario per l'esecuzione di questo script\n${NC}" "$tool";
+            printf "${R}--${NC}$mod_end $mod_";
     		exit 1;
     	fi
     done

@@ -3,8 +3,8 @@
 ##################################
 ##### Configurazione di rete #####
 ##################################
-mod_="configurazione di rete";
-echo ++$mod_start $mod_;
+mod_="configurazione di rete\n";
+printf "${Y}++${NC}$mod_start $mod_";
 
 
 
@@ -55,4 +55,4 @@ fi
 
 
 
-echo --$mod_end $mod_;
+printf "${Y}--${NC}$mod_end $mod_";

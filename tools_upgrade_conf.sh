@@ -3,8 +3,8 @@
 ##########################################
 ##### Aggiornamento tools di sistema #####
 ##########################################
-mod_="aggiornamento sistema";
-echo ++$mod_start $mod_;
+mod_="aggiornamento sistema\n";
+printf "${Y}++${NC}$mod_start $mod_";
 
 
 
@@ -140,5 +140,4 @@ fi
 
 
 
-mod_="aggiornamento sistema";
-echo --$mod_end $mod_;
+printf "${Y}--${NC}$mod_end $mod_";

@@ -3,8 +3,8 @@
 ##################################
 ##### Copia alias in .bashrc #####
 ##################################
-mod_="configurazione .bashrc";
-echo ++$mod_start $mod_;
+mod_="configurazione .bashrc\n";
+printf "${Y}++${NC}$mod_start $mod_";
 
 
 
@@ -27,5 +27,4 @@ fi
 
 
 
-mod_="configurazione di rete";
-echo --$mod_end $mod_;
+printf "${Y}--${NC}$mod_end $mod_";

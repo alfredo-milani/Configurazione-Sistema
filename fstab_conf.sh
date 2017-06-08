@@ -3,8 +3,8 @@
 #####################################
 ##### Configurazione file fstab #####
 #####################################
-mod_="configurazione file fstab";
-echo ++$mod_start $mod_;
+mod_="configurazione file fstab\n";
+printf "${Y}++${NC}$mod_start $mod_";
 
 
 
@@ -70,5 +70,4 @@ fi
 
 
 
-mod_="configurazione file fstab";
-echo --$mod_end $mod_;
+printf "${Y}--${NC}$mod_end $mod_";
