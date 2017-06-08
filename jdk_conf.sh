@@ -45,7 +45,7 @@ function config_profile() {
 echo "Impostare JDK Oracole java come default di sistema?";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
-	path_jdk="/opt/";
+	path_jdk=/opt/;
 	cd $path_jdk;
 	new_jdk=`ls | grep jdk`;
 	if [ "$new_jdk" == "" ]; then
@@ -57,8 +57,7 @@ if [ "$choise" == "y" ]; then
 			echo "Vuoi utilizzare la JDK $path_backup_jdk$backup_jdk?";
 			read -n1 choise;
 			if [ "$choise" == "y" ]; then
-				cp $path_backup_jdk$backup_jdk $_dev_shm_;
-				tar -xvf $_dev_shm_$backup_jdk -C $path_jdk &> $null;
+				tar -xvf $path_backup_jdk$backup_jdk -C $path_jdk &> $null;
 				backup_jdk=`ls $path_jdk | grep jdk`;
 				config_profile $path_jdk $backup_jdk;
 			else

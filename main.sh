@@ -71,9 +71,16 @@ function check_mount {
     UUID_dev=($`lsblk -o UUID,MOUNTPOINT | grep -w "$1"`);
     mount_point=${UUID_dev[1]};
     if [ "$mount_point" == "" ]; then
-        printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
-        lsblk -o UUID,MOUNTPOINT;
-        exit 1;
+        echo "Montare il device UUID=$1?";
+        read -n1 choise;
+        if [ "$choise" == "y" ]; then
+            mkdir "$1";
+            mount_point=$_dev_shm_$1;
+            sudo mount UUID=$1 $mount_point;
+        else
+            printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
+            exit 1;
+        fi
     fi
 }
 
@@ -151,6 +158,11 @@ absolute_script_path=${absolute_current_script_path::-$lenght};
 #   someone types --action=[ACTION] as well as the case where someone types
 #   --action [ACTION]
 # si usa l'operatore [xX] per avere scelte multiple
+if [ $# == 0 ]; then
+    printf "${U}Utilizza il flag -h per conoscere le operazioni disponibili\n${NC}";
+    exit 0;
+fi
+
 while [ $# -gt 0 ]; do
     case "$1" in
         --all | --ALL )
@@ -204,7 +216,7 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
 
-        -[jJ] )
+        -jdk | -JDK )
             # configurazione JDK Oracle
             $absolute_script_path"/jdk_conf.sh";
             shift
