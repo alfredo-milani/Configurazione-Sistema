@@ -3,8 +3,8 @@
 #####################################
 ##### Configurazione JDK Oracle #####
 #####################################
-mod_="configurazione JDK Oracle\n";
-printf "${Y}++${NC}$mod_start $mod_";
+mod_="configurazione JDK Oracle";
+printf "\n${Y}++${NC}$mod_start $mod_\n";
 
 
 
@@ -75,4 +75,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_";
+printf "${Y}--${NC}$mod_end $mod_\n";

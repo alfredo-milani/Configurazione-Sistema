@@ -3,8 +3,8 @@
 ######################################################
 ##### Configurazione impostazioni protocollo TCP #####
 ######################################################
-mod_="configurazione impostazioni protocollo TCP\n";
-printf "${Y}++${NC}$mod_start $mod_";
+mod_="configurazione impostazioni protocollo TCP";
+printf "\n${Y}++${NC}$mod_start $mod_\n";
 
 
 
@@ -29,4 +29,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_";
+printf "${Y}--${NC}$mod_end $mod_\n";

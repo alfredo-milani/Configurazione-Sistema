@@ -3,8 +3,8 @@
 ##############################
 ##### Modifica shortcuts #####
 ##############################
-mod_="configurazione shortcuts\n";
-printf "${Y}++${NC}$mod_start $mod_";
+mod_="configurazione shortcuts";
+printf "\n${Y}++${NC}$mod_start $mod_\n";
 
 
 
@@ -116,4 +116,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_";
+printf "${Y}--${NC}$mod_end $mod_\n";

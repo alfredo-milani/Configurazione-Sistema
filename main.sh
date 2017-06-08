@@ -4,13 +4,35 @@
 
 ##### TODO --> SCRIVI NOTE NEL FILE BASH
 
+##### ##################################
+##### Inizio controllo preliminare #####
+# $$ --> indica il pid del processo corrente
+# il file /proc/pid/cmdline contiene la riga di comando con la quale è stato lanciato il processo identificato da pid.
+# cut -c 1-4 restituisce i primi 4 caratteri della stringa presa in input
+line_acc1="bash"; line_acc2="/bin/bash";
+# sostituzione del carattere terminatore di stringa '\0' per evitare
+# il warning: "command substitution: ignored null byte in input"
+cmd_line=`cat /proc/$$/cmdline | tr '\0' ' '`;
+# verifica che tra i primi caratteri della riga di comando c'è la stringa "bash"
+cmd_acc=`echo $cmd_line | cut -c 1-${#line_acc1}`;
+if [ "$line_acc1" != "$cmd_acc" ]; then
+    cmd_acc=`echo $cmd_line | cut -c 1-${#line_acc2}`;
+    if [ "$line_acc2" != "$cmd_acc" ]; then
+        echo "Lo script corrente deve essere eseguito da una shell bash e NON sh";
+    	exit 1;
+    fi
+fi
+##### Fine controllo preliminare #####
+######################################
+
+
 
 # path temporaneo su RAM
 export _dev_shm_="/dev/shm/";
 export null="/dev/null";
 # nome root script
-export current_script_name="`basename "$0"`";
-export mod_;
+export current_script_name=;
+export mod_="preliminare";
 export mod_start="Avvio modulo";
 export mod_end="Fine modulo";
 export mount_point;
@@ -29,37 +51,6 @@ export NC='\033[0m'; # No Color
 export check_error_str="Azione: %s\tEsito: %s\n";
 export success="Positivo";
 export failure="Negativo";
-# line di comando con cui è stato lanciato lo script
-export cmd_line1="`cat /proc/$$/cmdline | cut -c 1-2`";
-export cmd_line2="`cat /proc/$$/cmdline | cut -c 6-7`";
-
-
-
-#################################
-##### Controllo preliminare #####
-# non mi è possibile usare la funzione check_tool perchè è possibile che si stia utilizzando
-# una shell sh che ha una sintassi diversa per la dichiarazione di funzioni
-for tool in "basename" "realpath"; do
-    # la shell sh non conosce il comando &>
-    which $tool 1> $null;
-    if [ $? != 0 ]; then
-        printf "${R}Tool $el necessario per l'esecuzione di questo script\n${NC}";
-		exit 1;
-    fi
-done
-
-# $$ --> indica il pid del processo corrente
-# il file /proc/pid/cmdline contiene la riga di comando con la quale è stato lanciato il processo identificato da pid.
-# cut -c 1-4 restituisce i primi 4 caratteri della stringa presa in input
-# la linea di comando dello script può essere: /bin/bash; bash; ./
-# il seguente script deve essere eseguito da una shell bash perchè alcuni tool sono implementati diversamente il altre shell
-shell_to_not_use="sh";
-if [ "$cmd_line1" = "$shell_to_not_use" ] || [ "$cmd_line2" = "$shell_to_not_use" ]; then
-	printf "${R}Lo script $current_script_name deve essere eseguito da una shell bash e NON sh${NC}\n"
-	exit 1;
-fi
-##### Fine controllo preliminare #####
-######################################
 
 
 
@@ -80,7 +71,7 @@ function check_mount {
             sudo mount UUID=$1 $mount_point;
         else
             printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
-            printf "${R}--${NC}$mod_end $mod_";
+            printf "${R}--${NC}$mod_end $mod_\n";
             exit 1;
         fi
     fi
@@ -101,7 +92,7 @@ function check_tool {
 
     	if [ $? != 0 ]; then
     		printf "${R}Tool '%s' necessario per l'esecuzione di questo script\n${NC}" "$tool";
-            printf "${R}--${NC}$mod_end $mod_";
+            printf "${R}--${NC}$mod_end $mod_\n";
     		exit 1;
     	fi
     done
@@ -147,6 +138,11 @@ export -f check_connection;
 
 
 
+check_tool "basename" "realpath";
+
+
+
+current_script_name=`basename "$0"`;
 # la shell sh non riconosce la sintassi ${string::-n}
 # path assoluto script corrente
 absolute_current_script_path=`realpath $0`;

@@ -3,8 +3,8 @@
 ##################################
 ##### Configurazione aspetto #####
 ##################################
-mod_="configurazione aspetto\n";
-printf "${Y}++${NC}$mod_start $mod_";
+mod_="configurazione aspetto";
+printf "\n${Y}++${NC}$mod_start $mod_\n";
 
 
 
@@ -38,4 +38,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_";
+printf "${Y}--${NC}$mod_end $mod_\n";
