@@ -48,8 +48,8 @@ if [ "$choise" == "y" ]; then
 	check_mount $UUID_backup;
 	# modo alternativo per esprimere uno if statement
 	! [ -d $script_path ] && sudo mkdir $script_path;
-	sudo cp $mount_point$tree_dir/my_scripts/redshift_regolator.sh $_dev_shm_; # al posto di $_dev_shm_ c'è $script_path
-
+	sudo cp $mount_point$tree_dir/my_scripts/redshift_regolator.sh $script_path;
+	
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
 	# is very similar to the backticks ``.
 	# It's called command substitution (posix specification) and it invokes a
