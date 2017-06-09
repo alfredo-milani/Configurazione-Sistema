@@ -15,7 +15,7 @@ printf "\n${Y}++${NC}$mod_start $mod_\n";
 #			FUNCNAME: An  array  variable  containing the names of all shell functions
 # 			currently in the execution call stack.
 function config_profile() {
-	if [ "$1" == "" ] || [ "$2" == "" ]; then
+	if [ ${#1} == 0 ] || [ ${#2} == 0 ]; then
 		printf "${R}Errore di sintassi nella funzione ${FUNCNAME[0]}\n${NC}";
 	else
 		f_path_jdk="$1";
@@ -48,12 +48,12 @@ if [ "$choise" == "y" ]; then
 	path_jdk=/opt/;
 	cd $path_jdk;
 	new_jdk=`ls | grep jdk`;
-	if [ "$new_jdk" == "" ]; then
+	if [ ${#new_jdk} == 0 ]; then
 		printf "${R}Nessuna cartella jdk trovata in $path_jdk\n${NC}";
 		check_mount $UUID_backup;
 		path_backup_jdk=$mount_point/SOFTWARE/LINUX/;
 		backup_jdk=`ls $path_backup_jdk | grep jdk`;
-		if [ "$backup_jdk" != "" ]; then
+		if [ ${#backup_jdk} != 0 ]; then
 			echo "Vuoi utilizzare la JDK $path_backup_jdk$backup_jdk?";
 			read -n1 choise;
 			if [ "$choise" == "y" ]; then

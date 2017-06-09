@@ -40,7 +40,7 @@ export tree_dir="/BACKUPs/CONFIG_LINUX";
 export mount_point;
 export UUID_backup="A6B0EE5DB0EE3409";
 export UUID_data="08AB0FD608AB0FD6";
-export script_path="/opt/script";
+export script_path="/opt/scripts";
 
 # colori utilizzati
 export R='\033[0;31m'; # red
@@ -60,11 +60,11 @@ export failure="Negativo";
 # e restituisce il punto di mount nella variabile globale mount_point COMUNE A TUTTI MODULI
 # grep -w restituisce output sse la stringa ha un matching completo
 function check_mount {
-    # operatore var=($"str1 str2 strn") crea un array con le stringhe che sono separate da uno spazio
     # oppure si poteva usare il comando awk --> var=`lsblk -o UUID,MOUNTPOINT | grep -w "$1" | awk '{if (NF == 2) print $2;}'`
-    UUID_dev=(`lsblk -o UUID,MOUNTPOINT | grep -w "$1"`);
+    # oppure UUID_dev=(`lsblk -o UUID,MOUNTPOINT | grep -w "$1"`);
+    IFS=' ' read -ra UUID_dev <<< `lsblk -o UUID,MOUNTPOINT | grep -w $1`;
     mount_point=${UUID_dev[1]};
-    if [ "$mount_point" == "" ]; then
+    if [ ${#mount_point} == 0 ]; then
         echo "Montare il device UUID=$1?";
         read -n1 choise;
         if [ "$choise" == "y" ]; then

@@ -46,10 +46,9 @@ read -n1 choise;
 if [ "$choise" == "y" ]; then
 	# preparazione per shortcut redshift
 	check_mount $UUID_backup;
-	if ! [ -d $script_path ]; then
-		sudo mkdir $script_path;
-	fi
-	sudo cp $mount_point$tree_dir/my_script/redshift_regolator.sh $script_path;
+	# modo alternativo per esprimere uno if statement
+	! [ -d $script_path ] && sudo mkdir $script_path;
+	sudo cp $mount_point$tree_dir/my_scripts/redshift_regolator.sh $_dev_shm_; # al posto di $_dev_shm_ c'è $script_path
 
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
 	# is very similar to the backticks ``.
