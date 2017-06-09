@@ -24,7 +24,7 @@ path_custom_sc="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings
 custom_kb="custom-keybinding";
 
 terminal="Terminal;gnome-terminal;'<Ctrl><Alt>T'";
-redshift="RedShift;redshift -l 41.6:13.4;'<Ctrl><Shift>F'";
+redshift="RedShift;/opt/script/redshift_regolator.sh;'<Ctrl><Shift>F'";
 home_sc="Home;nautilus;'<Ctrl>N'";
 home_sc2="Home2;nautilus;'<Ctrl>M'";
 chrome_sc="Google-Chrome;google-chrome --disk-cache-dir='/dev/shm';'<Ctrl>G'";
@@ -44,6 +44,13 @@ other_shortcut_array=("$maximize" "$minimize" "$move_ne" "$move_nw" "$move_se" "
 echo "Vuoi impostare i keyboard shortcuts?";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
+	# preparazione per shortcut redshift
+	check_mount $UUID_backup;
+	if ! [ -d $script_path ]; then
+		sudo mkdir $script_path;
+	fi
+	sudo cp $mount_point$tree_dir/my_script/redshift_regolator.sh $script_path;
+
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
 	# is very similar to the backticks ``.
 	# It's called command substitution (posix specification) and it invokes a

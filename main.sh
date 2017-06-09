@@ -35,10 +35,12 @@ export current_script_name=;
 export mod_="preliminare";
 export mod_start="Avvio modulo";
 export mod_end="Fine modulo";
-export mount_point;
 export cmd="sudo /bin/su -c";
+export tree_dir="/BACKUPs/CONFIG_LINUX";
+export mount_point;
 export UUID_backup="A6B0EE5DB0EE3409";
 export UUID_data="08AB0FD608AB0FD6";
+export script_path="/opt/script";
 
 # colori utilizzati
 export R='\033[0;31m'; # red

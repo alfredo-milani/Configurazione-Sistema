@@ -28,7 +28,7 @@ check_mount $UUID_backup;
 # scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
 # dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
 pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
-path_driver_backup=$mount_point/BACKUPs/CONFIG_LINUX/Driver/$pc_version;
+path_driver_backup=$mount_point$tree_dir/Driver/$pc_version;
 path_sys_driver=/lib/firmware/;
 
 echo "Copiare i driver contenuti in $path_driver_backup nella directory di sistema $path_sys_driver?";

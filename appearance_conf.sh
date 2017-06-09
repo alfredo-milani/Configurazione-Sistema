@@ -14,7 +14,7 @@ echo "Vuoi configurare il tema GTK+ del sistema? Premi y per OK";
 read -n1 ready;
 if [ "$ready" = "y" ]; then
 	theme_scelto="T4G_3.0_theme";
-	path_backup_theme=$mount_point/BACKUPs/CONFIG_LINUX/Aspetto/Themes/;
+	path_backup_theme=$mount_point$tree_dir/Aspetto/Themes/;
 	path_sys_theme=/usr/share/themes/;
 	sudo cp -r $path_backup_theme$theme_scelto $path_sys_theme;
 	gsettings set org.gnome.desktop.interface gtk-theme $theme_scelto;
@@ -27,7 +27,7 @@ echo "Vuoi configurare le icone del sistema? Premi y per OK";
 read -n1 ready;
 if [ "$ready" = "y" ]; then
 	icon_scelto="Flat_Remix";
-	path_backup_icon=$mount_point/BACKUPs/CONFIG_LINUX/Aspetto/Icons/;
+	path_backup_icon=$mount_point$tree_dir/Aspetto/Icons/;
 	path_sys_icon="/usr/share/icons/";
 	sudo cp -r $path_backup_icon$icon_scelto $path_sys_icon;
 	gsettings set org.gnome.desktop.interface icon-theme $icon_scelto;
