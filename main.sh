@@ -31,7 +31,7 @@ fi
 export _dev_shm_="/dev/shm/";
 export null="/dev/null";
 # nome root script
-export current_script_name=;
+export current_script_name;
 export mod_="preliminare";
 export mod_start="Avvio modulo";
 export mod_end="Fine modulo";
