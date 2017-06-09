@@ -82,7 +82,7 @@ function check_mount {
 # funzione per verificare l'esistenza di tutti i tools necessari nel sistema
 # return code 127 indica che il comando digitato è sconosciuto
 function check_tool {
-	for tool in $@; do
+    for tool in $@; do
         delimiter='_';
         tmp=`cut -d$delimiter -f1 <<< $tool`;
         if [ "$tmp" == "sudo" ]; then
@@ -93,9 +93,9 @@ function check_tool {
         fi
 
     	if [ $? != 0 ]; then
-    		printf "${R}Tool '%s' necessario per l'esecuzione di questo script\n${NC}" "$tool";
+    	    printf "${R}Tool '%s' necessario per l'esecuzione di questo script\n${NC}" "$tool";
             printf "${R}--${NC}$mod_end $mod_\n";
-    		exit 1;
+    	    exit 1;
     	fi
     done
 }
