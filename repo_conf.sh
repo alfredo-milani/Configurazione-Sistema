@@ -14,7 +14,8 @@ echo "sito: $sito_repo";
 echo "file da modificare: '/etc/apt/sources.list'";
 printf "${Y}NOTA:${NC} ricorda di commentare la riga relativa al repository che punta al cd-rom\n";
 if check_connection; then
-	echo "Apertura del browser firefox per ottenere il sito contenente le informazioni necessarie"
+	echo "Apertura del browser firefox per ottenere il sito contenente le informazioni necessarie";
+	echo "(Chiudere il browser per continuare con la configurazione)";
 	# 0 --> stdin; 1 --> stdout; 2 --> stderr;
 	firefox $sito_repo &> $null
 	if [ $? == 127 ]; then
