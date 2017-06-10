@@ -24,7 +24,7 @@ path_custom_sc="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings
 custom_kb="custom-keybinding";
 
 terminal="Terminal;gnome-terminal;'<Ctrl><Alt>T'";
-redshift="RedShift;/opt/script/redshift_regolator.sh;'<Ctrl><Shift>F'";
+redshift="RedShift;$script_path/redshift_regolator.sh;'<Ctrl><Shift>F'";
 home_sc="Home;nautilus;'<Ctrl>N'";
 home_sc2="Home2;nautilus;'<Ctrl>M'";
 chrome_sc="Google-Chrome;google-chrome --disk-cache-dir='/dev/shm';'<Ctrl>G'";
@@ -46,10 +46,13 @@ read -n1 choise;
 if [ "$choise" == "y" ]; then
 	# preparazione per shortcut redshift
 	check_mount $UUID_backup;
-	# modo alternativo per esprimere uno if statement
+	# modo alternativo per esprimere uno if statement...
+	# il comando "[]" server per valutare espressioni
 	! [ -d $script_path ] && sudo mkdir $script_path;
-	sudo cp $mount_point$tree_dir/my_scripts/redshift_regolator.sh $script_path;
-	
+	# redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
+	# copia di tutti gli scripts
+	sudo cp $mount_point$tree_dir/scripts/* $script_path 2> $null;
+
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
 	# is very similar to the backticks ``.
 	# It's called command substitution (posix specification) and it invokes a
