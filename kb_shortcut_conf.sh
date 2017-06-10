@@ -59,13 +59,15 @@ if [ "$choise" == "y" ]; then
 	# subshell. The command in the braces of $() or beween the backticks (``)
 	# is executed in a subshell and the output is then placed in the original command.
 
-	# elementi in org.gnome.settings-daemon.plugins.media-keys
+: <<'COMMENTO'
 	# NOTA: sintassi commento:
 	#	: <<'COMMENT'
 	#	qui c'è il commento
 	#	COMMENT
 	#	Il plugin dell'editor atom non riconosce questo come commento
+COMMENTO
 
+	# elementi in org.gnome.settings-daemon.plugins.media-keys
 	for el in "${shortcuts_array[@]}"; do
 		# <<< --> It redirects the string to stdin of the command.
 		read -ra tmp_array <<< $el;
