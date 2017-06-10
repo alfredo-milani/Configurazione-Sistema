@@ -25,19 +25,14 @@ else
 fi
 
 scrivania="`$xdg DESKTOP`";
+nome_link="Alfredo_files";
+dir_data_relative="Alfredo";
 echo "Vuoi creare il link simbolico in $scrivania?";
 read -n1 choise;
 if [ $choise == "y" ]; then
-	if ! [ -d $scrivania"/Alfredo_files" ]; then
-		mount_point=/media/Data/;
-		# Se directory $mount_point NON esiste
-		# -d --> esiste la directory?
-		# -f --> esiste il file?
-		if ! [ -d $mount_point ]; then
-			sudo mkdir $mount_point;
-		fi
-		sudo mount UUID=$UUID_data $mount_point;
-		ln -s $mount_point"Alfredo" $scrivania"/Alfredo_files";
+	if ! [ -d $scrivania/$nome_link ]; then
+		check_mount $UUID_data;
+		ln -s $mount_point/$dir_data_relative $scrivania/$nome_link;
 		check_error "Creazione link simbolico in $scrivania";
 	else
 		printf "${DG}${U}File $scrivania/Alfredo_files già esistente${NC}\n";

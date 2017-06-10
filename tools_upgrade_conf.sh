@@ -8,6 +8,18 @@ printf "\n${Y}++${NC}$mod_start $mod_\n";
 
 
 
+echo "Upgrade e update dei pacchetti del sistema. Attendere...";
+if check_connection; then
+	which apt-fast &> $null;
+	if [ $? -gt 0 ]; then
+		sudo apt-get update -y; sudo apt-get upgrade -y;
+	else
+		sudo apt-fast update -y; sudo apt-fast upgrade -y;
+	fi
+fi
+
+
+
 # Installazione e configurazione del tool apt-fast
 echo "Installare apt-fast? Premi 'y' per OK";
 read -n1 choise;
@@ -51,25 +63,13 @@ fi
 
 
 
-echo "Upgrade e update dei pacchetti del sistema. Attendere...";
-if check_connection; then
-	which apt-fast &> $null;
-	if [ $? -gt 0 ]; then
-		sudo apt-get update -y; sudo apt-get upgrade -y;
-	else
-		sudo apt-fast update -y; sudo apt-fast upgrade -y;
-	fi
-fi
-
-
-
 ##### Installazione tools principali
-echo "Vuoi installare vlc, preload, curl, redshift, alacarte, g++, gparted? Premi y per OK";
+echo "Vuoi installare vim, vlc, preload, curl, redshift, alacarte, g++, gparted? Premi y per OK";
 read -n1 ready;
 if [ "$ready" = "y" ] && check_connection; then
-	echo "Installazione dei princiali tools: vlc, preload, curl, redshift, alacarte, g++, gparted";
-	sudo apt-fast install vlc preload curl redshift alacarte g++ gparted -y;
-	check_error "Installazione dei tools: vlc, preload, curl, redshift, alacarte, g++, gparted";
+	echo "Installazione dei princiali tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
+	sudo apt-fast install vim vlc preload curl redshift alacarte g++ gparted -y;
+	check_error "Installazione dei tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 
 	printf "Vuoi installare e configurare anche prelink? Premi y per OK\n";
 	read -n1 ready;

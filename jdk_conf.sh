@@ -14,7 +14,7 @@ printf "\n${Y}++${NC}$mod_start $mod_\n";
 #		${FUNCNAME[0]} --> nome funzione chiamante;
 #			FUNCNAME: An  array  variable  containing the names of all shell functions
 # 			currently in the execution call stack.
-function config_profile() {
+function config_profile {
 	if [ ${#1} == 0 ] || [ ${#2} == 0 ]; then
 		printf "${R}Errore di sintassi nella funzione ${FUNCNAME[0]}\n${NC}";
 	else

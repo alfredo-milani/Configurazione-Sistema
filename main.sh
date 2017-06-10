@@ -27,34 +27,66 @@ fi
 
 
 
+# vars di sola lettura (declare -r)
 # path temporaneo su RAM
-export _dev_shm_="/dev/shm/";
-export null="/dev/null";
+declare -r _dev_shm_="/dev/shm/";
+declare -r null="/dev/null";
+declare -r mod_start="Avvio modulo";
+declare -r mod_end="Fine modulo";
+declare -r cmd="sudo /bin/su -c";
+# colori utilizzati
+declare -r R='\033[0;31m'; # red
+declare -r Y='\033[1;33m'; # yellow
+declare -r G='\033[0;32m'; # green
+declare -r DG='\033[1;30m'; # dark gray
+declare -r U='\033[4m'; # underlined
+declare -r NC='\033[0m'; # No Color
+# stringhe per la funzione check_error
+declare -r check_error_str="Azione: %s\tEsito: %s\n";
+declare -r success="Positivo";
+declare -r failure="Negativo";
+
+export _dev_shm_ null;
+export mod_start mod_end;
+export cmd;
+export R Y G DG U NC;
+export check_error_str success failure;
+
 # nome root script
 export current_script_name;
 export mod_="preliminare";
-export mod_start="Avvio modulo";
-export mod_end="Fine modulo";
-export cmd="sudo /bin/su -c";
 export tree_dir="/BACKUPs/CONFIG_LINUX";
 export mount_point;
 export UUID_backup="A6B0EE5DB0EE3409";
 export UUID_data="08AB0FD608AB0FD6";
 export script_path="/opt/scripts";
-
-# colori utilizzati
-export R='\033[0;31m'; # red
-export Y='\033[1;33m'; # yellow
-export G='\033[0;32m'; # green
-export DG='\033[1;30m'; # dark gray
-export U='\033[4m'; # underlined
-export NC='\033[0m'; # No Color
-# stringhe per la funzione check_error
-export check_error_str="Azione: %s\tEsito: %s\n";
-export success="Positivo";
-export failure="Negativo";
+# chiavi/valori dal file di configurazione
+export keys=();
+export values=();
+conf_file=sys.conf;
 
 
+
+# leggi i valori dal file di configurazione e inizializza gli arrays keys e values
+function fill_arrays {
+    if ! [ -f $conf_file ]; then
+        printf "${R}Devi specificare un file di configurazione valido.\nIl file $conf_file non è stato trovato.\n${NC}";
+        exit 1;
+    fi
+
+    # redirigo il file di configurazione all'input della funzione read
+    IFS='=';
+    while read -r key value; do
+        keys+=("$key");
+        values+=("$value");
+    done < $conf_file;
+}
+
+# restituisce il valore corrispondente alla chiave in input
+function get_value {
+    # TODO 
+    exit 1;
+}
 
 # funzione che verifica se il device il cui UUID è ricevuto in input è montato
 # e restituisce il punto di mount nella variabile globale mount_point COMUNE A TUTTI MODULI
@@ -138,6 +170,7 @@ function give_help {
     echo -e "\t--all | --ALL )\t\tConfigurazione completa del sistema";
     echo -e "\t-a | -A )\t\tConfigurazione di tema ed icone";
     echo -e "\t-b | -B )\t\tConfigurazione del file .bashrc";
+    echo -e "\t-c | -C )\t\tIndirizzo file di configurazione sys.conf";
     echo -e "\t-f | -F )\t\tConfigurazione del file /etc/fstab";
     echo -e "\t-j | -J )\t\tConfigurazione del JDK Oracle";
     echo -e "\t-l | -L )\t\tCreazione link simbolici";
@@ -160,9 +193,6 @@ export -f check_connection;
 
 
 check_tool "basename" "realpath";
-
-
-
 current_script_name=`basename "$0"`;
 # la shell sh non riconosce la sintassi ${string::-n}
 # path assoluto script corrente
@@ -171,18 +201,14 @@ absolute_current_script_path=`realpath $0`;
 lenght=${#current_script_name};
 # sintassi: ${string::-n} --> taglia gli ultimi (-n) n elementi di string
 absolute_script_path=${absolute_current_script_path::-$lenght};
-# -gt --> greater than
-# il comando shift n sposta il parametro posizionale di n posti (default n = 1)
-# si possono usare pattern del tipo: -h|--help) per selezione multipla
-# i pattern del tipo --action* : The * (wildcard) is for the case where
-#   someone types --action=[ACTION] as well as the case where someone types
-#   --action [ACTION]
-# si usa l'operatore [xX] per avere scelte multiple
+
+# controllo se l'utente non ha specificato il modulo da avviare
 if [ $# == 0 ]; then
     printf "${U}Utilizza il flag -h per conoscere le operazioni disponibili\n${NC}";
     exit 0;
 fi
 
+# controllo se l'utente ha inserito il flag -h
 for arg in $@; do
     if [ "$arg" == "-h" ] ||
         [ "$arg" == "-H" ] ||
@@ -196,6 +222,14 @@ for arg in $@; do
     fi
 done
 
+# -gt --> greater than
+# il comando shift;; n sposta il parametro posizionale di n posti (default n = 1)
+# si possono usare pattern del tipo: -h|--help) per selezione multipla
+# i pattern del tipo --action* : The * (wildcard) is for the case where
+#   someone types --action=[ACTION] as well as the case where someone types
+#   --action [ACTION]
+# si usa l'operatore [xX] per avere scelte multiple
+scripts_array=();
 while [ $# -gt 0 ]; do
     case "$1" in
         --all | --ALL )
@@ -207,88 +241,107 @@ while [ $# -gt 0 ]; do
                 # per effettuare operazioni aritmetiche si usa l'espressione: var3=$(($var1 + $var2));
                 tmp_ext=`echo $script | cut -c $(($lenght + 1))-$lenght_tmp_script`;
                 if [ "$tmp_ext" == "$ext" ] && [ "$current_script_name" != "$tmp_script" ]; then
-                    $script;
+                    scripts_array+=("$script");
                 fi
             done
-            break
+            break;
             ;;
 
         -[aA] )
             # configurazione aspetto
-            $absolute_script_path"/appearance_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/appearance_conf.sh");
+            shift;
             ;;
 
         -[bB] )
             # configurazione del file .bashrc
-            $absolute_script_path"/bashrc_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/bashrc_conf.sh");
+            shift;
+            ;;
+
+        -[cC] )
+            shift;
+            # path file di configurazione
+            if [ -f $1 ]; then
+                conf_file=$1;
+            else
+                printf "${R}File $arg non trovato. Verrà usato il file di default ($conf_file).\n${NC}";
+            fi
+            shift;
             ;;
 
         -[fF] )
             # configurazione file /etc/fstab
-            $absolute_script_path"/fstab_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/fstab_conf.sh");
+            shift;
             ;;
 
         -[hH] | -help | -HELP | --[hH] | --help | --HELP )
+            # verificato in precedenza
             give_help;
             ;;
 
         -jdk | -JDK )
             # configurazione JDK Oracle
-            $absolute_script_path"/jdk_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/jdk_conf.sh");
+            shift;
             ;;
 
         -[lL] )
             # configurazione link simbolici
-            $absolute_script_path"/symbolic_link_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/symbolic_link_conf.sh");
+            shift;
             ;;
 
         -[nN] )
             # configurazione di rete
-            $absolute_script_path"/network_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/network_conf.sh");
+            shift;
             ;;
 
         -[rR] )
             # configurazione repository
-            $absolute_script_path"/repo_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/repo_conf.sh");
+            shift;
             ;;
 
         -[sS] )
             # configurazione keyboard shortcuts
-            $absolute_script_path"/kb_shortcut_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/kb_shortcut_conf.sh");
+            shift;
             ;;
 
         -tcp | -TCP )
             # configurazione impostazioni protocollo TCP
-            $absolute_script_path"/tcp_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/tcp_conf.sh");
+            shift;
             ;;
 
         -tr | -TR )
             # disabilitazione tracker-*
-            $absolute_script_path"/tracker_disable_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/tracker_disable_conf.sh");
+            shift;
             ;;
 
         -[uU] )
             # aggiornamento tools sistema
-            $absolute_script_path"/tools_upgrade_conf.sh";
-            shift
+            scripts_array+=("$absolute_script_path/tools_upgrade_conf.sh");
+            shift;
             ;;
 
         * )
             printf "${R}Comando $1 non risconosciuto\n${NC}";
             echo "Usa il flag -h per ottenere più informazioni";
-            shift
+            shift;
             ;;
     esac
+done
+
+
+
+fill_arrays;
+for script in "${scripts_array[@]}"; do
+    $script;
 done
 
 ##### Mancanti
