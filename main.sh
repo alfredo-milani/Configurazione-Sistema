@@ -132,6 +132,25 @@ function check_connection {
 	printf "${G}Connessione internet presente${NC}\n";
 }
 
+function give_help {
+    echo "$current_script_name -options";
+    echo "";
+    echo -e "\t--all | --ALL )\t\tConfigurazione completa del sistema";
+    echo -e "\t-a | -A )\t\tConfigurazione di tema ed icone";
+    echo -e "\t-b | -B )\t\tConfigurazione del file .bashrc";
+    echo -e "\t-f | -F )\t\tConfigurazione del file /etc/fstab";
+    echo -e "\t-j | -J )\t\tConfigurazione del JDK Oracle";
+    echo -e "\t-l | -L )\t\tCreazione link simbolici";
+    echo -e "\t-n | -N )\t\tConfigurazione di rete";
+    echo -e "\t-r | -R )\t\tConfigurazione dei repository";
+    echo -e "\t-s | -S )\t\tConfigurazione dei keyboard shortcuts";
+    echo -e "\t-tcp | -TCP )\t\tConfigurazione impostazioni protocollo TCP";
+    echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
+    echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
+    exit 0
+}
+
+# flag -f per esportare le funzioni
 export -f check_mount;
 export -f check_tool;
 export -f check_error;
@@ -163,6 +182,19 @@ if [ $# == 0 ]; then
     printf "${U}Utilizza il flag -h per conoscere le operazioni disponibili\n${NC}";
     exit 0;
 fi
+
+for arg in $@; do
+    if [ "$arg" == "-h" ] ||
+        [ "$arg" == "-H" ] ||
+        [ "$arg" == "-help" ] ||
+        [ "$arg" == "-HELP" ] ||
+        [ "$arg" == "--h" ] ||
+        [ "$arg" == "--H" ] ||
+        [ "$arg" == "--help" ] ||
+        [ "$arg" == "--HELP" ]; then
+            give_help;
+    fi
+done
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -200,21 +232,7 @@ while [ $# -gt 0 ]; do
             ;;
 
         -[hH] | -help | -HELP | --[hH] | --help | --HELP )
-            echo "$current_script_name -options";
-            echo "";
-            echo -e "\t--all | --ALL )\t\tConfigurazione completa del sistema";
-            echo -e "\t-a | -A )\t\tConfigurazione di tema ed icone";
-            echo -e "\t-b | -B )\t\tConfigurazione del file .bashrc";
-            echo -e "\t-f | -F )\t\tConfigurazione del file /etc/fstab";
-            echo -e "\t-j | -J )\t\tConfigurazione del JDK Oracle";
-            echo -e "\t-l | -L )\t\tCreazione link simbolici";
-            echo -e "\t-n | -N )\t\tConfigurazione di rete";
-            echo -e "\t-r | -R )\t\tConfigurazione dei repository";
-            echo -e "\t-s | -S )\t\tConfigurazione dei keyboard shortcuts";
-            echo -e "\t-tcp | -TCP )\t\tConfigurazione impostazioni protocollo TCP";
-            echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
-            echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
-            exit 0
+            give_help;
             ;;
 
         -jdk | -JDK )
