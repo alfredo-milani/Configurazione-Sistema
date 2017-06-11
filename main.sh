@@ -147,8 +147,10 @@ function check_tool {
 function check_error {
 	if [ $? == 0 ]; then
 		printf "${G}$check_error_str${NC}" "$@" $success;
+        return 0;
 	else
 		printf "${R}***$check_error_str${NC}" "$@" $failure;
+        return 1;
 	fi
 }
 

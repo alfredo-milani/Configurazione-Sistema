@@ -109,10 +109,13 @@ if [ "$choise" = "y" ] && check_connection; then
 	sudo apt-fast -f install -y;
 	check_error "Installazione broswer google-chrome";
 
-	printf "${Y}Sposta la cache di Google-Chrome su RAMDISK con alacarte${NC}\n";
-	alacarte 2> $null;
-	echo "Una volta spostata la cache con alacarte premi un pulsante per continuare";
-	read -n1 ready;
+	# se l'installazione di google-chrome è andata a buon fine
+	if [ $? == 0 ]; then
+		printf "${Y}Sposta la cache di Google-Chrome su RAMDISK con alacarte${NC}\n";
+		alacarte 2> $null;
+		echo "Una volta spostata la cache con alacarte premi un pulsante per continuare";
+		read -n1 ready;
+	fi
 else
 	printf "${DG}${U}Atom e Google-Chrome non installati${NC}\n";
 fi
