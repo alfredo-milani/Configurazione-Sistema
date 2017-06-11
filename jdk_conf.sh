@@ -51,13 +51,14 @@ if [ "$choise" == "y" ]; then
 	if [ ${#new_jdk} == 0 ]; then
 		printf "${R}Nessuna cartella jdk trovata in $path_jdk\n${NC}";
 		check_mount $UUID_backup;
-		path_backup_jdk=$mount_point/SOFTWARE/LINUX/;
+		path_backup_jdk=$mount_point/$software;
 		backup_jdk=`ls $path_backup_jdk | grep jdk`;
 		if [ ${#backup_jdk} != 0 ]; then
-			echo "Vuoi utilizzare la JDK $path_backup_jdk$backup_jdk?";
+			echo "Vuoi utilizzare la JDK $path_backup_jdk/$backup_jdk?";
 			read -n1 choise;
 			if [ "$choise" == "y" ]; then
-				tar -xvf $path_backup_jdk$backup_jdk -C $path_jdk &> $null;
+				tar -xvf $path_backup_jdk/$backup_jdk -C $path_jdk &> $null;
+				check_error "Estrazione di $backup_jdk in $path_jdk";
 				backup_jdk=`ls $path_jdk | grep jdk`;
 				config_profile $path_jdk $backup_jdk;
 			else

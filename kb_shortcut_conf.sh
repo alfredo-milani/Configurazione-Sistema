@@ -51,7 +51,7 @@ if [ "$choise" == "y" ]; then
 	! [ -d $script_path ] && sudo mkdir $script_path;
 	# redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
 	# copia di tutti gli scripts
-	sudo cp $mount_point$tree_dir/scripts/* $script_path 2> $null;
+	sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
 
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
 	# is very similar to the backticks ``.

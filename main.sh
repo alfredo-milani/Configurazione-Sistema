@@ -10,6 +10,7 @@
 # il file /proc/pid/cmdline contiene la riga di comando con la quale è stato lanciato il processo identificato da pid.
 # cut -c 1-4 restituisce i primi 4 caratteri della stringa presa in input
 line_acc1="bash"; line_acc2="/bin/bash";
+# la shell sh non riconosce la sintassi ${string::-n}
 # sostituzione del carattere terminatore di stringa '\0' per evitare
 # il warning: "command substitution: ignored null byte in input"
 cmd_line=`cat /proc/$$/cmdline | tr '\0' ' '`;
@@ -52,19 +53,6 @@ export cmd;
 export R Y G DG U NC;
 export check_error_str success failure;
 
-# nome root script
-export current_script_name;
-export mod_="preliminare";
-export tree_dir="/BACKUPs/CONFIG_LINUX";
-export mount_point;
-export UUID_backup="A6B0EE5DB0EE3409";
-export UUID_data="08AB0FD608AB0FD6";
-export script_path="/opt/scripts";
-# chiavi/valori dal file di configurazione
-export keys=();
-export values=();
-conf_file=sys.conf;
-
 
 
 # leggi i valori dal file di configurazione e inizializza gli arrays keys e values
@@ -83,9 +71,22 @@ function fill_arrays {
 }
 
 # restituisce il valore corrispondente alla chiave in input
+# restituisce 0 in caso di errore
+# restituisce n > 0 che corrisponde al valore i + 1
 function get_value {
-    # TODO 
-    exit 1;
+    if [ $# == 0 ]; then
+        printf "${R}Errore nella funzione ${FUNCNAME[0]}. Nessun argomento ricevuto\n${NC}";
+        # la shell bash ritornerà un valore tra 0 e 255 --> -2 -> 254
+        return -2;
+    fi
+
+    # se trovo un matching ritorno il valore dell'indice
+    for ((i = 0; i < ${#keys[@]}; ++i)); do
+        [ "${keys[$i]}" == "$1" ] && return $i;
+    done
+
+    # la shell bash ritornerà un valore tra 0 e 255 --> -1 -> 255
+    return -1;
 }
 
 # funzione che verifica se il device il cui UUID è ricevuto in input è montato
@@ -184,6 +185,7 @@ function give_help {
 }
 
 # flag -f per esportare le funzioni
+export -f get_value;
 export -f check_mount;
 export -f check_tool;
 export -f check_error;
@@ -192,15 +194,36 @@ export -f check_connection;
 
 
 
-check_tool "basename" "realpath";
-current_script_name=`basename "$0"`;
-# la shell sh non riconosce la sintassi ${string::-n}
+export mount_point;
+# chiavi/valori dal file di configurazione
+export keys=();
+export values=();
+# contiene i moduli  invocati dall'utente
+scripts_array=();
+# file di default contenuto nella stessa directory dello script corrente
+conf_file=sys.conf;
+# nome root script
+export current_script_name=`basename "$0"`;
+export mod_="preliminare";
+export tree_dir;
+export UUID_backup;
+export UUID_data;
+export script_path;
+export software;
+export theme_backup;
+export icon_backup;
+export driver_backup;
+export scripts_backup;
 # path assoluto script corrente
 absolute_current_script_path=`realpath $0`;
 # l'operatore unario # restituisce la lunghezza della scringa/array
 lenght=${#current_script_name};
 # sintassi: ${string::-n} --> taglia gli ultimi (-n) n elementi di string
 absolute_script_path=${absolute_current_script_path::-$lenght};
+
+
+
+check_tool "basename" "realpath";
 
 # controllo se l'utente non ha specificato il modulo da avviare
 if [ $# == 0 ]; then
@@ -229,7 +252,6 @@ done
 #   someone types --action=[ACTION] as well as the case where someone types
 #   --action [ACTION]
 # si usa l'operatore [xX] per avere scelte multiple
-scripts_array=();
 while [ $# -gt 0 ]; do
     case "$1" in
         --all | --ALL )
@@ -262,10 +284,10 @@ while [ $# -gt 0 ]; do
         -[cC] )
             shift;
             # path file di configurazione
-            if [ -f $1 ]; then
+            if [ ${#1} != 0 ] && [ -f $1 ]; then
                 conf_file=$1;
             else
-                printf "${R}File $arg non trovato. Verrà usato il file di default ($conf_file).\n${NC}";
+                printf "${Y}File $arg non trovato. Verrà usato il file di default ($conf_file).\n${NC}";
             fi
             shift;
             ;;
@@ -339,7 +361,23 @@ done
 
 
 
+# ottenimento valori delle chiavi
 fill_arrays;
+
+get_value tree_dir; tree_dir=${values[$?]};
+get_value UUID_backup; UUID_backup=${values[$?]};
+get_value UUID_data; UUID_data=${values[$?]};
+get_value script_path; script_path=${values[$?]};
+get_value software; software=${values[$?]};
+get_value themes_backup; themes_backup=${values[$?]};
+get_value icon_backup; icon_backup=${values[$?]};
+get_value driver_backup; driver_backup=${values[$?]};
+get_value scripts_backup; scripts_backup=${values[$?]};
+
+for el in "${values[@]}"; do
+    echo "val: $el";
+done
+
 for script in "${scripts_array[@]}"; do
     $script;
 done

@@ -33,7 +33,7 @@ if [ "$choise" == "y" ]; then
 	# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
 	# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
 	pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
-	path_driver_backup=$mount_point$tree_dir/Driver/$pc_version;
+	path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version;
 	path_sys_driver=/lib/firmware/;
 
 	if [ -d "$path_driver_backup" ]; then
