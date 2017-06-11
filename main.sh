@@ -55,6 +55,7 @@ export check_error_str success failure;
 
 
 
+
 # leggi i valori dal file di configurazione e inizializza gli arrays keys e values
 function fill_arrays {
     if ! [ -f $conf_file ]; then
@@ -101,8 +102,15 @@ function check_mount {
         echo "Montare il device UUID=$1?";
         read -n1 choise;
         if [ "$choise" == "y" ]; then
-            mkdir $_dev_shm_$1;
             mount_point=$_dev_shm_$1;
+            echo "Montare il device in un punto particolare (default: $mount_point)?"
+            read -n1 choise;
+            if [ "$choise" == "y" ]; then
+                echo "Digita il punto di mount";
+                read mount_point;
+                ! [ -d $mount_point ] && printf "${Y}Directory $mount_point non esistente. Utilizzo di quella di default\n${NC}";
+            fi
+            mkdir $mount_point;
             sudo mount UUID=$1 $mount_point;
         else
             printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
@@ -195,31 +203,32 @@ export -f check_connection;
 
 
 export mount_point;
-# chiavi/valori dal file di configurazione
-export keys=();
-export values=();
-# contiene i moduli  invocati dall'utente
-scripts_array=();
-# file di default contenuto nella stessa directory dello script corrente
-conf_file=sys.conf;
 # nome root script
 export current_script_name=`basename "$0"`;
-export mod_="preliminare";
-export tree_dir;
-export UUID_backup;
-export UUID_data;
-export script_path;
-export software;
-export theme_backup;
-export icon_backup;
-export driver_backup;
-export scripts_backup;
 # path assoluto script corrente
 absolute_current_script_path=`realpath $0`;
 # l'operatore unario # restituisce la lunghezza della scringa/array
 lenght=${#current_script_name};
 # sintassi: ${string::-n} --> taglia gli ultimi (-n) n elementi di string
 absolute_script_path=${absolute_current_script_path::-$lenght};
+# chiavi/valori dal file di configurazione
+# NOTA: gli array non possono essere esportati
+keys=();
+values=();
+# contiene i moduli  invocati dall'utente
+scripts_array=();
+# file di default contenuto nella stessa directory dello script corrente
+conf_file=$absolute_script_path"sys.conf";
+export mod_="preliminare";
+export tree_dir;
+export UUID_backup;
+export UUID_data;
+export script_path;
+export software;
+export themes_backup;
+export icons_backup;
+export driver_backup;
+export scripts_backup;
 
 
 
@@ -287,7 +296,7 @@ while [ $# -gt 0 ]; do
             if [ ${#1} != 0 ] && [ -f $1 ]; then
                 conf_file=$1;
             else
-                printf "${Y}File $arg non trovato. Verrà usato il file di default ($conf_file).\n${NC}";
+                printf "${Y}File specificato ($arg) non trovato. Verrà usato il file di default ($conf_file).\n${NC}";
             fi
             shift;
             ;;
@@ -370,7 +379,7 @@ get_value UUID_data; UUID_data=${values[$?]};
 get_value script_path; script_path=${values[$?]};
 get_value software; software=${values[$?]};
 get_value themes_backup; themes_backup=${values[$?]};
-get_value icon_backup; icon_backup=${values[$?]};
+get_value icons_backup; icons_backup=${values[$?]};
 get_value driver_backup; driver_backup=${values[$?]};
 get_value scripts_backup; scripts_backup=${values[$?]};
 

@@ -95,7 +95,7 @@ COMMENTO
 	done
 	# inizializzazione valore della chiave custom-keybindings
 	printf -v custom_list "[%s]" "$custom_list";
-	#$gs set $media_keys $custom_kb"s" "$custom_list";
+	$gs set $media_keys $custom_kb"s" "$custom_list";
 	check_error "Impostazione chiave per abilitare una custom-list";
 
 	# inizializzazione valore sottochiavi custom
