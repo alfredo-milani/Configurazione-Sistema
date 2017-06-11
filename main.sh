@@ -28,7 +28,7 @@ fi
 
 
 
-# vars di sola lettura (declare -r)
+# variabili di sola lettura (declare -r)
 # path temporaneo su RAM
 declare -r _dev_shm_="/dev/shm/";
 declare -r null="/dev/null";
@@ -202,6 +202,8 @@ export -f check_connection;
 
 
 
+check_tool "basename" "realpath";
+
 export mount_point;
 # nome root script
 export current_script_name=`basename "$0"`;
@@ -215,7 +217,7 @@ absolute_script_path=${absolute_current_script_path::-$lenght};
 # NOTA: gli array non possono essere esportati
 keys=();
 values=();
-# contiene i moduli  invocati dall'utente
+# contiene i moduli invocati dall'utente
 scripts_array=();
 # file di default contenuto nella stessa directory dello script corrente
 conf_file=$absolute_script_path"sys.conf";
@@ -231,8 +233,6 @@ export driver_backup;
 export scripts_backup;
 
 
-
-check_tool "basename" "realpath";
 
 # controllo se l'utente non ha specificato il modulo da avviare
 if [ $# == 0 ]; then
@@ -383,6 +383,7 @@ get_value icons_backup; icons_backup=${values[$?]};
 get_value driver_backup; driver_backup=${values[$?]};
 get_value scripts_backup; scripts_backup=${values[$?]};
 
+# avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
     $script;
 done
