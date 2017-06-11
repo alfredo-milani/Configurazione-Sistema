@@ -374,10 +374,6 @@ get_value icon_backup; icon_backup=${values[$?]};
 get_value driver_backup; driver_backup=${values[$?]};
 get_value scripts_backup; scripts_backup=${values[$?]};
 
-for el in "${values[@]}"; do
-    echo "val: $el";
-done
-
 for script in "${scripts_array[@]}"; do
     $script;
 done
