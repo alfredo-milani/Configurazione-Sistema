@@ -36,11 +36,11 @@ La configurazione di default del file *sys.conf* rappresenta la seguente struttu
     ..
     |
     |--> CONFIG_LINUX --> Aspetto --> Themes
-                      |           |-> Icons
-                      |
-                      |-> Driver
-                      |
-                      |-> scripts
+    |                 |           |-> Icons
+    |                 |
+    |                 |-> Driver
+    |                 |
+    |                 |-> scripts
     |
     |--> SOFTWARE --> LINUX
 
