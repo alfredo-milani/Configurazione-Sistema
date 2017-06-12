@@ -186,12 +186,11 @@ function give_help {
     echo -e "\t-b | -B )\t\tConfigurazione del file .bashrc";
     echo -e "\t-c | -C )\t\tIndirizzo file di configurazione sys.conf";
     echo -e "\t-f | -F )\t\tConfigurazione del file /etc/fstab";
-    echo -e "\t-j | -J )\t\tConfigurazione del JDK Oracle";
+    echo -e "\t-jdk | -JDK )\t\tConfigurazione della JDK Oracle";
     echo -e "\t-l | -L )\t\tCreazione link simbolici";
     echo -e "\t-n | -N )\t\tConfigurazione di rete";
     echo -e "\t-r | -R )\t\tConfigurazione dei repository";
     echo -e "\t-s | -S )\t\tConfigurazione dei keyboard shortcuts";
-    echo -e "\t-tcp | -TCP )\t\tConfigurazione impostazioni protocollo TCP";
     echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
     echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
     exit 0
@@ -346,12 +345,6 @@ while [ $# -gt 0 ]; do
         -[sS] )
             # configurazione keyboard shortcuts
             scripts_array+=("$absolute_script_path/kb_shortcut_conf.sh");
-            shift;
-            ;;
-
-        -tcp | -TCP )
-            # configurazione impostazioni protocollo TCP
-            scripts_array+=("$absolute_script_path/tcp_conf.sh");
             shift;
             ;;
 
