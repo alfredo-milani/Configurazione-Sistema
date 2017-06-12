@@ -42,6 +42,7 @@ La configurazione di default del file *sys.conf* rappresenta la seguente struttu
     |                 |
     |                 |-> scripts
     |
+    |
     |--> SOFTWARE --> LINUX
 
 Questo è un file di tipo *key/value*:
