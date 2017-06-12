@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ ${#1} == 0 ] || [ $1 != 16 ]; then
+	printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n";
+	exit 1;
+fi
 ##############################
 ##### Modifica shortcuts #####
 ##############################

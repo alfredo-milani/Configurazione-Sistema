@@ -221,6 +221,8 @@ keys=();
 values=();
 # contiene i moduli invocati dall'utente
 scripts_array=();
+# codice di avvio per scripts
+start_script_code=16;
 # file di default contenuto nella stessa directory dello script corrente
 conf_file=$absolute_script_path"sys.conf";
 export mod_="preliminare";
@@ -387,7 +389,7 @@ get_value scripts_backup; scripts_backup=${values[$?]};
 
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
-    $script;
+    $script $start_script_code;
 done
 
 ##### Mancanti

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ ${#1} == 0 ] || [ $1 != 16 ]; then
+	printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n";
+	exit 1;
+fi
 ##########################################
 ##### Aggiornamento tools di sistema #####
 ##########################################
@@ -8,15 +12,13 @@ printf "\n${Y}++${NC}$mod_start $mod_\n";
 
 
 
+apt_manager=apt-get;
+# selezione apt-manager
+which apt &> $null && apt_manager=apt;
+which apt-fast &> $null && apt_manager=apt-fast;
+
 echo "Upgrade e update dei pacchetti del sistema. Attendere...";
-if check_connection; then
-	which apt-fast &> $null;
-	if [ $? -gt 0 ]; then
-		sudo apt-get update -y; sudo apt-get upgrade -y;
-	else
-		sudo apt-fast update -y; sudo apt-fast upgrade -y;
-	fi
-fi
+check_connection && sudo $apt_manager update -y && sudo $apt_manager upgrade -y;
 
 
 
@@ -29,7 +31,7 @@ if [ $choise == "y" ] && check_connection; then
 	cd $_dev_shm_;
 	mkdir apt-fast;
 	cd apt-fast;
-	sudo apt-get install -y aria2;
+	sudo $apt_manager install -y aria2;
 	wget $apt_fast;
 	unzip master.zip &> $null;
 	cd apt-fast-master;
@@ -68,13 +70,13 @@ echo "Vuoi installare vim, vlc, preload, curl, redshift, alacarte, g++, gparted?
 read -n1 ready;
 if [ "$ready" = "y" ] && check_connection; then
 	echo "Installazione dei princiali tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
-	sudo apt-fast install vim vlc preload curl redshift alacarte g++ gparted -y;
+	sudo $apt_manager install vim vlc preload curl redshift alacarte g++ gparted -y;
 	check_error "Installazione dei tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 
 	printf "Vuoi installare e configurare anche prelink? Premi y per OK\n";
 	read -n1 ready;
 	if [ "$ready" = "y" ]; then
-		sudo apt-fast install prelink -y;
+		sudo $apt_manager install prelink -y;
 		path_prelink="/etc/default/prelink";
 		files_da_modificare="prelink";
 		old_str="PRELINKING=unknown";
@@ -106,7 +108,7 @@ if [ "$choise" = "y" ] && check_connection; then
 	chrome_link="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb";
 	wget $chrome_link;
 	sudo dpkg -i *deb;
-	sudo apt-fast -f install -y;
+	sudo $apt_manager -f install -y;
 	check_error "Installazione broswer google-chrome";
 
 	# se l'installazione di google-chrome è andata a buon fine
