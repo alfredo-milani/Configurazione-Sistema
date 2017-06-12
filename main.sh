@@ -164,6 +164,7 @@ function get_header {
 function check_connection {
 	# una funzione (o comando) risulta verificata se rotorna il codice 0 --> non ha riscontrato problemi
 	# mentre get_header ritorna una valore maggiore di 0 ()--> mentre wget riscontra errori) chiedi all'utente come procedere
+    echo "Controllo accesso ad Internet. Attendere...";
 	while ! get_header; do
 		printf "${Y}Connessione assente. Premi 'j' per saltare questa parte oppure premi qualsiasi tasto per ritestare la connessione.${NC}\n";
 		read -n1 choise;
@@ -374,9 +375,10 @@ done
 
 
 
-# ottenimento valori delle chiavi
+# lettura file di configurazione
 fill_arrays;
 
+# definizione array key/value
 get_value tree_dir; tree_dir=${values[$?]};
 get_value UUID_backup; UUID_backup=${values[$?]};
 get_value UUID_data; UUID_data=${values[$?]};

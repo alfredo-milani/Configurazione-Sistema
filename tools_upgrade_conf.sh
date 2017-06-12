@@ -17,7 +17,7 @@ apt_manager=apt-get;
 which apt &> $null && apt_manager=apt;
 which apt-fast &> $null && apt_manager=apt-fast;
 
-echo "Upgrade e update dei pacchetti del sistema. Attendere...";
+echo "Upgrade e update dei pacchetti del sistema.";
 check_connection && sudo $apt_manager update -y && sudo $apt_manager upgrade -y;
 
 
@@ -128,7 +128,9 @@ fi
 echo "Vuoi aprire il software center ed installare ora le estensioni?";
 read -n1 choise;
 if [ "$choise" == "y" ] && check_connection; then
-	printf "Estensioni da installare:\n-Appfolders management extension\n-Application menu (dovrebbe essere già presente);\n-Battery status;\n-Dash to dock;\n-Dynamic panel transparency;\n";
+	check_mount $UUID_backup;
+	path_readme_exts=$mount_point/$software/GNOME_EXTENSIONS/README*;
+	[ -f $path_readme_exts ] && printf "\n\n" && cat $path_readme_exts && printf "\n\n";
 	gnome-software 2> $null;
 	if [ $? == 127 ]; then
 		gnome_ext="https://extensions.gnome.org/";
