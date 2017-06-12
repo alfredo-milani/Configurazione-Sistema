@@ -111,6 +111,7 @@ function check_mount {
                 ! [ -d $mount_point ] && printf "${Y}Directory $mount_point non esistente. Utilizzo di quella di default\n${NC}";
             fi
             mkdir $mount_point;
+            echo "Montaggio device UUID=$1 in $mount_point";
             sudo mount UUID=$1 $mount_point;
         else
             printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
@@ -127,6 +128,7 @@ function check_tool {
         delimiter='_';
         tmp=`cut -d$delimiter -f1 <<< $tool`;
         if [ "$tmp" == "sudo" ]; then
+            echo "Checking tool $tmp nel sistema";
             sudo_tool=`cut -d$delimiter -f2 <<< $tool`
             sudo which $sudo_tool &> $null;
         else

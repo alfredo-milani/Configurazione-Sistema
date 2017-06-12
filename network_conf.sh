@@ -29,26 +29,22 @@ fi
 
 
 
+check_tool "sudo_dmidecode" "tr";
+check_mount $UUID_backup;
+# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
+# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
+pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
+path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version;
+# path_sys_driver=/lib/firmware/;
+path_sys_driver=/dev/shm;
 echo "Copiare i driver contenuti in $path_driver_backup nella directory di sistema $path_sys_driver?";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
-	check_tool "sudo_dmidecode" "tr";
-	check_mount $UUID_backup;
-	# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
-	# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
-	pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
-	path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version;
-	path_sys_driver=/lib/firmware/;
-
 	if [ -d "$path_driver_backup" ]; then
 		for file in $path_driver_backup/*; do
 			tmp=`basename $file`;
 			if [ "$tmp" != "INFO" ]; then
-				if [ -d $file ]; then
-					sudo cp -r $file $path_sys_driver;
-				else
-					sudo cp $file $path_sys_driver;
-				fi
+				sudo cp -r $file $path_sys_driver;
 				check_error "Aggiunta driver $file";
 			fi
 		done
