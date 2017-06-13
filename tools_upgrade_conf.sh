@@ -126,25 +126,31 @@ fi
 
 
 # Installazioe estensioni
-echo "Vuoi aprire il software center ed installare ora le estensioni?";
+echo "Vuoi installare le estensioni con id: $extensions_id?";
 read -n1 choise;
 if [ "$choise" == "y" ] && check_connection; then
-	check_mount $UUID_backup;
-	path_readme_exts=$mount_point/$software/GNOME_EXTENSIONS/README*;
-	[ -f $path_readme_exts ] && printf "\n\n" && cat $path_readme_exts && printf "\n\n";
-	gnome-software 2> $null;
-	if [ $? == 127 ]; then
-		gnome_ext="https://extensions.gnome.org/";
-		ext_dir="/usr/share/gnome-shell/extensions/";
-		echo "Il tool gnome-software non è stato trovato."
-		echo "Vai sul sito $gnome_ext per installarle manualmente."
-		echo "Decomprimi le singole estensioni e copiale in $ext_dir";
-	fi
-	echo "Premi un pulsante una volta installate le estensioni";
-	read -n1 ready;
+	# abilitazione percentuale batteria
+	gsettings set org.gnome.desktop.interface show-battery-percentage true
+	check_error "Abilitazione percentuale batteria";
+
+	#########################
+	# script by N. Bernaerts#
+	#########################
+	for el in $extensions_id; do
+		$absolute_script_path"gnomeshell_extension_manage.sh" --system --install --extension-id $el;
+
+		# disabilitazione intel_pstate a fronte dell'installazione di un'estensione per regolare la frequenza della CPU
+		if [ $el == 1082 ] || [ $el == 945 ] || [ $el == 47 ] || [ $el == 444 ]; then
+			old_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet';
+			new_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet intel_pstate=disable';
+			sudo sed -i "s/$old_str/$new_str/" /etc/default/grub;
+			sudo update-grub;
+		fi
+	done
 else
 	printf "${DG}${U}Estensioni non installate${NC}\n";
 fi
+
 
 
 

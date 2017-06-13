@@ -14,7 +14,7 @@ line_acc1="bash"; line_acc2="/bin/bash";
 # sostituzione del carattere terminatore di stringa '\0' per evitare
 # il warning: "command substitution: ignored null byte in input"
 cmd_line=`cat /proc/$$/cmdline | tr '\0' ' '`;
-# verifica che tra i primi caratteri della riga di comando c'è la stringa "bash"
+# verifica se tra i primi caratteri della riga di comando c'è la stringa "bash"
 cmd_acc=`echo $cmd_line | cut -c 1-${#line_acc1}`;
 if [ "$line_acc1" != "$cmd_acc" ]; then
     cmd_acc=`echo $cmd_line | cut -c 1-${#line_acc2}`;
@@ -237,6 +237,7 @@ export themes_backup;
 export icons_backup;
 export driver_backup;
 export scripts_backup;
+export extensions_id;
 
 
 
@@ -383,6 +384,7 @@ get_value themes_backup; themes_backup=${values[$?]};
 get_value icons_backup; icons_backup=${values[$?]};
 get_value driver_backup; driver_backup=${values[$?]};
 get_value scripts_backup; scripts_backup=${values[$?]};
+get_value extensions_id; extensions_id=${values[$?]};
 
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
