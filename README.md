@@ -97,4 +97,4 @@ driver_backup | Directory dove si trovano i drivers necessari al sistema (parten
 
 ## Note
 
-Lo script ~/utils/gnomeshell_extension_manage.sh è stato creato da [**N. Bernaerts**](http://bernaerts.dyndns.org/linux/76-gnome/345-gnome-shell-install-remove-extension-command-line-script).
+Lo script ~/utils/gnomeshell_extension_manage.sh è stato creato da [**N. Bernaerts**](https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/ubuntugnome/gnomeshell-extension-manage).
