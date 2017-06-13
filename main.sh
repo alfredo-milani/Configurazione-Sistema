@@ -108,9 +108,8 @@ function check_mount {
             if [ "$choise" == "y" ]; then
                 echo "Digita il punto di mount";
                 read mount_point;
-                ! [ -d $mount_point ] && printf "${Y}Directory $mount_point non esistente. Utilizzo di quella di default\n${NC}";
             fi
-            mkdir $mount_point;
+            mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
             sudo mount UUID=$1 $mount_point;
         else
@@ -216,7 +215,7 @@ absolute_current_script_path=`realpath $0`;
 # l'operatore unario # restituisce la lunghezza della scringa/array
 lenght=${#current_script_name};
 # sintassi: ${string::-n} --> taglia gli ultimi (-n) n elementi di string
-absolute_script_path=${absolute_current_script_path::-$lenght};
+export absolute_script_path=${absolute_current_script_path::-$lenght};
 # chiavi/valori dal file di configurazione
 # NOTA: gli array non possono essere esportati
 keys=();
