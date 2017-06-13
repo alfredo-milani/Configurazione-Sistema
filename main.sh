@@ -286,13 +286,13 @@ while [ $# -gt 0 ]; do
 
         -[aA] )
             # configurazione aspetto
-            scripts_array+=("$absolute_script_path/appearance_conf.sh");
+            scripts_array+=($absolute_script_path"appearance_conf.sh");
             shift;
             ;;
 
         -[bB] )
             # configurazione del file .bashrc
-            scripts_array+=("$absolute_script_path/bashrc_conf.sh");
+            scripts_array+=($absolute_script_path"bashrc_conf.sh");
             shift;
             ;;
 
@@ -309,7 +309,7 @@ while [ $# -gt 0 ]; do
 
         -[fF] )
             # configurazione file /etc/fstab
-            scripts_array+=("$absolute_script_path/fstab_conf.sh");
+            scripts_array+=($absolute_script_path"fstab_conf.sh");
             shift;
             ;;
 
@@ -320,43 +320,43 @@ while [ $# -gt 0 ]; do
 
         -jdk | -JDK )
             # configurazione JDK Oracle
-            scripts_array+=("$absolute_script_path/jdk_conf.sh");
+            scripts_array+=($absolute_script_path"jdk_conf.sh");
             shift;
             ;;
 
         -[lL] )
             # configurazione link simbolici
-            scripts_array+=("$absolute_script_path/symbolic_link_conf.sh");
+            scripts_array+=($absolute_script_path"symbolic_link_conf.sh");
             shift;
             ;;
 
         -[nN] )
             # configurazione di rete
-            scripts_array+=("$absolute_script_path/network_conf.sh");
+            scripts_array+=($absolute_script_path"network_conf.sh");
             shift;
             ;;
 
         -[rR] )
             # configurazione repository
-            scripts_array+=("$absolute_script_path/repo_conf.sh");
+            scripts_array+=($absolute_script_path"repo_conf.sh");
             shift;
             ;;
 
         -[sS] )
             # configurazione keyboard shortcuts
-            scripts_array+=("$absolute_script_path/kb_shortcut_conf.sh");
+            scripts_array+=($absolute_script_path"kb_shortcut_conf.sh");
             shift;
             ;;
 
         -tr | -TR )
             # disabilitazione tracker-*
-            scripts_array+=("$absolute_script_path/tracker_disable_conf.sh");
+            scripts_array+=($absolute_script_path"tracker_disable_conf.sh");
             shift;
             ;;
 
         -[uU] )
             # aggiornamento tools sistema
-            scripts_array+=("$absolute_script_path/tools_upgrade_conf.sh");
+            scripts_array+=($absolute_script_path"tools_upgrade_conf.sh");
             shift;
             ;;
 
