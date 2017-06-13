@@ -6,6 +6,7 @@ Semplici script per configurare un sistema (*debian-based* - *gnome*).
     - [Descrizione](#descrizione)
     - [Personalizzazione](#personalizzazione)
     - [Utilizzo](#utilizzo)
+    - [Note](#note)
 
 ------
 
@@ -91,3 +92,9 @@ driver_backup | Directory dove si trovano i drivers necessari al sistema (parten
     -u | -U )           Aggiornamento tools del sistema
 
 ```
+
+
+
+## Note
+
+Lo script ~/utils/gnomeshell_extension_manage.sh è stato creato da [**N. Bernaerts**](http://bernaerts.dyndns.org/linux/76-gnome/345-gnome-shell-install-remove-extension-command-line-script).
