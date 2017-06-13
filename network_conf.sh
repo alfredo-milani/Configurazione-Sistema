@@ -57,8 +57,7 @@ check_mount $UUID_backup;
 # dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
 pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
 path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version;
-# path_sys_driver=/lib/firmware/;
-path_sys_driver=/dev/shm;
+path_sys_driver=/lib/firmware/;
 echo "Copiare i driver contenuti in $path_driver_backup nella directory di sistema $path_sys_driver?";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
