@@ -34,7 +34,7 @@ Gli altri moduli sono:
 ## Personalizzazione
 La configurazione di default del file *sys.conf* rappresenta la seguente struttura di directory (prendere `~/example_dir` come esempio):
 
-    ..
+    example_dir
     |
     |--> CONFIG_LINUX --> Aspetto --> Themes
     |                 |           |-> Icons
