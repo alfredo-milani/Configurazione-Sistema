@@ -35,8 +35,9 @@ home_sc2="Home2;nautilus;'<Ctrl>M'";
 chrome_sc="Google-Chrome;google-chrome --disk-cache-dir='/dev/shm';'<Ctrl>G'";
 ping_sc="Ping;gnome-terminal -e 'ping google.com';'<Ctrl><Shift>minus'";
 network_manager_sc="Network Manager Restart;gksudo service network-manager restart;'<Ctrl>R'";
+disable_cores="DisableCores;gksudo /opt/scripts/disable_half_cores.sh;'<Ctrl><Shift>D'";
 # aggiungere le var che si vogliono attivare in quest'array
-custom_kb_array=("$terminal" "$redshift" "$home_sc2" "$chrome_sc" "$ping_sc");
+custom_kb_array=("$terminal" "$redshift" "$home_sc2" "$chrome_sc" "$ping_sc" "$disable_cores");
 
 keybindings="org.gnome.desktop.wm.keybindings";
 maximize="maximize;['<Super>Up']";
