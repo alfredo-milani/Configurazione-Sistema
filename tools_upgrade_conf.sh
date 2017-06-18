@@ -133,16 +133,17 @@ if [ "$choise" == "y" ] && check_connection; then
 	gsettings set org.gnome.desktop.interface show-battery-percentage true
 	check_error "Abilitazione percentuale batteria";
 
-	#########################
-	# script by N. Bernaerts#
-	#########################
 	for el in $extensions_id; do
+		#########################
+		# script by N. Bernaerts#
+		#########################
 		$absolute_script_path"utils/gnomeshell_extension_manage.sh" --system --install --extension-id $el;
+		check_error "Installazione estensione con id: $el";
 
 		# disabilitazione intel_pstate a fronte dell'installazione di un'estensione per regolare la frequenza della CPU
 		if [ $el == 1082 ] || [ $el == 47 ] || [ $el == 444 ] && [ -f /etc/default/grub ]; then
 			echo "Disabilitare i driver intel_pstate?";
-			echo "Disabilitando il driver, con l'estensione cpufreq, il TurboBoost potrebbe non funzionare";
+			echo "Disabilitando il driver, con l'estensione cpufreq il TurboBoost potrebbe non funzionare";
 			read -n1 choise;
 			if [ "$choise" == "y" ]; then
 				old_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet';
