@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# per evitare che lo script sia lanciato in modo diretto, cioù non lanciato dal main script
+# per evitare che lo script sia lanciato in modo diretto, cioè non lanciato dal main script
 if [ ${#1} == 0 ] || [ $1 != 16 ]; then
 	printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n";
 	exit 1;
@@ -36,6 +36,7 @@ echo "Vuoi creare il link simbolico in $scrivania?";
 read -n1 choise;
 if [ $choise == "y" ]; then
 	if ! [ -d $scrivania/$nome_link ]; then
+		# TODO cercare possibile bug...
 		check_mount $UUID_data;
 		ln -s $mount_point/$dir_data_relative $scrivania/$nome_link;
 		check_error "Creazione link simbolico in $scrivania";

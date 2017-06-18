@@ -26,6 +26,14 @@ function config_profile {
 		f_path_jdk="$1";
 		f_new_jdk="$2";
 		file_profile="/etc/profile";
+
+		echo "Impostazione di java e javaws come default di sistema";
+		sudo update-alternatives --install "/usr/bin/java" "java" "$f_path_jdk$f_new_jdk/bin/java" 1;
+		sudo update-alternatives --install "/usr/bin/javaws" "javaws" "$f_path_jdk$f_new_jdk/bin/javaws" 1;
+		sudo update-alternatives --set java "$f_path_jdk$f_new_jdk/bin/java";
+		sudo update-alternatives --set javaws "$f_path_jdk$f_new_jdk/bin/javaws";
+		check_error "Impostazione JDK Oracle come default di sistema";
+
 		echo "Impostazione variabili globali nel file $file_profile";
 		sudo /bin/su -c "echo JAVA_HOME=$f_path_jdk$f_new_jdk >> $file_profile";
 		sudo /bin/su -c "echo JRE_HOME=$f_path_jdk$f_new_jdk'/jre' >> $file_profile";
@@ -34,13 +42,6 @@ function config_profile {
 		sudo /bin/su -c "echo 'export JRE_HOME' >> $file_profile";
 		sudo /bin/su -c "echo 'export PATH' >> $file_profile";
 		check_error "Modifica file $file_profile";
-
-		echo "Impostazione di java e javaws come default di sistema";
-		sudo update-alternatives --install "/usr/bin/java" "java" "$f_path_jdk$f_new_jdk/bin/java" 1;
-		sudo update-alternatives --install "/usr/bin/javaws" "javaws" "$f_path_jdk$f_new_jdk/bin/javaws" 1;
-		sudo update-alternatives --set java "$f_path_jdk$f_new_jdk/bin/java";
-		sudo update-alternatives --set javaws "$f_path_jdk$f_new_jdk/bin/javaws";
-		check_error "Impostazione JDK Oracle come default di sistema";
 	fi
 }
 
@@ -62,7 +63,7 @@ if [ "$choise" == "y" ]; then
 			echo "Vuoi utilizzare la JDK $path_backup_jdk/$backup_jdk?";
 			read -n1 choise;
 			if [ "$choise" == "y" ]; then
-				tar -xvf $path_backup_jdk/$backup_jdk -C $path_jdk &> $null;
+				sudo tar -xvf $path_backup_jdk/$backup_jdk -C $path_jdk &> $null;
 				check_error "Estrazione di $backup_jdk in $path_jdk";
 				backup_jdk=`ls $path_jdk | grep jdk`;
 				config_profile $path_jdk $backup_jdk;
