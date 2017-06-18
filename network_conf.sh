@@ -42,10 +42,16 @@ options iwlwifi 11n_disable=1
 #options iwlwifi swcrypto=1
 #options iwlwifi 11n_disable=8
 #options iwlwifi wd_disable=1' >> /etc/modprobe.d/iwlwifi.conf";
+<<<<<<< HEAD
   check_error "Modifica files iwlwifi.conf";
 
 	$cmd "echo 'IT' >> /etc/default/crda";
 	check_error "Modifica files crda";
+=======
+
+	$cmd "echo 'IT' >> /etc/default/crda";
+	check_error "Modifica files iwlwifi.conf e crda";
+>>>>>>> a5b03d2df28a4d847819e12f34f9fc55f1fa60cb
 else
 	printf "${DG}${U}File iwlwifi.conf non modificato${NC}\n";
 fi
