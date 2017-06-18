@@ -96,6 +96,7 @@ fi
 echo "Vuoi installare atom e google-chrome? Premi y per OK";
 read -n1 choise;
 if [ "$choise" = "y" ] && check_connection; then
+	sudo $apt_manager install git;
 	mkdir $_dev_shm_"atom";
 	cd $_dev_shm_"atom";
 	atom_link="https://atom.io/download/deb";
