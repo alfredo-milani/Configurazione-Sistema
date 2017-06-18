@@ -109,7 +109,7 @@ function check_mount {
                 echo "Digita il punto di mount";
                 read mount_point;
             fi
-            mkdir -p $mount_point;
+            sudo mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
             sudo mount UUID=$1 $mount_point;
         else

@@ -37,13 +37,13 @@ fi
 echo "Modificare il file /etc/modprob.d/iwlwifi.conf e il file /etc/default/crda con le impostazioni ottimali?";
 read -n1 choise;
 if [ $choise == "y" ]; then
-	sudo echo "# Test per rendere la connessione stabile
+	$cmd "echo '# Test per rendere la connessione stabile
 options iwlwifi 11n_disable=1
 #options iwlwifi swcrypto=1
 #options iwlwifi 11n_disable=8
-#options iwlwifi wd_disable=1" >> /etc/modprobe.d/iwlwifi.conf;
+#options iwlwifi wd_disable=1' >> /etc/modprobe.d/iwlwifi.conf";
 
-	sudo echo "IT" >> /etc/default/crda;
+	$cmd "echo 'IT' >> /etc/default/crda";
 	check_error "Modifica files iwlwifi.conf e crda";
 else
 	printf "${DG}${U}File iwlwifi.conf non modificato${NC}\n";

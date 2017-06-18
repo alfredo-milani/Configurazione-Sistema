@@ -67,11 +67,11 @@ fi
 
 
 ##### Installazione tools principali
-echo "Vuoi installare vim, vlc, preload, curl, redshift, alacarte, g++, gparted? Premi y per OK";
+echo "Vuoi installare gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted? Premi y per OK";
 read -n1 ready;
 if [ "$ready" = "y" ] && check_connection; then
-	echo "Installazione dei princiali tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
-	sudo $apt_manager install vim vlc preload curl redshift alacarte g++ gparted -y;
+	echo "Installazione dei princiali tools: gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
+	sudo $apt_manager install gksu vim vlc preload curl redshift alacarte g++ gparted -y;
 	check_error "Installazione dei tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 
 	printf "Vuoi installare e configurare anche prelink? Premi y per OK\n";

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# per evitare che lo script sia lanciato in modo diretto, cioù non lanciato dal main script
+# per evitare che lo script sia lanciato in modo diretto, cioè non lanciato dal main script
 if [ ${#1} == 0 ] || [ $1 != 16 ]; then
 	printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n";
 	exit 1;
