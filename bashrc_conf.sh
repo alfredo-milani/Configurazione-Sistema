@@ -22,6 +22,13 @@ alias uu='sudo apt update && sudo apt upgrade'
 alias inst='sudo apt-fast install'
 alias shutdown='sudo shutdown -h now'
 
+# to use GPU NVIDIA
+alias Gpu='optirun -c yuv'
+alias gpu='optirun'
+
+# to launch Android emulator with NVIDIA GPU and KVM
+alias emu='optirun /opt/Sdk/tools/emulator -netdelay none -netspeed full -qemu -m 1536 -enable-kvm'
+
 # alias per impostare i diritti in lettura/scrittura su /dev/ttyACM0 per Arduino
 alias setele='sudo chmod a+rw /dev/ttyACM0'" >> ~/.bashrc;
 

@@ -44,7 +44,6 @@ options iwlwifi 11n_disable=1
 #options iwlwifi wd_disable=1' >> /etc/modprobe.d/iwlwifi.conf";
   check_error "Modifica files iwlwifi.conf";
 
-  # TODO utilizza sed altrimenti IT viene scritto in una nuova riga del file
 	$cmd "sed -i 's/REGDOMAIN=/REGDOMAIN=IT/' /etc/default/crda";
 	check_error "Modifica files crda";
 else
