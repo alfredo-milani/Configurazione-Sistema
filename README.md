@@ -17,6 +17,7 @@ Gli altri moduli sono:
 - appearance_conf.sh - per la configurazione del *tema* e delle *icone*;
 - bashrc_conf.sh - configurazione del file `~/.bashrc`;
 - fstab.sh - configurazione del file `/etc/fstab`;
+- gpu_conf.sh - configurazione bumblebee per gestione GPU discreta NVIDIA;
 - jdk_conf.sh - copia e configurazione della *JDK Oracle*;
 - kb_shortcut_conf.sh - impostazione dei *keyboard shortcuts*;
 - network_conf.sh - ottimizzazione impostazioni protocollo *TCP* / *NIC*;
@@ -65,6 +66,8 @@ scripts_backup | Directory dove sono locati gli scripts da copiare (partendo da 
 UUID_data | UUID del device dal quale si vogliono creare dei *link simbolici*
    |   
 driver_backup | Directory dove si trovano i drivers necessari al sistema (partendo da *tree_dir*)
+   |   
+tmp | Directory dove si vogliono salvare i files temporanei. Default=/dev/shm
 
 
 
@@ -83,6 +86,7 @@ driver_backup | Directory dove si trovano i drivers necessari al sistema (parten
     -b | -B )           Configurazione del file .bashrc
     -c | -C )           Indirizzo file di configurazione sys.conf
     -f | -F )           Configurazione del file /etc/fstab
+    -gpu | -GPU )       Configurazione bumblebee per gestione GPU NVIDIA
     -jdk | -JDK )       Configurazione della JDK Oracle
     -l | -L )           Creazione link simbolici
     -n | -N )           Configurazione di rete

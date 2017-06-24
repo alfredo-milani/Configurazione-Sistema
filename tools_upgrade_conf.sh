@@ -13,7 +13,6 @@ printf "\n${Y}++${NC}$mod_start $mod_\n";
 
 
 
-apt_manager=apt-get;
 # selezione apt-manager
 which apt &> $null && apt_manager=apt;
 which apt-fast &> $null && apt_manager=apt-fast;

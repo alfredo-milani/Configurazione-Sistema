@@ -29,8 +29,6 @@ fi
 
 
 # variabili di sola lettura (declare -r)
-# path temporaneo su RAM
-declare -r _dev_shm_="/dev/shm/";
 declare -r null="/dev/null";
 declare -r mod_start="Avvio modulo";
 declare -r mod_end="Fine modulo";
@@ -47,7 +45,8 @@ declare -r check_error_str="Azione: %s\tEsito: %s\n";
 declare -r success="Positivo";
 declare -r failure="Negativo";
 
-export _dev_shm_ null;
+
+export null;
 export mod_start mod_end;
 export cmd;
 export R Y G DG U NC;
@@ -185,6 +184,7 @@ function give_help {
     echo -e "\t-b | -B )\t\tConfigurazione del file .bashrc";
     echo -e "\t-c | -C )\t\tIndirizzo file di configurazione sys.conf";
     echo -e "\t-f | -F )\t\tConfigurazione del file /etc/fstab";
+    echo -e "\t-gpu | -GPU\t\tConfigurazione bumblebee per gestione GPU NVIDIA";
     echo -e "\t-jdk | -JDK )\t\tConfigurazione della JDK Oracle";
     echo -e "\t-l | -L )\t\tCreazione link simbolici";
     echo -e "\t-n | -N )\t\tConfigurazione di rete";
@@ -226,6 +226,19 @@ scripts_array=();
 start_script_code=16;
 # file di default contenuto nella stessa directory dello script corrente
 conf_file=$absolute_script_path"sys.conf";
+# apt-manager di default
+apt_manager=apt-get;
+# path temporaneo su RAM
+get_value tmp;
+_dev_shm_=${values[$?]};
+if [ ${#_dev_shm_} == 0 ]; then
+    _dev_shm_=/dev/shm;
+elif ! [ -d ]; then
+    printf "${R}Controllare il campo 'tmp' del file 'sys.conf'. Immettere una directory valida.\n${NC}";
+    exit 1;
+fi
+
+export _dev_shm_;
 export mod_="preliminare";
 export tree_dir;
 export UUID_backup;
@@ -237,6 +250,7 @@ export icons_backup;
 export driver_backup;
 export scripts_backup;
 export extensions_id;
+export apt_manager;
 
 
 
@@ -313,6 +327,12 @@ while [ $# -gt 0 ]; do
             shift;
             ;;
 
+        -gpu | -GPU )
+            # configurazione bumblebee
+            scripts_array+=($absolute_script_path"gpu_conf.sh");
+            shift;
+            ;;
+
         -[hH] | -help | -HELP | --[hH] | --help | --HELP )
             # verificato in precedenza
             give_help;
@@ -384,6 +404,8 @@ get_value icons_backup; icons_backup=${values[$?]};
 get_value driver_backup; driver_backup=${values[$?]};
 get_value scripts_backup; scripts_backup=${values[$?]};
 get_value extensions_id; extensions_id=${values[$?]};
+
+
 
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
