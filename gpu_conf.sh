@@ -52,9 +52,9 @@ if [ $arch != 64 ] && [ $arch != 32 ]; then
 	exit 1;
 fi
 
-$apt_manager update;
-$apt_manager install gcc make linux-headers-amd$arch;
-$apt_manager install dkms bbswitch-dkms;
+sudo $apt_manager update;
+sudo $apt_manager install gcc make linux-headers-amd$arch;
+sudo $apt_manager install dkms bbswitch-dkms;
 
 # load the bbswitch module
 sudo modprobe bbswitch load_state=0;
@@ -71,9 +71,9 @@ $cmd 'echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-blacklist.conf';
 check_connection "Nouveau modulo in blacklist";
 
 printf "Installazione dirver nvidia, bumblebee e dipendenze varie";
-$apt_manager install nvidia-kernel-dkms nvidia-xconfig nvidia-settings;
-$apt_manager install nvidia-vdpau-driver vdpau-va-driver mesa-utils;
-$apt_manager install bumblebee-nvidia;
+sudo $apt_manager install nvidia-kernel-dkms nvidia-xconfig nvidia-settings;
+sudo $apt_manager install nvidia-vdpau-driver vdpau-va-driver mesa-utils;
+sudo $apt_manager install bumblebee-nvidia;
 
 sito_visualgl="https://sourceforge.net/projects/virtualgl/files/";
 printf "${Y}Apertura sito $sito_visualgl\n${NC}";
@@ -86,8 +86,52 @@ sudo dpkg -i virtual*.deb;
 printf "Per utilizzare la GPU NVIDIA sono necessari i peremessi di root quindi aggiungiamo l'username al gruppo bumblebee\n";
 sudo usermod -aG bumblebee $USER;
 sudo service bumblebeed restart;
+
+
+
+# check lib in /usr/lib/ e ~/sdk/emulator/
+libstd=libstdc++.so.;
+libstd_lenght=${#libstd};
+lib_usr_path=/usr/lib/x86_64-linux-gnu/;
+arr_lib_usr_path=(`ls $lib_usr_path | grep $libstd`);
+sdk_path=$sdk/emulator/lib64/$libstd;
+echo "Checking delle librerie in $lib_usr_path e $sdk_path";
+
+##########
+# TODO --> funzione ricorsiva che restituisce la versione più aggiornata della libstdc++
+##########
+for lib in ${arr_lib_usr_path[@]}; do
+	lib_lenght=${#lib};
+	tmp_vers=`echo $lib | cut -c $(($libstd_lenght + 1))-$lib_lenght`;
+	echo $tmp_vers;
+done
+
+
+
+# Configurazione KVM
+echo "Installare i componenti necessari per KVM?";
+read -n1 choise;
+kvm_pre_inst=`egrep -c '(vmx|svm)' /proc/cpuinfo`;
+if [ "$choise" == "y" ]; then
+	if [ $kvm_pre_inst != 0 ]; then
+		sudo $apt_manager install qemu-kvm libvirt-clients libvirt-daemon-system;
+		sudo adduser $USER libvirt;
+		check_error "Aggiunta $USER al gruppo libvirt";
+		sudo adduser $USER libvirt-qemu;
+		check_error "Aggiunta $USER al gruppo libvirt-qemu";
+		virsh list --all;
+	else
+		printf "${R}Errore! Sembra che non è possibile configurare KVM sul terminale corrente\n${NC}";
+	fi
+else
+	printf "${DG}${U}KVM non configurato\n${NC}";
+fi
+
+
+
 printf "${Y}Bisogna riavviare il pc per completare l'installazione. Premere y per riavviare\n${NC}";
-printf "NOTA: per testare bumblebee: $ optirun -vv glxgears\n";
+printf "NOTA: è consigliato usare primusrun rispetto ad optirun perchè più veloce\n";
+printf "NOTA: per testare bumblebee: $ primusrun/optirun -vv glxgears\n";
 printf "Per tools di benchmarking visitare questo sito: 'http://www.geeks3d.com/gputest/download/'\n";
 printf "Per utilizzare nvidia-settings usare il comando: 'optirun nvidia-settings -c :8'\n";
 read -n1 choise;

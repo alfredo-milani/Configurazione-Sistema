@@ -67,7 +67,9 @@ UUID_data | UUID del device dal quale si vogliono creare dei *link simbolici*
    |   
 driver_backup | Directory dove si trovano i drivers necessari al sistema (partendo da *tree_dir*)
    |   
-tmp | Directory dove si vogliono salvare i files temporanei. Default=/dev/shm
+tmp | Directory assoluta dove si vogliono salvare i files temporanei. Default=/dev/shm
+   |   
+sdk | Directory assoluta dove si trova la SDK
 
 
 

@@ -240,6 +240,7 @@ fi
 
 export _dev_shm_;
 export mod_="preliminare";
+export sdk;
 export tree_dir;
 export UUID_backup;
 export UUID_data;
@@ -404,6 +405,7 @@ get_value icons_backup; icons_backup=${values[$?]};
 get_value driver_backup; driver_backup=${values[$?]};
 get_value scripts_backup; scripts_backup=${values[$?]};
 get_value extensions_id; extensions_id=${values[$?]};
+get_value sdk; sdk=${values[$?]};
 
 
 
