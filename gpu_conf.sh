@@ -89,22 +89,66 @@ sudo service bumblebeed restart;
 
 
 
+# funzione ricorsiva che copia in current_latest il numero di versione più alto
+function get_latest_vers {
+	if [ ${#1} == 0 ] || [ ${#2} == 0 ]; then
+		printf "${R}Errore in ${FUNCNAME[0]}: argomenti mancanti\n${NC}";
+		return 1;
+	fi
+
+	# scomposizione numero versione
+	arr1=(`echo $1 | tr "." " "`);
+	arr2=(`echo $2 | tr "." " "`);
+	if [ ${#arr1[@]} -gt ${#arr2[@]} ]; then
+		max_lenght=${#arr1[@]};
+	else
+		max_lenght=${#arr2[@]};
+	fi
+	for (( i=0; i < $max_lenght; ++i )); do
+		# se uno dei campi è vuoto
+		[ ${#arr1[$i]} == 0 ] && current_latest=$2 && return 0;
+		[ ${#arr2[$i]} == 0 ] && current_latest=$1 && return 0;
+		# arr1[i] < arr2[i] --> aggiorna il massimo corrente e ritorna con esito positivo
+		[ ${arr1[$i]} -lt ${arr2[$i]} ] && current_latest=$2 && return 0;
+		# arr1[i] > arr2[i] --> aggiorna il massimo corrente e ritorna con esito positivo
+		[ ${arr1[$i]} -gt ${arr2[$i]} ] && current_latest=$1 && return 0;
+	done
+
+	# errore sconosciuto
+	return 1;
+}
 # check lib in /usr/lib/ e ~/sdk/emulator/
 libstd=libstdc++.so.;
 libstd_lenght=${#libstd};
-lib_usr_path=/usr/lib/x86_64-linux-gnu/;
+lib_usr_path=/usr/lib/x86_64-linux-gnu;
 arr_lib_usr_path=(`ls $lib_usr_path | grep $libstd`);
-sdk_path=$sdk/emulator/lib64/$libstd;
-echo "Checking delle librerie in $lib_usr_path e $sdk_path";
+sdk_path=$sdk/emulator/lib64/libstdc++;
+arr_sdk_path=(`ls $sdk_path | grep $libstd`);
+echo "Correggere l'errore libstdc++.so.6: version 'GLIBCXX_3.4.21' not found?";
+read -n1 choise;
+if [ "$choise" == "y" ]; then
+	echo "Checking delle librerie in $lib_usr_path e $sdk_path";
+	! [ -d $lib_usr_path ] || ! [ -d $sdk_path ] &&
+	printf "${R}Il path $lib_usr_path o $sdk_path non esisteni\n${NC}"; && return 1;
+	# numero di versione corrente più alto in lib_usr_path
+	current_latest="0";
 
-##########
-# TODO --> funzione ricorsiva che restituisce la versione più aggiornata della libstdc++
-##########
-for lib in ${arr_lib_usr_path[@]}; do
-	lib_lenght=${#lib};
-	tmp_vers=`echo $lib | cut -c $(($libstd_lenght + 1))-$lib_lenght`;
-	echo $tmp_vers;
-done
+	# scrittura del numero di versione in current_latest
+	for lib in ${arr_lib_usr_path[@]}; do
+		lib_lenght=${#lib};
+		tmp_vers=`echo $lib | cut -c $(($libstd_lenght + 1))-$lib_lenght`;
+		get_latest_vers $current_latest $tmp_vers;
+	done
+
+	for lib in ${arr_sdk_path[@]}; do
+		sudo mv $lib $lib"_orig";
+	done
+	# link simbolico della versione più recente delle lib
+	sudo ln -s $lib_usr_path/$libstd$current_latest $sdk_path;
+	check_error "Correzione errore libstdc++.so.6: version 'GLIBCXX_3.4.21'";
+else
+	printf "${DG}${U}Errore non corretto\n${NC}";
+fi
 
 
 
