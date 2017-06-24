@@ -35,6 +35,7 @@ fi
 printf "Assicurati che il modulo 'vga_switcheroo' sia disabilitato (oppure che sia mancante)";
 sudo modprobe -r vga_switcheroo;
 
+printf "Abilita i repository 'main', 'contrib', 'non-free. Chiudi la finestra per continuare\n";
 software-properties-gtk &> &null;
 if [ $? != 0 ]; then
 	# TODO --> modifica automatica del file /etc/apt/source.list
