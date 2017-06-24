@@ -89,7 +89,7 @@ sudo service bumblebeed restart;
 printf "${Y}Bisogna riavviare il pc per completare l'installazione. Premere y per riavviare\n${NC}";
 printf "NOTA: per testare bumblebee: $ optirun -vv glxgears\n";
 printf "Per tools di benchmarking visitare questo sito: 'http://www.geeks3d.com/gputest/download/'\n";
-printf "Per utilizzare nvidia-settings usare il comando: 'nvidia-settings -c :8'\n";
+printf "Per utilizzare nvidia-settings usare il comando: 'optirun nvidia-settings -c :8'\n";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
 	sudo reboot;
