@@ -81,7 +81,7 @@ fi
 ###### TODO --> da terminare
 # modifica file /etc/nsswitch.conf per evitare bug di Avahi-daemon
 _etc_nsswitch=/etc/nsswitch.conf;
-echo "Modificare file $_etc_nsswitch per evitare bug nel software Avahi-daemon?";
+echo "Modificare file $_etc_nsswitch per evitare il bug nel software Avahi-daemon?";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
 	sudo cp $_etc_nsswitch $_etc_nsswitch"_old";

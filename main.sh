@@ -415,4 +415,4 @@ for script in "${scripts_array[@]}"; do
 done
 
 ##### Mancanti
-printf "${Y}\n\nTODO: \nInstallare software in /opt;\n\nRiavvia il PC per rendere effettive le modifiche${NC}\n";
+printf "${Y}\n\nRiavvia il PC per rendere effettive le modifiche${NC}\n";
