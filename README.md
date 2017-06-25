@@ -21,7 +21,6 @@ Gli altri moduli sono:
 - jdk_conf.sh - copia e configurazione della *JDK Oracle*;
 - kb_shortcut_conf.sh - impostazione dei *keyboard shortcuts*;
 - network_conf.sh - ottimizzazione impostazioni protocollo *TCP* / *NIC*;
-- repo_conf.sh - configurazione *repository*;
 - symbolic_link_conf.sh - creazione *link simbolici*;
 - tools_upgrade_conf.sh - *aggiornamento tools* sistema;
 - tracker_disable_conf.sh - disabilitazione _tracker-* tools_;
@@ -92,7 +91,6 @@ sdk | Directory assoluta dove si trova la SDK
     -jdk | -JDK )       Configurazione della JDK Oracle
     -l | -L )           Creazione link simbolici
     -n | -N )           Configurazione di rete
-    -r | -R )           Configurazione dei repository
     -s | -S )           Configurazione dei keyboard shortcuts
     -tr | -TR )         Disabilitazione tracker-* tools
     -u | -U )           Aggiornamento tools del sistema

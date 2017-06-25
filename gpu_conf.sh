@@ -171,6 +171,30 @@ if [ "$choise" == "y" ]; then
 
 	printf "Per utilizzare la GPU NVIDIA sono necessari i peremessi di root quindi aggiungiamo l'username al gruppo bumblebee\n";
 	sudo usermod -aG bumblebee $USER;
+
+	bumblebee_conf=/etc/bumblebee/bumblebee.conf;
+	echo "Ottimizzare il file di configurazione $bumblebee_conf?";
+	read -n1 choise;
+	if [ "$choise" == "y" ]; then
+		# sed: ^ --> inizio riga
+		#      $ --> fine riga
+		#	   I --> case sensitive
+		#	  .* --> sostituzione intera riga
+		line_to_replace="VGLTransport="; new_str="VGLTransport=proxy";
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+
+		line_to_replace="PMMethod="; new_str="PMMethod=bbswitch";
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+
+		line_to_replace="Bridge="; new_str="Bridge=primus";
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+
+		line_to_replace="Driver="; new_str="Driver=nvidia";
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+	else
+		printf "${DG}${U}File $bumblebee_conf non ottimizzato\n${NC}";
+	fi
+
 	sudo service bumblebeed restart;
 
 	printf "${Y}Bisogna riavviare il pc per completare l'installazione. Premere y per riavviare\n${NC}";

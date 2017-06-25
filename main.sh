@@ -188,7 +188,6 @@ function give_help {
     echo -e "\t-jdk | -JDK )\t\tConfigurazione della JDK Oracle";
     echo -e "\t-l | -L )\t\tCreazione link simbolici";
     echo -e "\t-n | -N )\t\tConfigurazione di rete";
-    echo -e "\t-r | -R )\t\tConfigurazione dei repository";
     echo -e "\t-s | -S )\t\tConfigurazione dei keyboard shortcuts";
     echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
     echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
@@ -354,12 +353,6 @@ while [ $# -gt 0 ]; do
         -[nN] )
             # configurazione di rete
             scripts_array+=($absolute_script_path"network_conf.sh");
-            shift;
-            ;;
-
-        -[rR] )
-            # configurazione repository
-            scripts_array+=($absolute_script_path"repo_conf.sh");
             shift;
             ;;
 
