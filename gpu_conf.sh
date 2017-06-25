@@ -33,7 +33,7 @@ if [ "$choise" == "y" ]; then
 		[ "$correct_virsh" == "$current_virsh" ];
 		check_error "Configurazione KVM";
 	else
-		printf "${R}Errore! Sembra che non è possibile configurare KVM sul terminale corrente\n${NC}";
+		printf "${R}Errore! Sembra che non sia possibile configurare KVM sul terminale corrente\n${NC}";
 	fi
 else
 	printf "${DG}${U}KVM non configurato\n${NC}";
@@ -41,7 +41,7 @@ fi
 
 
 
-# funzione ricorsiva che copia in current_latest il numero di versione più alto
+# funzione iterativa che copia in current_latest il numero di versione più alto
 function get_latest_vers {
 	if [ ${#1} == 0 ] || [ ${#2} == 0 ]; then
 		printf "${R}Errore in ${FUNCNAME[0]}: argomenti mancanti\n${NC}";
@@ -107,8 +107,7 @@ echo "Installare e configurare bumblebee?";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
 	# controllo presenza GPU nel sistema
-	# check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'nvidia'`;
-	check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'op'`;
+	check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'nvidia'`;
 	[ ${#check_gpu} != 0 ];
 	! check_error "Verifica presenza GPU discreta" && printf "$str_end" && exit 1;
 
