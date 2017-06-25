@@ -23,9 +23,15 @@ if [ "$choise" == "y" ]; then
 		sudo $apt_manager install qemu-kvm libvirt-clients libvirt-daemon-system;
 		sudo adduser $USER libvirt;
 		check_error "Aggiunta $USER al gruppo libvirt";
+
 		sudo adduser $USER libvirt-qemu;
 		check_error "Aggiunta $USER al gruppo libvirt-qemu";
-		virsh list --all;
+
+		correct_virsh=" Id    Name                           State
+----------------------------------------------------";
+		current_virsh=`virsh list --all`;
+		[ "$correct_virsh" == "$current_virsh" ];
+		check_error "Configurazione KVM";
 	else
 		printf "${R}Errore! Sembra che non è possibile configurare KVM sul terminale corrente\n${NC}";
 	fi
@@ -101,22 +107,16 @@ echo "Installare e configurare bumblebee?";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
 	# controllo presenza GPU nel sistema
-	check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'nvidia'`;
-	if [ ${#check_gpu} == 0 ]; then
-	    printf "${R}Il sistema corrente sembra non avere una GPU discreta\n${NC}";
-		printf $str_end;
-	    exit 1;
-	fi
+	# check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'nvidia'`;
+	check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'op'`;
+	[ ${#check_gpu} != 0 ];
+	! check_error "Verifica presenza GPU discreta" && printf "$str_end" && exit 1;
 
 	echo "Disabilitazione driver nouveau";
 	sudo modprobe -r nouveau;
-	check_error "Disabilitazione driver nouveau";
-	if [ $? != 0 ]; then
-		printf "${R}Impossibile continuare l'installazione\n${NC}";
-		printf "${Y}Prova ad aggiungere il flag 'nomodeset' durante la fase di boot\n${NC}";
-		printf $str_end;
-		exit 1;
-	fi
+	check_error "Disabilitazione driver nouveau" &&
+	printf "${Y}Prova ad aggiungere il flag 'nomodeset' durante la fase di boot\n${NC}" &&
+	printf "$str_end" && exit 1;
 
 	printf "Assicurati che il modulo 'vga_switcheroo' sia disabilitato (oppure che sia mancante)";
 	sudo modprobe -r vga_switcheroo;
@@ -131,12 +131,10 @@ if [ "$choise" == "y" ]; then
 
 	printf "Update, update del sistema e download tools necessari";
 	tmp=`lscpu | grep 'CPU op-mode(s):' | awk '{print $4}'`;
-	arch=`${tmp::2}`;
-	if [ $arch != 64 ] && [ $arch != 32 ]; then
-		printf "${R}Architettura sconosciuta\n${NC}";
-		printf $str_end;
-		exit 1;
-	fi
+	arch=`echo $tmp | cut -c 1-2`;
+	[ $arch != 64 ] && [ $arch != 32 ] &&
+	check_error "Controllo architettura di sistema" &&
+	printf "$str_end" && exit 1;
 
 	sudo $apt_manager update;
 	sudo $apt_manager install gcc make linux-headers-amd$arch;
@@ -147,11 +145,9 @@ if [ "$choise" == "y" ]; then
 	# test bbswitch
 	bbswitch_=(`cat /proc/acpi/bbswitch`);
 	bbswitch_online=${bbswitch[1]};
-	if [ "$bbswitch_online" != "ON" ] && [ "$bbswitch_online" != "OFF" ]; then
-		printf "${R}Errore: test bbswitch fallito\n${NC}";
-		printf $str_end;
-		exit 1;
-	fi
+	[ "$bbswitch_online" != "ON" ] && [ "$bbswitch_online" != "OFF" ] &&
+	check_error "Test bbswitch" &&
+	printf "$str_end" && exit 1;
 
 	$cmd 'echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-blacklist.conf';
 	check_connection "Nouveau modulo in blacklist";
@@ -182,15 +178,19 @@ if [ "$choise" == "y" ]; then
 		#	  .* --> sostituzione intera riga
 		line_to_replace="VGLTransport="; new_str="VGLTransport=proxy";
 		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="PMMethod="; new_str="PMMethod=bbswitch";
 		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="Bridge="; new_str="Bridge=primus";
 		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="Driver="; new_str="Driver=nvidia";
 		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		check_error "Modificare chiave $line_to_replace"
 	else
 		printf "${DG}${U}File $bumblebee_conf non ottimizzato\n${NC}";
 	fi
@@ -212,4 +212,4 @@ fi
 
 
 
-printf $str_end;
+printf "$str_end";

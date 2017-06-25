@@ -10,6 +10,7 @@ fi
 ##################################
 mod_="configurazione di rete";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
+str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
@@ -52,16 +53,15 @@ fi
 
 
 
-check_tool "sudo_dmidecode" "tr";
-check_mount $UUID_backup;
-# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
-# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
-pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
-path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version;
-path_sys_driver=/lib/firmware/;
 echo "Copiare i driver contenuti in $path_driver_backup nella directory di sistema $path_sys_driver?";
 read -n1 choise;
-if [ "$choise" == "y" ]; then
+if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID_backup; then
+	# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
+	# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
+	pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
+	path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version;
+	path_sys_driver=/lib/firmware/;
+
 	if [ -d "$path_driver_backup" ]; then
 		for file in $path_driver_backup/*; do
 			tmp=`basename $file`;
@@ -97,4 +97,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_\n";
+printf "$str_end";

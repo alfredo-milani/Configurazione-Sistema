@@ -10,6 +10,7 @@ fi
 #####################################
 mod_="configurazione JDK Oracle";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
+str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
@@ -56,10 +57,10 @@ if [ "$choise" == "y" ]; then
 	new_jdk=`ls | grep jdk`;
 	if [ ${#new_jdk} == 0 ]; then
 		printf "${R}Nessuna cartella jdk trovata in $path_jdk\n${NC}";
-		check_mount $UUID_backup;
-		path_backup_jdk=$mount_point/$software;
-		backup_jdk=`ls $path_backup_jdk | grep jdk`;
-		if [ ${#backup_jdk} != 0 ]; then
+		if [ ${#backup_jdk} != 0 ] && check_mount $UUID_backup; then
+			path_backup_jdk=$mount_point/$software;
+			backup_jdk=`ls $path_backup_jdk | grep jdk`;
+
 			echo "Vuoi utilizzare la JDK $path_backup_jdk/$backup_jdk?";
 			read -n1 choise;
 			if [ "$choise" == "y" ]; then
@@ -82,4 +83,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_\n";
+printf "$str_end";

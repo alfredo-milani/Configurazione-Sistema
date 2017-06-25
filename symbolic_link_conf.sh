@@ -10,15 +10,16 @@ fi
 ####################################
 mod_="configurazione link simbolici";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
+str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
 xdg="xdg-user-dir";
-check_tool $xdg;
-scaricati="`$xdg DOWNLOAD`";
-echo "Vuoi creare un link simbolico di un file system temporaneo in $scaricati?";
+echo "Vuoi creare un link simbolico di un file system temporaneo nella sezione Download?";
 read -n1 choise;
-if [ $choise == "y" ]; then
+if [ $choise == "y" ] && check_tool $xdg; then
+	scaricati="`$xdg DOWNLOAD`";
+
 	if ! [ -d $scaricati"/shm" ]; then
 		ln -s $_dev_shm_ $scaricati;
 		check_error "Creazione link simbolico in $scaricati";
@@ -29,15 +30,17 @@ else
 	printf "${DG}${U}Link simbolico in $scaricati non creato${NC}\n";
 fi
 
-scrivania="`$xdg DESKTOP`";
-nome_link="Alfredo_files";
-dir_data_relative="Alfredo";
-echo "Vuoi creare il link simbolico in $scrivania?";
+
+
+echo "Vuoi creare il link simbolico nella Scrivania?";
 read -n1 choise;
-if [ $choise == "y" ]; then
-	if ! [ -d $scrivania/$nome_link ]; then
-		# TODO cercare possibile bug...
-		check_mount $UUID_data;
+if [ $choise == "y" ] && check_tool $xdg; then
+	scrivania="`$xdg DESKTOP`";
+	nome_link="Alfredo_files";
+	dir_data_relative="Alfredo";
+
+	# TODO cercare possibile bug...
+	if ! [ -d $scrivania/$nome_link ] && check_mount $UUID_data; then
 		ln -s $mount_point/$dir_data_relative $scrivania/$nome_link;
 		check_error "Creazione link simbolico in $scrivania";
 	else
@@ -49,4 +52,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_\n";
+printf "$str_end";

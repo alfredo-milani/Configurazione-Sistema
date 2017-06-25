@@ -10,6 +10,7 @@ fi
 ##############################
 mod_="configurazione shortcuts";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
+str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
@@ -49,9 +50,7 @@ move_sw="move-to-corner-sw;['<Alt>Left']";
 other_shortcut_array=("$maximize" "$minimize" "$move_ne" "$move_nw" "$move_se" "$move_sw");
 echo "Vuoi impostare i keyboard shortcuts?";
 read -n1 choise;
-if [ "$choise" == "y" ]; then
-	# preparazione per shortcut redshift
-	check_mount $UUID_backup;
+if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	# modo alternativo per esprimere uno if statement...
 	# il comando "[]" server per valutare espressioni
 	! [ -d $script_path ] && sudo mkdir $script_path;
@@ -133,4 +132,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_\n";
+printf "$str_end";

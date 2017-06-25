@@ -10,15 +10,13 @@ fi
 ##################################
 mod_="configurazione aspetto";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
+str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
-check_tool "gsettings";
 echo "Vuoi configurare il tema GTK+ del sistema? Premi y per OK";
 read -n1 ready;
-if [ "$ready" = "y" ]; then
-	check_mount $UUID_backup;
-
+if [ "$ready" = "y" ] && check_tool "gsettings" && check_mount $UUID_backup; then
 	theme_scelto="T4G_3.0_theme";
 	path_backup_theme=$mount_point/$tree_dir/$themes_backup;
 	path_sys_theme=/usr/share/themes/;
@@ -32,9 +30,7 @@ fi
 
 echo "Vuoi configurare le icone del sistema? Premi y per OK";
 read -n1 ready;
-if [ "$ready" = "y" ]; then
-	check_mount $UUID_backup;
-
+if [ "$ready" = "y" ] && check_tool "gsettings" && check_mount $UUID_backup; then
 	icon_scelto="Flat_Remix";
 	path_backup_icon=$mount_point/$tree_dir/$icons_backup;
 	path_sys_icon="/usr/share/icons/";
@@ -48,4 +44,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_\n";
+printf "$str_end";

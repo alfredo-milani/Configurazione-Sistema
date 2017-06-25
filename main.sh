@@ -45,13 +45,11 @@ declare -r check_error_str="Azione: %s\tEsito: %s\n";
 declare -r success="Positivo";
 declare -r failure="Negativo";
 
-
 export null;
 export mod_start mod_end;
 export cmd;
 export R Y G DG U NC;
 export check_error_str success failure;
-
 
 
 
@@ -110,13 +108,14 @@ function check_mount {
             fi
             sudo mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
-            sudo mount UUID=$1 $mount_point;
-        else
-            printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
-            printf "${R}--${NC}$mod_end $mod_\n";
-            exit 1;
+            sudo mount UUID=$1 $mount_point && return 0;
         fi
+
+        printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
+        return 1;
     fi
+
+    return 0;
 }
 
 # funzione per verificare l'esistenza di tutti i tools necessari nel sistema
@@ -133,11 +132,11 @@ function check_tool {
             which $tool &> $null;
         fi
 
-    	if [ $? != 0 ]; then
-    	    printf "${R}Tool '%s' necessario per l'esecuzione di questo script\n${NC}" "$tool";
-            printf "${R}--${NC}$mod_end $mod_\n";
-    	    exit 1;
-    	fi
+        [ $? != 0 ] &&
+        printf "${R}Tool '%s' necessario per l'esecuzione di questo script\n${NC}" "$tool" &&
+        return 1;
+
+        return 0;
     done
 }
 
@@ -204,7 +203,9 @@ export -f check_connection;
 
 
 
-check_tool "basename" "realpath";
+if ! check_tool "basename" "realpath"; then
+    exit $?;
+fi
 
 export mount_point;
 # nome root script

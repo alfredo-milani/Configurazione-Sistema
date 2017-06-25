@@ -10,6 +10,7 @@ fi
 ##########################################
 mod_="aggiornamento sistema";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
+str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
@@ -187,4 +188,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_\n";
+printf "$str_end";

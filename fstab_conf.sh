@@ -10,16 +10,17 @@ fi
 #####################################
 mod_="configurazione file fstab";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
+str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
 # tool per vedere il path assoluto di una specifica direzione
 xdg="xdg-user-dir";
-check_tool $xdg;
-home="`$xdg HOME`";
 echo "Vuoi modificare il file /etc/fstab per aggiungere RAMDISK? Premi y per OK";
 read -n1 ready;
-if [ "$ready" == "y" ]; then
+if [ "$ready" == "y" ] && check_tool $xdg; then
+	home="`$xdg HOME`";
+
 	echo "Configurazione file '/etc/fstab'";
 	user=`id -u`;
 	group=`id -g`;
@@ -75,4 +76,4 @@ fi
 
 
 
-printf "${Y}--${NC}$mod_end $mod_\n";
+printf "$str_end";
