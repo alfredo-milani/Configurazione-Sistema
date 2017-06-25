@@ -53,6 +53,7 @@ export check_error_str success failure;
 
 
 
+# TODO --> ignora stringhe precedute dal carattere '#'
 # leggi i valori dal file di configurazione e inizializza gli arrays keys e values
 function fill_arrays {
     if ! [ -f $conf_file ]; then
