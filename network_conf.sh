@@ -78,7 +78,7 @@ else
 fi
 
 
-###### TODO --> da terminare
+
 # modifica file /etc/nsswitch.conf per evitare bug di Avahi-daemon
 _etc_nsswitch=/etc/nsswitch.conf;
 echo "Modificare file $_etc_nsswitch per evitare il bug nel software Avahi-daemon?";
