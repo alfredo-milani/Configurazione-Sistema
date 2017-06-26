@@ -4,9 +4,10 @@
 # applico l'algorimto di hashing sul numero casuale generato dal modulo
 # principale e lo confronto con il file tmp
 hash_check=`echo "$1" | md5sum`;
+file_hash=`cat "$2" &> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
-[ "$hash_check" != "`cat "$2" &> /dev/null`" ] &&
+[ "$hash_check" != "$file_hash" ] &&
 printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
 exit 1;
 ##################################
