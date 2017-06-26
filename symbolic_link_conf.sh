@@ -4,7 +4,7 @@
 # applico l'algorimto di hashing sul numero casuale generato dal modulo
 # principale e lo confronto con il file tmp
 hash_check=`echo "$1" | md5sum`;
-file_hash=`cat "$2" &> /dev/null`;
+file_hash=`cat "$2" 2> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
 [ "$hash_check" != "$file_hash" ] &&
