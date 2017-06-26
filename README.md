@@ -66,9 +66,12 @@ UUID_data | UUID del device dal quale si vogliono creare dei *link simbolici*
    |   
 driver_backup | Directory dove si trovano i drivers necessari al sistema (partendo da *tree_dir*)
    |   
-tmp | Directory assoluta dove si vogliono salvare i files temporanei. Default=/dev/shm
+extensions_id | ID delle estensioni ottenibili dal sito "https://extensions.gnome.org/"
    |   
 sdk | Directory assoluta dove si trova la SDK
+
+
+> **NOTA:** Non utilizzare il carattere '=' nei commenti (stringhe precedute dal carattere '#')
 
 
 

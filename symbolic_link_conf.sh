@@ -1,10 +1,14 @@
 #!/bin/bash
 
 # per evitare che lo script sia lanciato in modo diretto, cioè non lanciato dal main script
-if [ ${#1} == 0 ] || [ $1 != 16 ]; then
-	printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n";
-	exit 1;
-fi
+# applico l'algorimto di hashing sul numero casuale generato dal modulo
+# principale e lo confronto con il file tmp
+hash_check=`echo "$1" | md5sum`;
+[ ${#1} -eq 0 ] ||
+[ ${#2} -eq 0 ] ||
+[ "$hash_check" != "`cat "$2"`" ] &&
+printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+exit 1;
 ####################################
 ##### Creazione link simbolici #####
 ####################################

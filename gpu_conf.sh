@@ -1,10 +1,14 @@
 #!/bin/bash
 
-# per evitare che lo script sia lanciato in modo diretto, cioù non lanciato dal main script
-if [ ${#1} == 0 ] || [ $1 != 16 ]; then
-	printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n";
-	exit 1;
-fi
+# per evitare che lo script sia lanciato in modo diretto, cioè non lanciato dal main script
+# applico l'algorimto di hashing sul numero casuale generato dal modulo
+# principale e lo confronto con il file tmp
+hash_check=`echo "$1" | md5sum`;
+[ ${#1} -eq 0 ] ||
+[ ${#2} -eq 0 ] ||
+[ "$hash_check" != "`cat "$2"`" ] &&
+printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+exit 1;
 ###########################################################
 ##### Installazione bumblebee per utilizzo GPU NVIDIA #####
 ###########################################################
@@ -124,7 +128,8 @@ if [ "$choise" == "y" ]; then
 	software-properties-gtk &> $null;
 	if [ $? != 0 ]; then
 		# TODO --> modifica automatica del file /etc/apt/source.list
-		printf "software-properties-gtk mancante. Modifica il file /etc/apt/source.list manualmente per abilitare i repository 'main', 'contrib', 'non-free'";
+		printf "software-properties-gtk mancante.
+		Modifica il file /etc/apt/source.list manualmente per abilitare i repository 'main', 'contrib', 'non-free'";
 		sudo vi /etc/apt/source.list;
 	fi
 
@@ -149,7 +154,7 @@ if [ "$choise" == "y" ]; then
 	printf "$str_end" && exit 1;
 
 	$cmd 'echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-blacklist.conf';
-	check_connection "Nouveau modulo in blacklist";
+	check_error "Modulo nouveau in blacklist";
 
 	printf "Installazione dirver nvidia, bumblebee e dipendenze varie";
 	sudo $apt_manager install nvidia-kernel-dkms nvidia-xconfig nvidia-settings;
@@ -163,6 +168,7 @@ if [ "$choise" == "y" ]; then
 	read -n1;
 	cd $_dev_shm_;
 	sudo dpkg -i virtual*.deb;
+	check_error "Installazione tool virtualgl";
 
 	printf "Per utilizzare la GPU NVIDIA sono necessari i peremessi di root quindi aggiungiamo l'username al gruppo bumblebee\n";
 	sudo usermod -aG bumblebee $USER;
@@ -202,9 +208,7 @@ if [ "$choise" == "y" ]; then
 	printf "Per tools di benchmarking visitare questo sito: 'http://www.geeks3d.com/gputest/download/'\n";
 	printf "Per utilizzare nvidia-settings usare il comando: 'optirun nvidia-settings -c :8'\n";
 	read -n1 choise;
-	if [ "$choise" == "y" ]; then
-		sudo reboot;
-	fi
+	[ "$choise" == "y" ] && sudo reboot;
 else
 	printf "${DG}${U}Modulo bulmbelee non installato\n${NC}";
 fi

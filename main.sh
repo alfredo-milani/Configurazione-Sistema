@@ -29,6 +29,7 @@ fi
 
 
 # variabili di sola lettura (declare -r)
+declare -r _dev_shm_="/dev/shm";
 declare -r null="/dev/null";
 declare -r mod_start="Avvio modulo";
 declare -r mod_end="Fine modulo";
@@ -45,7 +46,7 @@ declare -r check_error_str="Azione: %s\tEsito: %s\n";
 declare -r success="Positivo";
 declare -r failure="Negativo";
 
-export null;
+export null _dev_shm_;
 export mod_start mod_end;
 export cmd;
 export R Y G DG U NC;
@@ -53,7 +54,6 @@ export check_error_str success failure;
 
 
 
-# TODO --> ignora stringhe precedute dal carattere '#'
 # leggi i valori dal file di configurazione e inizializza gli arrays keys e values
 function fill_arrays {
     if ! [ -f $conf_file ]; then
@@ -63,7 +63,11 @@ function fill_arrays {
 
     # redirigo il file di configurazione all'input della funzione read
     IFS='=';
-    while read -r key value; do
+
+
+    while read -r key value && [ "$key" != "\#*" ]; do
+        echo "DIO: $line";
+
         keys+=("$key");
         values+=("$value");
     done < $conf_file;
@@ -223,23 +227,11 @@ keys=();
 values=();
 # contiene i moduli invocati dall'utente
 scripts_array=();
-# codice di avvio per scripts
-start_script_code=16;
 # file di default contenuto nella stessa directory dello script corrente
 conf_file=$absolute_script_path"sys.conf";
 # apt-manager di default
 apt_manager=apt-get;
-# path temporaneo su RAM
-get_value tmp;
-_dev_shm_=${values[$?]};
-if [ ${#_dev_shm_} == 0 ]; then
-    _dev_shm_=/dev/shm;
-elif ! [ -d ]; then
-    printf "${R}Controllare il campo 'tmp' del file 'sys.conf'. Immettere una directory valida.\n${NC}";
-    exit 1;
-fi
 
-export _dev_shm_;
 export mod_="preliminare";
 export sdk;
 export tree_dir;
@@ -404,10 +396,24 @@ get_value sdk; sdk=${values[$?]};
 
 
 
+# creazione file tmp perevitare l'esecuzione dei singoli moduli
+private_rand=$RANDOM;
+# file temporaneo
+tmp_file=`mktemp -p $_dev_shm_`;
+# applica una l'algoritmo di hashing su un numero random e scrivilo su un file temporaneo
+echo "$private_rand" | md5sum >> $tmp_file;
+
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
-    $script $start_script_code;
+    $script $private_rand $tmp_file;
 done
 
 ##### Mancanti
 printf "${Y}\n\nRiavvia il PC per rendere effettive le modifiche${NC}\n";
+
+
+
+# eliminazione codice per evitarne il riutilizzo
+rm -f $tmp_file;
+# successo
+exit 0;
