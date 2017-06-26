@@ -6,7 +6,7 @@
 hash_check=`echo "$1" | md5sum`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
-[ "$hash_check" != "`cat "$2"`" ] &&
+[ "$hash_check" != "`cat "$2" &> /dev/null`" ] &&
 printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
 exit 1;
 ##########################################
