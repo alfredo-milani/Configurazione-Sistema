@@ -66,8 +66,6 @@ function fill_arrays {
 
 
     while read -r key value && [ "$key" != "\#*" ]; do
-        echo "DIO: $line";
-
         keys+=("$key");
         values+=("$value");
     done < $conf_file;
