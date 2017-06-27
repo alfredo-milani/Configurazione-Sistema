@@ -22,7 +22,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 printf "Modificare impostazioni protocollo TCP?\n$choise_opt";
 read -n1 choise;
 printf "\n";
-if [ $choise == "y" ]; then
+if [ "$choise" == "y" ]; then
 	net_conf_file="/etc/sysctl.conf";
 	$cmd 'echo "net.core.wmem_max=12582912" >> $net_conf_file';
 	$cmd 'echo "net.core.rmem_max=12582912" >> $net_conf_file';
@@ -44,7 +44,7 @@ fi
 printf "Modificare il file /etc/modprob.d/iwlwifi.conf e il file /etc/default/crda con le impostazioni ottimali?\n$choise_opt";
 read -n1 choise;
 printf "\n";
-if [ $choise == "y" ]; then
+if [ "$choise" == "y" ]; then
 	$cmd 'echo "# Test per rendere la connessione stabile
 options iwlwifi 11n_disable=1
 #options iwlwifi swcrypto=1

@@ -58,7 +58,7 @@ printf "Installare apt-fast?\n$choise_opt";
 read -n1 choise;
 printf "\n";
 # la scrittura 'if check_connection; then' si può usare solo nel caso si debbano testare valori di ritorno di funzioni
-if [ $choise == "y" ] && check_connection; then
+if [ "$choise" == "y" ] && check_connection; then
 	apt_fast="https://github.com/ilikenwf/apt-fast/archive/master.zip";
 	cd $_dev_shm_;
 	mkdir apt-fast;

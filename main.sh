@@ -79,7 +79,6 @@ COMM
     # nota: la d finale serve per cancellare gli spazi bianchi
     sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' $conf_file >> $file_to_parse;
     while IFS='=' read -r key value; do
-        echo "K: $key      V: $value";
         case "$key" in
             tree_dir )          tree_dir="`echo $value`" ;;
             UUID_backup )       UUID_backup=$value ;;
@@ -427,10 +426,6 @@ done
 
 # lettura file di configurazione
 fill_arrays;
-
-echo -e "\nMADONNA CANE:\n $tree_dir\n $UUID_data\n $UUID_backup\n $driver_backup\n $sdk\n $script_path\n $software\n $themes_backup\n $icons_backup\n $script_path\n $extensions_id\n $apt_manager\n $_dev_shm_\n";
-
-
 
 # verifica se cancellare o meno codici di identificazione precedenti
 [ $tmp_code != 0 ] && rm -f $_dev_shm_/tmp.* 2> $null;
