@@ -39,7 +39,7 @@ if check_connection; then
 	fi
 fi
 echo "Premi un tasto per continuare una volta aggiornato il file 'source.list'";
-read -n1 ready;
+read -n1 choise;
 
 
 
@@ -97,15 +97,15 @@ fi
 
 ##### Installazione tools principali
 echo "Vuoi installare gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted? Premi y per OK";
-read -n1 ready;
-if [ "$ready" = "y" ] && check_connection; then
+read -n1 choise;
+if [ "$choise" = "y" ] && check_connection; then
 	echo "Installazione dei princiali tools: gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 	sudo $apt_manager install gksu vim vlc preload curl redshift alacarte g++ gparted -y;
 	check_error "Installazione dei tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 
 	printf "Vuoi installare e configurare anche prelink? Premi y per OK\n";
-	read -n1 ready;
-	if [ "$ready" = "y" ]; then
+	read -n1 choise;
+	if [ "$choise" = "y" ]; then
 		sudo $apt_manager install prelink -y;
 		path_prelink="/etc/default/prelink";
 		files_da_modificare="prelink";
@@ -147,7 +147,7 @@ if [ "$choise" = "y" ] && check_connection; then
 		printf "${Y}Sposta la cache di Google-Chrome su RAMDISK con alacarte${NC}\n";
 		alacarte 2> $null;
 		echo "Una volta spostata la cache con alacarte premi un pulsante per continuare";
-		read -n1 ready;
+		read -n1 choise;
 	fi
 else
 	printf "${DG}${U}Atom e Google-Chrome non installati${NC}\n";

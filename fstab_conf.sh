@@ -22,8 +22,8 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 # tool per vedere il path assoluto di una specifica direzione
 xdg="xdg-user-dir";
 echo "Vuoi modificare il file /etc/fstab per aggiungere RAMDISK? Premi y per OK";
-read -n1 ready;
-if [ "$ready" == "y" ] && check_tool $xdg; then
+read -n1 choise;
+if [ "$choise" == "y" ] && check_tool $xdg; then
 	home="`$xdg HOME`";
 
 	echo "Configurazione file '/etc/fstab'";
