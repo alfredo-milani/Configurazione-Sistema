@@ -23,6 +23,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 xdg="xdg-user-dir";
 printf "Vuoi modificare il file /etc/fstab per aggiungere RAMDISK?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ] && check_tool $xdg; then
 	home="`$xdg HOME`";
 
@@ -31,13 +32,16 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	group=`id -g`;
 	printf "Utilizzare l'UUID di default (UUID default = $UUID_data)?\n$choise_opt";
 	read -n1 choise;
+	printf "\n";
 	while ! [ $choise == "y" ]; do
 		echo "Esecuzione del comando 'lsblk -f' per vedere l'UUID del device...";
 		lsblk -f;
-		echo "Digita l'UUID del device che si vuole utilizzare:";
+		printf "Digitare l'UUID del device che si vuole utilizzare:\t";
 		read UUID_data;
+		printf "\n";
 		printf "L'UUID = '$UUID_data' è corretto?\n$choise_opt";
 		read -n1 choise;
+		printf "\n";
 	done
 
 	fstab="#########################################################\n

@@ -55,6 +55,7 @@ move_sw="move-to-corner-sw;['<Alt>Left']";
 other_shortcut_array=("$maximize" "$minimize" "$move_ne" "$move_nw" "$move_se" "$move_sw");
 printf "Vuoi impostare i keyboard shortcuts?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	# modo alternativo per esprimere uno if statement...
 	# il comando "[]" server per valutare espressioni

@@ -39,7 +39,6 @@ fi
 
 
 # variabili di sola lettura (declare -r)
-declare -r _dev_shm_="/dev/shm";
 declare -r null="/dev/null";
 declare -r mod_start="Avvio modulo";
 declare -r mod_end="Fine modulo";
@@ -56,6 +55,7 @@ declare -r NC='\033[0m'; # No Color
 declare -r check_error_str="Azione: %s\tEsito: %s\n";
 declare -r success="Positivo";
 declare -r failure="Negativo";
+_dev_shm_="/dev/shm";
 
 export null _dev_shm_;
 export mod_start mod_end;
@@ -72,12 +72,25 @@ function fill_arrays {
         exit 1;
     fi
 
-    # redirigo il file di configurazione all'input della funzione read
-    IFS='=';
-    while read -r key value && [ "$key" != "\#*" ]; do
+
+    # eliminazione commenti all'inizio riga ed inline prima di parsare i dati
+    # nota: la d finale serve per cancellare gli spazi bianchi
+    i=0;
+    sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' $conf_file |
+    while IFS='=' read -r key value; do
+
+        echo "K: $key      V: $value";
+
+        keys[$i]="$key";
+        values[$i]="$value";
+        i=$(( i + 1 ));
+        echo "I: $i";
+
         keys+=("$key");
         values+=("$value");
-    done < $conf_file;
+    done
+
+    echo "GESU: ${values[0]}     ${values[1]}      ${values[2]}      ${values[3]}      ${values[4]}"
 }
 
 # restituisce il valore corrispondente alla chiave in input
@@ -95,7 +108,7 @@ function get_value {
         [ "${keys[$i]}" == "$1" ] && return $i;
     done
 
-    # la shell bash ritornerà un valore tra 0 e 255 --> -1 -> 255
+    # la shell bash ritornerà un valore tra 0 e 255 --> errore = -1 -> 255
     return -1;
 }
 
@@ -111,13 +124,16 @@ function check_mount {
     if [ ${#mount_point} == 0 ]; then
         printf "Montare il device UUID=$1?\n$choise_opt";
         read -n1 choise;
+        printf "\n";
         if [ "$choise" == "y" ]; then
             mount_point=$_dev_shm_$1;
             printf "Montare il device in un punto particolare (default: $mount_point)?\n$choise_opt"
             read -n1 choise;
+            printf "\n";
             if [ "$choise" == "y" ]; then
-                printf "Digita il punto di mount:\n";
+                printf "Digita il punto di mount:\t";
                 read mount_point;
+                printf "\n";
             fi
             mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
@@ -180,6 +196,7 @@ function check_connection {
 	while ! get_header; do
 		printf "${Y}Connessione assente.\n$choise_opt_net${NC}\n";
 		read -n1 choise;
+        printf "\n";
 		if [ $choise == "j" ]; then
 			return 1;
 		fi
@@ -199,6 +216,7 @@ function give_help {
     echo -e "\t-gpu | -GPU\t\tConfigurazione bumblebee per gestione GPU NVIDIA";
     echo -e "\t-jdk | -JDK )\t\tConfigurazione della JDK Oracle";
     echo -e "\t-l | -L )\t\tCreazione link simbolici";
+    echo -e "\t-m | -M )\t\tPer creare più istanze contemporaneamente";
     echo -e "\t-n | -N )\t\tConfigurazione di rete";
     echo -e "\t-s | -S )\t\tConfigurazione dei keyboard shortcuts";
     echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
@@ -231,8 +249,8 @@ lenght=${#current_script_name};
 export absolute_script_path=${absolute_current_script_path::-$lenght};
 # chiavi/valori dal file di configurazione
 # NOTA: gli array non possono essere esportati
-keys=();
-values=();
+declare -a keys=();
+declare -a values=();
 # contiene i moduli invocati dall'utente
 scripts_array=();
 # file di default contenuto nella stessa directory dello script corrente
@@ -354,6 +372,12 @@ while [ $# -gt 0 ]; do
             shift;
             ;;
 
+        -[mM]] )
+            # tmp_code viene impostata ad 1 --> è possibile creare più istanze contemporaneamente dello script
+            tmp_code=0;
+            shift;
+            ;;
+
         -[nN] )
             # configurazione di rete
             scripts_array+=($absolute_script_path"network_conf.sh");
@@ -363,12 +387,6 @@ while [ $# -gt 0 ]; do
         -[sS] )
             # configurazione keyboard shortcuts
             scripts_array+=($absolute_script_path"kb_shortcut_conf.sh");
-            shift;
-            ;;
-
-        --tmp | --TMP )
-            # tmp_code viene impostata ad 1 --> è possibile creare più istanze contemporaneamente dello script
-            tmp_code=0;
             shift;
             ;;
 
@@ -409,6 +427,25 @@ get_value driver_backup; driver_backup=${values[$?]};
 get_value scripts_backup; scripts_backup=${values[$?]};
 get_value extensions_id; extensions_id=${values[$?]};
 get_value sdk; sdk=${values[$?]};
+get_value tmp; tmp_dev_shm_=${values[$?]};
+if [ ${#tmp_dev_shm_} == 0 ] || ! [ -d $tmp_dev_shm_ ]; then
+    printf "${R}Errore, il path $tmp_dev_shm_ non esiste o non è una directory valida.\nUtilizzo di quella di default ($_dev_shm_).\n${NC}";
+else
+    _dev_shm_=$tmp_dev_shm_;
+fi
+
+echo "MADONNA CANE: $tree_dir     $UUID_data    $UUID_backup    $driver_backup    $sdk";
+
+
+for el in ${keys[@]}; do
+    echo "k: $el";
+done
+
+for el in ${values[@]}; do
+    echo "v: $el";
+done
+
+
 
 
 # verifica se cancellare o meno codici di identificazione precedenti

@@ -26,7 +26,7 @@ echo "sito: $sito_repo";
 echo "file da modificare: '/etc/apt/sources.list'";
 printf "${Y}NOTA:${NC} ricorda di commentare la riga relativa al repository che punta al cd-rom\n";
 if check_connection; then
-	echo "Apertura del browser firefox per ottenere il sito contenente le informazioni necessarie";
+	echo "~Apertura del browser firefox per ottenere il sito contenente le informazioni necessarie";
 	echo "(Chiudere il browser per continuare con la configurazione)";
 	# 0 --> stdin; 1 --> stdout; 2 --> stderr;
 	firefox $sito_repo &> $null
@@ -40,6 +40,7 @@ if check_connection; then
 fi
 echo "Premi un tasto per continuare una volta aggiornato il file 'source.list'";
 read -n1 choise;
+printf "\n";
 
 
 
@@ -55,6 +56,7 @@ check_connection && $apt_manager update -y && $apt_manager upgrade -y;
 # Installazione e configurazione del tool apt-fast
 printf "Installare apt-fast?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 # la scrittura 'if check_connection; then' si può usare solo nel caso si debbano testare valori di ritorno di funzioni
 if [ $choise == "y" ] && check_connection; then
 	apt_fast="https://github.com/ilikenwf/apt-fast/archive/master.zip";
@@ -98,6 +100,7 @@ fi
 ##### Installazione tools principali
 printf "Vuoi installare gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" = "y" ] && check_connection; then
 	echo "Installazione dei princiali tools: gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 	$apt_manager install gksu vim vlc preload curl redshift alacarte g++ gparted -y;
@@ -105,6 +108,7 @@ if [ "$choise" = "y" ] && check_connection; then
 
 	printf "Vuoi installare e configurare anche prelink?\n$choise_opt";
 	read -n1 choise;
+	printf "\n";
 	if [ "$choise" = "y" ]; then
 		$apt_manager install prelink -y;
 		path_prelink="/etc/default/prelink";
@@ -124,6 +128,7 @@ fi
 
 printf "Vuoi installare atom e google-chrome?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" = "y" ] && check_connection; then
 	$apt_manager install git;
 	mkdir $_dev_shm_"atom";
@@ -148,6 +153,7 @@ if [ "$choise" = "y" ] && check_connection; then
 		alacarte 2> $null;
 		echo "Una volta spostata la cache con alacarte premi un pulsante per continuare";
 		read -n1 choise;
+		printf "\n";
 	fi
 else
 	printf "${DG}${U}Atom e Google-Chrome non installati${NC}\n";
@@ -158,6 +164,7 @@ fi
 # Installazioe estensioni
 printf "Vuoi installare le estensioni con id: $extensions_id?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ] && check_connection; then
 	# abilitazione percentuale batteria
 	gsettings set org.gnome.desktop.interface show-battery-percentage true
@@ -175,6 +182,7 @@ if [ "$choise" == "y" ] && check_connection; then
 			echo "Disabilitando il driver, con l'estensione cpufreq il TurboBoost potrebbe non funzionare";
 			printf "Disabilitare i driver intel_pstate?\n$choise_opt";
 			read -n1 choise;
+			printf "\n";
 			if [ "$choise" == "y" ]; then
 				old_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet';
 				new_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet intel_pstate=disable';

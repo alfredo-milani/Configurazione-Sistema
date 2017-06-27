@@ -24,6 +24,7 @@ Gli altri moduli sono:
 - symbolic_link_conf.sh - creazione *link simbolici*;
 - tools_upgrade_conf.sh - *aggiornamento tools* sistema;
 - tracker_disable_conf.sh - disabilitazione _tracker-* tools_;
+- utils/gnomeshell_extension_manage.sh - download e installazione estensioni dal gnome-center (autore: *N. Bernaerts*);
 
 - sys.conf - definizione variabili.
 
@@ -69,6 +70,8 @@ driver_backup | Directory dove si trovano i drivers necessari al sistema (parten
 extensions_id | ID delle estensioni ottenibili dal sito "https://extensions.gnome.org/"
    |   
 sdk | Directory assoluta dove si trova la SDK
+   |   
+tmp | Direzione files temporanei (default /dev/shm)
 
 
 > **NOTA:** Non utilizzare il carattere '=' nei commenti (stringhe precedute dal carattere '#')
@@ -93,9 +96,9 @@ sdk | Directory assoluta dove si trova la SDK
     -gpu | -GPU )       Configurazione bumblebee per gestione GPU NVIDIA
     -jdk | -JDK )       Configurazione della JDK Oracle
     -l | -L )           Creazione link simbolici
+    -m | -M )           Per creare più istanze contemporaneamente
     -n | -N )           Configurazione di rete
     -s | -S )           Configurazione dei keyboard shortcuts
-    --tmp | --TMP )     Per creare più istanze contemporaneamente
     -tr | -TR )         Disabilitazione tracker-* tools
     -u | -U )           Aggiornamento tools del sistema
 

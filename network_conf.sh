@@ -21,6 +21,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 printf "Modificare impostazioni protocollo TCP?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ $choise == "y" ]; then
 	net_conf_file="/etc/sysctl.conf";
 	echo 'net.core.wmem_max=12582912' >> $net_conf_file;
@@ -42,6 +43,7 @@ fi
 
 printf "Modificare il file /etc/modprob.d/iwlwifi.conf e il file /etc/default/crda con le impostazioni ottimali?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ $choise == "y" ]; then
 	echo '# Test per rendere la connessione stabile
 options iwlwifi 11n_disable=1
@@ -60,6 +62,7 @@ fi
 
 printf "Copiare i driver contenuti in $path_driver_backup nella directory di sistema $path_sys_driver?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ] && check_tool "dmidecode" "tr" && check_mount $UUID_backup; then
 	# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
 	# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
@@ -88,6 +91,7 @@ fi
 _etc_nsswitch=/etc/nsswitch.conf;
 printf "Modificare file $_etc_nsswitch per evitare il bug nel software Avahi-daemon?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ]; then
 	cp $_etc_nsswitch $_etc_nsswitch"_old";
 	new_str="hosts:          files dns";

@@ -38,6 +38,7 @@ function get_OS {
 # Configurazione KVM
 printf "Installare i componenti necessari per KVM?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ]; then
 	kvm_pre_inst=`egrep -c '(vmx|svm)' /proc/cpuinfo`;
 	get_OS;
@@ -112,6 +113,7 @@ sdk_path=$sdk/emulator/lib64/libstdc++;
 arr_sdk_path=(`ls $sdk_path | grep $libstd`);
 printf "Correggere l'errore 'libstdc++.so.6: version GLIBCXX_3.4.21 not found'?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ]; then
 	echo "Checking delle librerie in $lib_usr_path e $sdk_path";
 	! [ -d $lib_usr_path ] || ! [ -d $sdk_path ] && printf "${R}Path $lib_usr_path o $sdk_path non esisteni\n${NC}" && return 1;
@@ -139,6 +141,7 @@ fi
 
 printf "Installare e configurare bumblebee?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ]; then
 	# controllo presenza GPU nel sistema
 	check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'nvidia'`;
@@ -196,6 +199,7 @@ if [ "$choise" == "y" ]; then
 	firefox $sito_visualgl &> $null;
 	echo "Premere un pulsante una volta scaricato il file nella directory $_dev_shm_";
 	read -n1;
+	printf "\n";
 	cd $_dev_shm_;
 	dpkg -i virtual*.deb;
 	check_error "Installazione tool virtualgl";
@@ -206,6 +210,7 @@ if [ "$choise" == "y" ]; then
 	bumblebee_conf=/etc/bumblebee/bumblebee.conf;
 	printf "Ottimizzare il file di configurazione $bumblebee_conf?\n$choise_opt";
 	read -n1 choise;
+	printf "\n";
 	if [ "$choise" == "y" ]; then
 		# sed: ^ --> inizio riga
 		#      $ --> fine riga
@@ -239,6 +244,7 @@ if [ "$choise" == "y" ]; then
 	printf "${Y}Bisogna riavviare il pc per completare l'installazione.\n${NC}";
 	printf "${Y}Riavviare ora?\n$choise_opt${NC}";
 	read -n1 choise;
+	printf "\n";
 	[ "$choise" == "y" ] && reboot;
 else
 	printf "${DG}${U}Modulo bulmbelee non installato\n${NC}";

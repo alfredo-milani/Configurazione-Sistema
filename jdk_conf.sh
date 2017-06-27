@@ -56,6 +56,7 @@ function config_profile {
 # Impostazione JDK Oracle come default di sistema
 printf "Impostare JDK Oracole java come default di sistema?\n$choise_opt";
 read -n1 choise;
+printf "\n";
 if [ "$choise" == "y" ]; then
 	path_jdk=/opt/;
 	cd $path_jdk;
@@ -68,6 +69,7 @@ if [ "$choise" == "y" ]; then
 
 			printf "Vuoi utilizzare la JDK $path_backup_jdk/$backup_jdk?\n$choise_opt";
 			read -n1 choise;
+			printf "\n";
 			if [ "$choise" == "y" ]; then
 				tar -xvf $path_backup_jdk/$backup_jdk -C $path_jdk &> $null;
 				check_error "Estrazione di $backup_jdk in $path_jdk";
