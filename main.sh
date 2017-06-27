@@ -384,7 +384,7 @@ while [ $# -gt 0 ]; do
             shift;
             ;;
 
-        -[mM]] )
+        -[mM] )
             # tmp_code viene impostata ad 1 --> è possibile creare più istanze contemporaneamente dello script
             tmp_code=0;
             shift;
