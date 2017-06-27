@@ -76,8 +76,8 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	cp $_etc_$file_fstab .;
 	# flag '-e' per abilitare l'interpretazione del backslash
 	echo -e $fstab >> $file_fstab;
-	mv $_etc_$file_fstab $_etc_$file_fstab"_old";
-	cp $file_fstab $_etc_;
+	sudo mv $_etc_$file_fstab $_etc_$file_fstab"_old";
+	sudo cp $file_fstab $_etc_;
 	check_error "Modifica file $_etc_$file_fstab";
 else
 	printf "${DG}${U}File /etc/fstab non moficato${NC}\n";

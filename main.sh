@@ -23,27 +23,18 @@ if [ "$line_acc1" != "$cmd_acc" ]; then
     	exit 1;
     fi
 fi
-
-
-
-ROOT_UID=0     # Solo gli utenti con $UID 0 hanno i privilegi di root.
-E_NONROOT=67   # Codice di exit non-root.
-# Da eseguire come root, naturalmente.
-if [ "$UID" -ne "$ROOT_UID" ]; then
-  echo "Devi essere root per eseguire questo script.";
-  exit $E_NONROOT;
-fi
 ##### Fine controllo preliminare #####
 ######################################
 
 
 
 # variabili di sola lettura (declare -r)
+declare -r cmd="sudo /bin/su -c";
 declare -r null="/dev/null";
 declare -r mod_start="Avvio modulo";
 declare -r mod_end="Fine modulo";
-declare -r choise_opt="[y=procedi/others=annulla]\t";
-declare -r choise_opt_net="[j=riprova più tardi/others=riprova ora]\t";
+declare -r choise_opt="[y=procedi / others=annulla]\t";
+declare -r choise_opt_net="[j=riprova più tardi / others=riprova ora]\t";
 # colori utilizzati
 declare -r R='\033[0;31m'; # red
 declare -r Y='\033[1;33m'; # yellow
@@ -57,7 +48,7 @@ declare -r success="Positivo";
 declare -r failure="Negativo";
 _dev_shm_="/dev/shm";
 
-export null _dev_shm_;
+export null _dev_shm_ cmd;
 export mod_start mod_end;
 export choise_opt;
 export R Y G DG U NC;
@@ -72,25 +63,47 @@ function fill_arrays {
         exit 1;
     fi
 
-
-    # eliminazione commenti all'inizio riga ed inline prima di parsare i dati
-    # nota: la d finale serve per cancellare gli spazi bianchi
-    i=0;
+: <<'COMM'
     sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' $conf_file |
     while IFS='=' read -r key value; do
-
         echo "K: $key      V: $value";
-
-        keys[$i]="$key";
-        values[$i]="$value";
-        i=$(( i + 1 ));
-        echo "I: $i";
-
+        # le variabili NON vengono assegnate agli arrays
         keys+=("$key");
         values+=("$value");
     done
+COMM
 
-    echo "GESU: ${values[0]}     ${values[1]}      ${values[2]}      ${values[3]}      ${values[4]}"
+    # workaround
+    # eliminazione commenti all'inizio riga ed inline prima di parsare i dati
+    file_to_parse=`mktemp -p $_dev_shm_`;
+    # nota: la d finale serve per cancellare gli spazi bianchi
+    sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' $conf_file >> $file_to_parse;
+    while IFS='=' read -r key value; do
+        echo "K: $key      V: $value";
+        case "$key" in
+            tree_dir )          tree_dir="`echo $value`" ;;
+            UUID_backup )       UUID_backup=$value ;;
+            UUID_data )         UUID_data=$value ;;
+            script_path )       script_path=$value ;;
+            software )          software=$value ;;
+            themes_backup )     themes_backup=$value ;;
+            icons_backup )      icons_backup=$value ;;
+            driver_backup )     driver_backup=$value ;;
+            scripts_backup )    scripts_backup=$value ;;
+            extensions_id )     extensions_id=$value ;;
+            sdk )               sdk=$value ;;
+            tmp )
+                                tmp_dev_shm_=$value;
+                                if [ ${#tmp_dev_shm_} == 0 ] || ! [ -d $tmp_dev_shm_ ]; then
+                                    printf "${R}Errore, il path $tmp_dev_shm_ non esiste o non è una directory valida.\nUtilizzo di quella di default ($_dev_shm_).\n${NC}";
+                                else
+                                    _dev_shm_=$tmp_dev_shm_;
+                                fi
+                                ;;
+        esac
+    done < $file_to_parse;
+
+    rm -f $file_to_parse;
 }
 
 # restituisce il valore corrispondente alla chiave in input
@@ -135,9 +148,9 @@ function check_mount {
                 read mount_point;
                 printf "\n";
             fi
-            mkdir -p $mount_point;
+            sudo mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
-            mount UUID=$1 $mount_point && return 0;
+            sudo mount UUID=$1 $mount_point && return 0;
         fi
 
         printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
@@ -156,7 +169,7 @@ function check_tool {
         if [ "$tmp" == "sudo" ]; then
             echo "Checking tool $tmp nel sistema";
             sudo_tool=`cut -d$delimiter -f2 <<< $tool`
-            which $sudo_tool &> $null;
+            sudo which $sudo_tool &> $null;
         else
             which $tool &> $null;
         fi
@@ -415,36 +428,7 @@ done
 # lettura file di configurazione
 fill_arrays;
 
-# definizione array key/value
-get_value tree_dir; tree_dir=${values[$?]};
-get_value UUID_backup; UUID_backup=${values[$?]};
-get_value UUID_data; UUID_data=${values[$?]};
-get_value script_path; script_path=${values[$?]};
-get_value software; software=${values[$?]};
-get_value themes_backup; themes_backup=${values[$?]};
-get_value icons_backup; icons_backup=${values[$?]};
-get_value driver_backup; driver_backup=${values[$?]};
-get_value scripts_backup; scripts_backup=${values[$?]};
-get_value extensions_id; extensions_id=${values[$?]};
-get_value sdk; sdk=${values[$?]};
-get_value tmp; tmp_dev_shm_=${values[$?]};
-if [ ${#tmp_dev_shm_} == 0 ] || ! [ -d $tmp_dev_shm_ ]; then
-    printf "${R}Errore, il path $tmp_dev_shm_ non esiste o non è una directory valida.\nUtilizzo di quella di default ($_dev_shm_).\n${NC}";
-else
-    _dev_shm_=$tmp_dev_shm_;
-fi
-
-echo "MADONNA CANE: $tree_dir     $UUID_data    $UUID_backup    $driver_backup    $sdk";
-
-
-for el in ${keys[@]}; do
-    echo "k: $el";
-done
-
-for el in ${values[@]}; do
-    echo "v: $el";
-done
-
+echo -e "\nMADONNA CANE:\n $tree_dir\n $UUID_data\n $UUID_backup\n $driver_backup\n $sdk\n $script_path\n $software\n $themes_backup\n $icons_backup\n $script_path\n $extensions_id\n $apt_manager\n $_dev_shm_\n";
 
 
 
@@ -463,7 +447,6 @@ for script in "${scripts_array[@]}"; do
     $script $private_rand $tmp_file;
 done
 
-##### Mancanti
 printf "${Y}\n\nRiavvia il PC per rendere effettive le modifiche${NC}\n";
 
 

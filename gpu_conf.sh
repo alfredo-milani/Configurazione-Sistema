@@ -49,11 +49,11 @@ if [ "$choise" == "y" ]; then
 
 		1 )
 			if [ $kvm_pre_inst != 0 ]; then
-				$apt_manager install qemu-kvm libvirt-clients libvirt-daemon-system;
-				adduser $USER libvirt;
+				sudo $apt_manager install qemu-kvm libvirt-clients libvirt-daemon-system;
+				sudo adduser $USER libvirt;
 				check_error "Aggiunta $USER al gruppo libvirt";
 
-				adduser $USER libvirt-qemu;
+				sudo adduser $USER libvirt-qemu;
 				check_error "Aggiunta $USER al gruppo libvirt-qemu";
 
 				correct_virsh=" Id    Name                           State
@@ -128,10 +128,10 @@ if [ "$choise" == "y" ]; then
 	done
 
 	for lib in ${arr_sdk_path[@]}; do
-		mv $lib $lib"_orig";
+		sudo mv $lib $lib"_orig";
 	done
 	# link simbolico della versione più recente delle lib
-	ln -s $lib_usr_path/$libstd$current_latest $sdk_path;
+	sudo ln -s $lib_usr_path/$libstd$current_latest $sdk_path;
 	check_error "Correzione errore libstdc++.so.6: version 'GLIBCXX_3.4.21'";
 else
 	printf "${DG}${U}Errore non corretto\n${NC}";
@@ -149,13 +149,13 @@ if [ "$choise" == "y" ]; then
 	! check_error "Verifica presenza GPU discreta" && printf "$str_end" && exit 1;
 
 	echo "Disabilitazione driver nouveau";
-	modprobe -r nouveau;
+	sudo modprobe -r nouveau;
 	check_error "Disabilitazione driver nouveau" &&
 	printf "${Y}Prova ad aggiungere il flag 'nomodeset' durante la fase di boot\n${NC}" &&
 	printf "$str_end" && exit 1;
 
 	printf "Assicurati che il modulo 'vga_switcheroo' sia disabilitato (oppure che sia mancante)";
-	modprobe -r vga_switcheroo;
+	sudo modprobe -r vga_switcheroo;
 
 	printf "Abilita i repository 'main', 'contrib', 'non-free'. Chiudi la finestra per continuare\n";
 	software-properties-gtk &> $null;
@@ -163,7 +163,7 @@ if [ "$choise" == "y" ]; then
 		# TODO --> modifica automatica del file /etc/apt/source.list
 		printf "software-properties-gtk mancante.
 		Modifica il file /etc/apt/source.list manualmente per abilitare i repository 'main', 'contrib', 'non-free'";
-		vi /etc/apt/source.list;
+		sudo vi /etc/apt/source.list;
 	fi
 
 	printf "Update, update del sistema e download tools necessari";
@@ -173,12 +173,12 @@ if [ "$choise" == "y" ]; then
 	check_error "Controllo architettura di sistema" &&
 	printf "$str_end" && exit 1;
 
-	$apt_manager update;
-	$apt_manager install gcc make linux-headers-amd$arch;
-	$apt_manager install dkms bbswitch-dkms;
+	sudo $apt_manager update;
+	sudo $apt_manager install gcc make linux-headers-amd$arch;
+	sudo $apt_manager install dkms bbswitch-dkms;
 
 	# load the bbswitch module
-	modprobe bbswitch load_state=0;
+	sudo modprobe bbswitch load_state=0;
 	# test bbswitch
 	bbswitch_=(`cat /proc/acpi/bbswitch`);
 	bbswitch_online=${bbswitch[1]};
@@ -186,13 +186,13 @@ if [ "$choise" == "y" ]; then
 	check_error "Test bbswitch" &&
 	printf "$str_end" && exit 1;
 
-	echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-blacklist.conf;
+	$cmd 'echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-blacklist.conf';
 	check_error "Modulo nouveau in blacklist";
 
 	printf "Installazione dirver nvidia, bumblebee e dipendenze varie";
-	$apt_manager install nvidia-kernel-dkms nvidia-xconfig nvidia-settings;
-	$apt_manager install nvidia-vdpau-driver vdpau-va-driver mesa-utils;
-	$apt_manager install bumblebee-nvidia;
+	sudo $apt_manager install nvidia-kernel-dkms nvidia-xconfig nvidia-settings;
+	sudo $apt_manager install nvidia-vdpau-driver vdpau-va-driver mesa-utils;
+	sudo $apt_manager install bumblebee-nvidia;
 
 	sito_visualgl="https://sourceforge.net/projects/virtualgl/files/";
 	printf "${Y}Apertura sito $sito_visualgl\n${NC}";
@@ -201,11 +201,11 @@ if [ "$choise" == "y" ]; then
 	read -n1;
 	printf "\n";
 	cd $_dev_shm_;
-	dpkg -i virtual*.deb;
+	sudo dpkg -i virtual*.deb;
 	check_error "Installazione tool virtualgl";
 
 	printf "Per utilizzare la GPU NVIDIA sono necessari i peremessi di root quindi aggiungiamo l'username al gruppo bumblebee\n";
-	usermod -aG bumblebee $USER;
+	sudo usermod -aG bumblebee $USER;
 
 	bumblebee_conf=/etc/bumblebee/bumblebee.conf;
 	printf "Ottimizzare il file di configurazione $bumblebee_conf?\n$choise_opt";
@@ -217,25 +217,25 @@ if [ "$choise" == "y" ]; then
 		#	   I --> case sensitive
 		#	  .* --> sostituzione intera riga
 		line_to_replace="VGLTransport="; new_str="VGLTransport=proxy";
-		sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
 		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="PMMethod="; new_str="PMMethod=bbswitch";
-		sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
 		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="Bridge="; new_str="Bridge=primus";
-		sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
 		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="Driver="; new_str="Driver=nvidia";
-		sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
 		check_error "Modificare chiave $line_to_replace"
 	else
 		printf "${DG}${U}File $bumblebee_conf non ottimizzato\n${NC}";
 	fi
 
-	service bumblebeed restart;
+	sudo service bumblebeed restart;
 
 	printf "NOTA: è consigliato usare primusrun rispetto ad optirun perchè più veloce\n";
 	printf "NOTA: per testare bumblebee: $ primusrun/optirun -vv glxgears\n";
@@ -245,7 +245,7 @@ if [ "$choise" == "y" ]; then
 	printf "${Y}Riavviare ora?\n$choise_opt${NC}";
 	read -n1 choise;
 	printf "\n";
-	[ "$choise" == "y" ] && reboot;
+	[ "$choise" == "y" ] && sudo reboot;
 else
 	printf "${DG}${U}Modulo bulmbelee non installato\n${NC}";
 fi

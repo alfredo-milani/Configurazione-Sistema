@@ -34,19 +34,19 @@ function config_profile {
 		file_profile="/etc/profile";
 
 		echo "Impostazione di java e javaws come default di sistema";
-		update-alternatives --install "/usr/bin/java" "java" "$f_path_jdk$f_new_jdk/bin/java" 1;
-		update-alternatives --install "/usr/bin/javaws" "javaws" "$f_path_jdk$f_new_jdk/bin/javaws" 1;
-		update-alternatives --set java "$f_path_jdk$f_new_jdk/bin/java";
-		update-alternatives --set javaws "$f_path_jdk$f_new_jdk/bin/javaws";
+		sudo update-alternatives --install "/usr/bin/java" "java" "$f_path_jdk$f_new_jdk/bin/java" 1;
+		sudo update-alternatives --install "/usr/bin/javaws" "javaws" "$f_path_jdk$f_new_jdk/bin/javaws" 1;
+		sudo update-alternatives --set java "$f_path_jdk$f_new_jdk/bin/java";
+		sudo update-alternatives --set javaws "$f_path_jdk$f_new_jdk/bin/javaws";
 		check_error "Impostazione JDK Oracle come default di sistema";
 
 		echo "Impostazione variabili globali nel file $file_profile";
-		echo "JAVA_HOME=$f_path_jdk$f_new_jdk" >> $file_profile;
-		echo "JRE_HOME=$f_path_jdk$f_new_jdk/jre" >> $file_profile;
-		echo 'PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin' >> $file_profile;
-		echo 'export JAVA_HOME' >> $file_profile;
-		echo 'export JRE_HOME' >> $file_profile;
-		echo 'export PATH' >> $file_profile;
+		$cmd 'echo "JAVA_HOME=$f_path_jdk$f_new_jdk" >> $file_profile';
+		$cmd 'echo "JRE_HOME=$f_path_jdk$f_new_jdk/jre" >> $file_profile';
+		$cmd 'echo "PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin" >> $file_profile';
+		$cmd 'echo "export JAVA_HOME" >> $file_profile';
+		$cmd 'echo "export JRE_HOME" >> $file_profile';
+		$cmd 'echo "export PATH" >> $file_profile';
 		check_error "Modifica file $file_profile";
 	fi
 }
@@ -71,7 +71,7 @@ if [ "$choise" == "y" ]; then
 			read -n1 choise;
 			printf "\n";
 			if [ "$choise" == "y" ]; then
-				tar -xvf $path_backup_jdk/$backup_jdk -C $path_jdk &> $null;
+				sudo tar -xvf $path_backup_jdk/$backup_jdk -C $path_jdk &> $null;
 				check_error "Estrazione di $backup_jdk in $path_jdk";
 				backup_jdk=`ls $path_jdk | grep jdk`;
 				config_profile $path_jdk $backup_jdk;

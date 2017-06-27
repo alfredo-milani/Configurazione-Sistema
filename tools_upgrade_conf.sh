@@ -26,7 +26,7 @@ echo "sito: $sito_repo";
 echo "file da modificare: '/etc/apt/sources.list'";
 printf "${Y}NOTA:${NC} ricorda di commentare la riga relativa al repository che punta al cd-rom\n";
 if check_connection; then
-	echo "~Apertura del browser firefox per ottenere il sito contenente le informazioni necessarie";
+	echo "Apertura del browser firefox per ottenere il sito contenente le informazioni necessarie";
 	echo "(Chiudere il browser per continuare con la configurazione)";
 	# 0 --> stdin; 1 --> stdout; 2 --> stderr;
 	firefox $sito_repo &> $null
@@ -49,7 +49,7 @@ which apt &> $null && apt_manager=apt;
 which apt-fast &> $null && apt_manager=apt-fast;
 
 echo "Upgrade e update dei pacchetti del sistema.";
-check_connection && $apt_manager update -y && $apt_manager upgrade -y;
+check_connection && sudo $apt_manager update -y && sudo $apt_manager upgrade -y;
 
 
 
@@ -63,16 +63,16 @@ if [ $choise == "y" ] && check_connection; then
 	cd $_dev_shm_;
 	mkdir apt-fast;
 	cd apt-fast;
-	$apt_manager install -y aria2;
+	sudo $apt_manager install -y aria2;
 	wget $apt_fast;
 	unzip master.zip &> $null;
 	cd apt-fast-master;
-	cp apt-fast /usr/bin;
+	sudo cp apt-fast /usr/bin;
 	check_error "Installazione apt-fast";
-	cp ./man/apt-fast.8 /usr/share/man/man8;
-	gzip /usr/share/man/man8/apt-fast.8;
-	cp ./man/apt-fast.conf.5 /usr/share/man/man5;
-	gzip /usr/share/man/man5/apt-fast.conf.5;
+	sudo cp ./man/apt-fast.8 /usr/share/man/man8;
+	sudo gzip /usr/share/man/man8/apt-fast.8;
+	sudo cp ./man/apt-fast.conf.5 /usr/share/man/man5;
+	sudo gzip /usr/share/man/man5/apt-fast.conf.5;
 
 	echo "Configurazione apt-fast.conf";
 	mirror_apt_fast="MIRRORS=( 'http://ftp.it.debian.org/debian/,http://mi.mirror.garr.it/mirrors/debian/,http://mirror.units.it/debian/,http://debian.e4a.it/debian/' )";
@@ -89,7 +89,7 @@ if [ $choise == "y" ] && check_connection; then
 	echo "################################################################" >> $apt_fast_conf_file;
 	echo "###	Fine configurazione    ###" >> $apt_fast_conf_file;
 	echo "################################################################" >> $apt_fast_conf_file;
-	cp apt-fast.conf /etc;
+	sudo cp apt-fast.conf /etc;
 	check_error "Cofgurazione apt-fast.conf";
 else
 	printf "${DG}${U}apt-fast non installato${NC}\n";
@@ -103,21 +103,21 @@ read -n1 choise;
 printf "\n";
 if [ "$choise" = "y" ] && check_connection; then
 	echo "Installazione dei princiali tools: gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
-	$apt_manager install gksu vim vlc preload curl redshift alacarte g++ gparted -y;
+	sudo $apt_manager install gksu vim vlc preload curl redshift alacarte g++ gparted -y;
 	check_error "Installazione dei tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 
 	printf "Vuoi installare e configurare anche prelink?\n$choise_opt";
 	read -n1 choise;
 	printf "\n";
 	if [ "$choise" = "y" ]; then
-		$apt_manager install prelink -y;
+		sudo $apt_manager install prelink -y;
 		path_prelink="/etc/default/prelink";
 		files_da_modificare="prelink";
 		old_str="PRELINKING=unknown";
 		new_str="PRELINKING=yes";
 		cd $path_prelink;
-		sed -i "s/$old_str/$new_str/g" $files_da_modificare;
-		/etc/cron.daily/prelink;
+		sudo sed -i "s/$old_str/$new_str/g" $files_da_modificare;
+		sudo /etc/cron.daily/prelink;
 		check_error "Installazione ed avvio del tool prelink";
 	else
 		printf "${DG}${U}Il tool prelink non è stato installato${NC}\n";
@@ -130,12 +130,12 @@ printf "Vuoi installare atom e google-chrome?\n$choise_opt";
 read -n1 choise;
 printf "\n";
 if [ "$choise" = "y" ] && check_connection; then
-	$apt_manager install git;
+	sudo $apt_manager install git;
 	mkdir $_dev_shm_"atom";
 	cd $_dev_shm_"atom";
 	atom_link="https://atom.io/download/deb";
 	wget $atom_link;
-	dpkg -i *deb;
+	sudo dpkg -i *deb;
 	check_error "Installazione editor atom";
 
 	echo "Installazione google-chrome attraverso wget (molto simile a curl, ma wget è esclusivamente un command line tool)";
@@ -143,8 +143,8 @@ if [ "$choise" = "y" ] && check_connection; then
 	cd $_dev_shm_"google";
 	chrome_link="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb";
 	wget $chrome_link;
-	dpkg -i *deb;
-	$apt_manager -f install -y;
+	sudo dpkg -i *deb;
+	sudo $apt_manager -f install -y;
 	check_error "Installazione broswer google-chrome";
 
 	# se l'installazione di google-chrome è andata a buon fine
@@ -186,9 +186,9 @@ if [ "$choise" == "y" ] && check_connection; then
 			if [ "$choise" == "y" ]; then
 				old_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet';
 				new_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet intel_pstate=disable';
-				sed -i "s/$old_str/$new_str/" /etc/default/grub;
+				sudo sed -i "s/$old_str/$new_str/" /etc/default/grub;
 				check_error "Modifica file /etc/default/grub";
-				update-grub;
+				sudo update-grub;
 			else
 				printf "${DG}${U}Driver intel_pstate non disabilitato\n${NC}";
 			fi
