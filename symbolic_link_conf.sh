@@ -26,7 +26,7 @@ printf "\n";
 if [ "$choise" == "y" ] && check_tool $xdg; then
 	scaricati="`$xdg DOWNLOAD`";
 
-	if ! [ -d $scaricati"/shm" ]; then
+	if ! [ -d "$scaricati/shm" ]; then
 		ln -s $_dev_shm_ $scaricati;
 		check_error "Creazione link simbolico in $scaricati";
 	else
@@ -47,7 +47,7 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	dir_data_relative="Alfredo";
 
 	# TODO cercare possibile bug...
-	if ! [ -d $scrivania/$nome_link ] && check_mount $UUID_data; then
+	if ! [ -d "$scrivania/$nome_link" ] && check_mount $UUID_data; then
 		ln -s $mount_point/$dir_data_relative $scrivania/$nome_link;
 		check_error "Creazione link simbolico in $scrivania";
 	else

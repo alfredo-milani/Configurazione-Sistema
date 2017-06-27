@@ -105,16 +105,17 @@ function get_latest_vers {
 	return 1;
 }
 # check lib in /usr/lib/ e ~/sdk/emulator/
-libstd=libstdc++.so.;
-libstd_lenght=${#libstd};
-lib_usr_path=/usr/lib/x86_64-linux-gnu;
-arr_lib_usr_path=(`ls $lib_usr_path | grep $libstd`);
-sdk_path=$sdk/emulator/lib64/libstdc++;
-arr_sdk_path=(`ls $sdk_path | grep $libstd`);
 printf "Correggere l'errore 'libstdc++.so.6: version GLIBCXX_3.4.21 not found'?\n$choise_opt";
 read -n1 choise;
 printf "\n";
 if [ "$choise" == "y" ]; then
+	libstd=libstdc++.so.;
+	libstd_lenght=${#libstd};
+	lib_usr_path=/usr/lib/x86_64-linux-gnu;
+	arr_lib_usr_path=(`ls $lib_usr_path | grep $libstd`);
+	sdk_path=$sdk/emulator/lib64/libstdc++;
+	arr_sdk_path=(`ls $sdk_path | grep $libstd`);
+
 	echo "Checking delle librerie in $lib_usr_path e $sdk_path";
 	! [ -d $lib_usr_path ] || ! [ -d $sdk_path ] && printf "${R}Path $lib_usr_path o $sdk_path non esisteni\n${NC}" && return 1;
 	# numero di versione corrente più alto in lib_usr_path
@@ -150,7 +151,7 @@ if [ "$choise" == "y" ]; then
 
 	echo "Disabilitazione driver nouveau";
 	sudo modprobe -r nouveau;
-	check_error "Disabilitazione driver nouveau" &&
+	! check_error "Disabilitazione driver nouveau" &&
 	printf "${Y}Prova ad aggiungere il flag 'nomodeset' durante la fase di boot\n${NC}" &&
 	printf "$str_end" && exit 1;
 

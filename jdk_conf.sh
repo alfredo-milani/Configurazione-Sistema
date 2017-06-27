@@ -41,12 +41,12 @@ function config_profile {
 		check_error "Impostazione JDK Oracle come default di sistema";
 
 		echo "Impostazione variabili globali nel file $file_profile";
-		$cmd 'echo "JAVA_HOME=$f_path_jdk$f_new_jdk" >> $file_profile';
-		$cmd 'echo "JRE_HOME=$f_path_jdk$f_new_jdk/jre" >> $file_profile';
-		$cmd 'echo "PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin" >> $file_profile';
-		$cmd 'echo "export JAVA_HOME" >> $file_profile';
-		$cmd 'echo "export JRE_HOME" >> $file_profile';
-		$cmd 'echo "export PATH" >> $file_profile';
+		sudo /bin/su -c "echo JAVA_HOME=$f_path_jdk$f_new_jdk >> $file_profile";
+		sudo /bin/su -c "echo JRE_HOME=$f_path_jdk$f_new_jdk/jre >> $file_profile";
+		sudo /bin/su -c "echo 'PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin' >> $file_profile";
+		sudo /bin/su -c "echo 'export JAVA_HOME' >> $file_profile";
+		sudo /bin/su -c "echo 'export JRE_HOME' >> $file_profile";
+		sudo /bin/su -c "echo 'export PATH' >> $file_profile";
 		check_error "Modifica file $file_profile";
 	fi
 }
@@ -62,11 +62,11 @@ if [ "$choise" == "y" ]; then
 	cd $path_jdk;
 	new_jdk=`ls | grep jdk`;
 	if [ ${#new_jdk} == 0 ]; then
-		printf "${R}Nessuna cartella jdk trovata in $path_jdk\n${NC}";
-		if [ ${#backup_jdk} != 0 ] && check_mount $UUID_backup; then
-			path_backup_jdk=$mount_point/$software;
-			backup_jdk=`ls $path_backup_jdk | grep jdk`;
-
+		printf "${Y}Nessuna cartella jdk trovata in $path_jdk\n${NC}";
+		check_mount $UUID_backup
+		path_backup_jdk=$mount_point/$software;
+		backup_jdk=`ls $path_backup_jdk | grep jdk`;
+		if [ ${#backup_jdk} != 0 ]; then
 			printf "Vuoi utilizzare la JDK $path_backup_jdk/$backup_jdk?\n$choise_opt";
 			read -n1 choise;
 			printf "\n";

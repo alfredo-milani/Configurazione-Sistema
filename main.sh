@@ -138,7 +138,7 @@ function check_mount {
         read -n1 choise;
         printf "\n";
         if [ "$choise" == "y" ]; then
-            mount_point=$_dev_shm_$1;
+            mount_point=$_dev_shm_/$1;
             printf "Montare il device in un punto particolare (default: $mount_point)?\n$choise_opt"
             read -n1 choise;
             printf "\n";
@@ -209,7 +209,7 @@ function check_connection {
 		printf "${Y}Connessione assente.\n$choise_opt_net${NC}\n";
 		read -n1 choise;
         printf "\n";
-		if [ $choise == "j" ]; then
+		if [ "$choise" == "j" ]; then
 			return 1;
 		fi
 	done

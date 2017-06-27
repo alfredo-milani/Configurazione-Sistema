@@ -33,7 +33,7 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	printf "Utilizzare l'UUID di default (UUID default = $UUID_data)?\n$choise_opt";
 	read -n1 choise;
 	printf "\n";
-	while ! [ $choise == "y" ]; do
+	while ! [ "$choise" == "y" ]; do
 		echo "Esecuzione del comando 'lsblk -f' per vedere l'UUID del device...";
 		lsblk -f;
 		printf "Digitare l'UUID del device che si vuole utilizzare:\t";
