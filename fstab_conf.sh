@@ -21,7 +21,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 # tool per vedere il path assoluto di una specifica direzione
 xdg="xdg-user-dir";
-echo "Vuoi modificare il file /etc/fstab per aggiungere RAMDISK? Premi y per OK";
+printf "Vuoi modificare il file /etc/fstab per aggiungere RAMDISK?\n$choise_opt";
 read -n1 choise;
 if [ "$choise" == "y" ] && check_tool $xdg; then
 	home="`$xdg HOME`";
@@ -29,14 +29,14 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	echo "Configurazione file '/etc/fstab'";
 	user=`id -u`;
 	group=`id -g`;
-	echo "Utilizzare l'UUID di default (UUID default = $UUID_data)? Premi y per OK";
+	printf "Utilizzare l'UUID di default (UUID default = $UUID_data)?\n$choise_opt";
 	read -n1 choise;
 	while ! [ $choise == "y" ]; do
 		echo "Esecuzione del comando 'lsblk -f' per vedere l'UUID del device...";
 		lsblk -f;
 		echo "Digita l'UUID del device che si vuole utilizzare:";
 		read UUID_data;
-		echo "L'UUID = '$UUID_data' è corretto? Premi y per OK";
+		printf "L'UUID = '$UUID_data' è corretto?\n$choise_opt";
 		read -n1 choise;
 	done
 
@@ -72,8 +72,8 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	cp $_etc_$file_fstab .;
 	# flag '-e' per abilitare l'interpretazione del backslash
 	echo -e $fstab >> $file_fstab;
-	sudo mv $_etc_$file_fstab $_etc_$file_fstab"_old";
-	sudo cp $file_fstab $_etc_;
+	mv $_etc_$file_fstab $_etc_$file_fstab"_old";
+	cp $file_fstab $_etc_;
 	check_error "Modifica file $_etc_$file_fstab";
 else
 	printf "${DG}${U}File /etc/fstab non moficato${NC}\n";

@@ -95,6 +95,7 @@ sdk | Directory assoluta dove si trova la SDK
     -l | -L )           Creazione link simbolici
     -n | -N )           Configurazione di rete
     -s | -S )           Configurazione dei keyboard shortcuts
+    --tmp | --TMP )     Per creare più istanze contemporaneamente
     -tr | -TR )         Disabilitazione tracker-* tools
     -u | -U )           Aggiornamento tools del sistema
 

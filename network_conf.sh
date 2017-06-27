@@ -19,20 +19,20 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
-printf "Modificare impostazioni protocollo TCP?\n";
+printf "Modificare impostazioni protocollo TCP?\n$choise_opt";
 read -n1 choise;
 if [ $choise == "y" ]; then
 	net_conf_file="/etc/sysctl.conf";
-	$cmd "echo 'net.core.wmem_max=12582912' >> $net_conf_file";
-	$cmd "echo 'net.core.rmem_max=12582912' >> $net_conf_file";
-	$cmd "echo 'net.ipv4.tcp_rmem= 10240 87380 12582912' >> $net_conf_file";
-	$cmd "echo 'net.ipv4.tcp_wmem= 10240 87380 12582912' >> $net_conf_file";
-	$cmd "echo 'net.ipv4.tcp_window_scaling = 1' >> $net_conf_file";
-	$cmd "echo 'net.ipv4.tcp_timestamps = 1' >> $net_conf_file";
-	$cmd "echo 'net.ipv4.tcp_sack = 1' >> $net_conf_file";
-	$cmd "echo 'net.ipv4.tcp_no_metrics_save = 1' >> $net_conf_file";
-	$cmd "echo 'net.core.netdev_max_backlog = 5000' >> $net_conf_file";
-	sudo sysctl -p;
+	echo 'net.core.wmem_max=12582912' >> $net_conf_file;
+	echo 'net.core.rmem_max=12582912' >> $net_conf_file;
+	echo 'net.ipv4.tcp_rmem= 10240 87380 12582912' >> $net_conf_file;
+	echo 'net.ipv4.tcp_wmem= 10240 87380 12582912' >> $net_conf_file;
+	echo 'net.ipv4.tcp_window_scaling = 1' >> $net_conf_file;
+	echo 'net.ipv4.tcp_timestamps = 1' >> $net_conf_file;
+	echo 'net.ipv4.tcp_sack = 1' >> $net_conf_file;
+	echo 'net.ipv4.tcp_no_metrics_save = 1' >> $net_conf_file;
+	echo 'net.core.netdev_max_backlog = 5000' >> $net_conf_file;
+	sysctl -p;
 	check_error "Modifica impostazioni protocollo TCP";
 else
 	printf "${DG}${U}Impostazioni protocollo TCP non modificate${NC}\n";
@@ -40,17 +40,17 @@ fi
 
 
 
-echo "Modificare il file /etc/modprob.d/iwlwifi.conf e il file /etc/default/crda con le impostazioni ottimali?";
+printf "Modificare il file /etc/modprob.d/iwlwifi.conf e il file /etc/default/crda con le impostazioni ottimali?\n$choise_opt";
 read -n1 choise;
 if [ $choise == "y" ]; then
-	$cmd "echo '# Test per rendere la connessione stabile
+	echo '# Test per rendere la connessione stabile
 options iwlwifi 11n_disable=1
 #options iwlwifi swcrypto=1
 #options iwlwifi 11n_disable=8
-#options iwlwifi wd_disable=1' >> /etc/modprobe.d/iwlwifi.conf";
-  check_error "Modifica files iwlwifi.conf";
+#options iwlwifi wd_disable=1' >> /etc/modprobe.d/iwlwifi.conf;
+  	check_error "Modifica files iwlwifi.conf";
 
-	$cmd "sed -i 's/REGDOMAIN=/REGDOMAIN=IT/' /etc/default/crda";
+	sed -i 's/REGDOMAIN=/REGDOMAIN=IT/' /etc/default/crda;
 	check_error "Modifica files crda";
 else
 	printf "${DG}${U}File iwlwifi.conf non modificato${NC}\n";
@@ -58,12 +58,12 @@ fi
 
 
 
-echo "Copiare i driver contenuti in $path_driver_backup nella directory di sistema $path_sys_driver?";
+printf "Copiare i driver contenuti in $path_driver_backup nella directory di sistema $path_sys_driver?\n$choise_opt";
 read -n1 choise;
-if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID_backup; then
+if [ "$choise" == "y" ] && check_tool "dmidecode" "tr" && check_mount $UUID_backup; then
 	# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
 	# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
-	pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
+	pc_version="`dmidecode -s system-version | tr " " "_"`";
 	path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version;
 	path_sys_driver=/lib/firmware/;
 
@@ -71,7 +71,7 @@ if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID
 		for file in $path_driver_backup/*; do
 			tmp=`basename $file`;
 			if [ "$tmp" != "INFO" ]; then
-				sudo cp -r $file $path_sys_driver;
+				cp -r $file $path_sys_driver;
 				check_error "Aggiunta driver $file";
 			fi
 		done
@@ -86,15 +86,15 @@ fi
 
 # modifica file /etc/nsswitch.conf per evitare bug di Avahi-daemon
 _etc_nsswitch=/etc/nsswitch.conf;
-echo "Modificare file $_etc_nsswitch per evitare il bug nel software Avahi-daemon?";
+printf "Modificare file $_etc_nsswitch per evitare il bug nel software Avahi-daemon?\n$choise_opt";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
-	sudo cp $_etc_nsswitch $_etc_nsswitch"_old";
+	cp $_etc_nsswitch $_etc_nsswitch"_old";
 	new_str="hosts:          files dns";
 	line_to_replace=hosts;
 	# cerca il pattern $line_to_replace, sostituisci (s/) tutta la riga (.*) con $new_str
 	# -i (in-place) --> modifica direttamente nel file originale
-	sudo sed -i "/$line_to_replace/s/.*/$new_str/" $_etc_nsswitch;
+	sed -i "/$line_to_replace/s/.*/$new_str/" $_etc_nsswitch;
 	check_error "Modifica file $_etc_nsswitch";
 else
 	printf "${DG}${U}File $_etc_nsswitch non modificato\n${NC}";

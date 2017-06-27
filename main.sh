@@ -23,6 +23,16 @@ if [ "$line_acc1" != "$cmd_acc" ]; then
     	exit 1;
     fi
 fi
+
+
+
+ROOT_UID=0     # Solo gli utenti con $UID 0 hanno i privilegi di root.
+E_NONROOT=67   # Codice di exit non-root.
+# Da eseguire come root, naturalmente.
+if [ "$UID" -ne "$ROOT_UID" ]; then
+  echo "Devi essere root per eseguire questo script.";
+  exit $E_NONROOT;
+fi
 ##### Fine controllo preliminare #####
 ######################################
 
@@ -33,7 +43,8 @@ declare -r _dev_shm_="/dev/shm";
 declare -r null="/dev/null";
 declare -r mod_start="Avvio modulo";
 declare -r mod_end="Fine modulo";
-declare -r cmd="sudo /bin/su -c";
+declare -r choise_opt="[y=procedi/others=annulla]\t";
+declare -r choise_opt_net="[j=riprova più tardi/others=riprova ora]\t";
 # colori utilizzati
 declare -r R='\033[0;31m'; # red
 declare -r Y='\033[1;33m'; # yellow
@@ -48,7 +59,7 @@ declare -r failure="Negativo";
 
 export null _dev_shm_;
 export mod_start mod_end;
-export cmd;
+export choise_opt;
 export R Y G DG U NC;
 export check_error_str success failure;
 
@@ -63,8 +74,6 @@ function fill_arrays {
 
     # redirigo il file di configurazione all'input della funzione read
     IFS='=';
-
-
     while read -r key value && [ "$key" != "\#*" ]; do
         keys+=("$key");
         values+=("$value");
@@ -96,22 +105,23 @@ function get_value {
 function check_mount {
     # oppure si poteva usare il comando awk --> var=`lsblk -o UUID,MOUNTPOINT | grep -w "$1" | awk '{if (NF == 2) print $2;}'`
     # oppure UUID_dev=(`lsblk -o UUID,MOUNTPOINT | grep -w "$1"`);
-    IFS=' ' read -ra UUID_dev <<< `lsblk -o UUID,MOUNTPOINT | grep -w $1`;
+    IFS=' ';
+    read -ra UUID_dev <<< `lsblk -o UUID,MOUNTPOINT | grep -w $1`;
     mount_point=${UUID_dev[1]};
     if [ ${#mount_point} == 0 ]; then
-        echo "Montare il device UUID=$1?";
+        printf "Montare il device UUID=$1?\n$choise_opt";
         read -n1 choise;
         if [ "$choise" == "y" ]; then
             mount_point=$_dev_shm_$1;
-            echo "Montare il device in un punto particolare (default: $mount_point)?"
+            printf "Montare il device in un punto particolare (default: $mount_point)?\n$choise_opt"
             read -n1 choise;
             if [ "$choise" == "y" ]; then
-                echo "Digita il punto di mount";
+                printf "Digita il punto di mount:\n";
                 read mount_point;
             fi
-            sudo mkdir -p $mount_point;
+            mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
-            sudo mount UUID=$1 $mount_point && return 0;
+            mount UUID=$1 $mount_point && return 0;
         fi
 
         printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
@@ -130,7 +140,7 @@ function check_tool {
         if [ "$tmp" == "sudo" ]; then
             echo "Checking tool $tmp nel sistema";
             sudo_tool=`cut -d$delimiter -f2 <<< $tool`
-            sudo which $sudo_tool &> $null;
+            which $sudo_tool &> $null;
         else
             which $tool &> $null;
         fi
@@ -168,7 +178,7 @@ function check_connection {
 	# mentre get_header ritorna una valore maggiore di 0 ()--> mentre wget riscontra errori) chiedi all'utente come procedere
     echo "Controllo accesso ad Internet. Attendere...";
 	while ! get_header; do
-		printf "${Y}Connessione assente. Premi 'j' per saltare questa parte oppure premi qualsiasi tasto per ritestare la connessione.${NC}\n";
+		printf "${Y}Connessione assente.\n$choise_opt_net${NC}\n";
 		read -n1 choise;
 		if [ $choise == "j" ]; then
 			return 1;
@@ -229,6 +239,8 @@ scripts_array=();
 conf_file=$absolute_script_path"sys.conf";
 # apt-manager di default
 apt_manager=apt-get;
+# verifica rimozione files di autenticazione
+tmp_code=1;
 
 export mod_="preliminare";
 export sdk;
@@ -354,6 +366,12 @@ while [ $# -gt 0 ]; do
             shift;
             ;;
 
+        --tmp | --TMP )
+            # tmp_code viene impostata ad 1 --> è possibile creare più istanze contemporaneamente dello script
+            tmp_code=0;
+            shift;
+            ;;
+
         -tr | -TR )
             # disabilitazione tracker-*
             scripts_array+=($absolute_script_path"tracker_disable_conf.sh");
@@ -393,12 +411,14 @@ get_value extensions_id; extensions_id=${values[$?]};
 get_value sdk; sdk=${values[$?]};
 
 
+# verifica se cancellare o meno codici di identificazione precedenti
+[ $tmp_code != 0 ] && rm -f $_dev_shm_/tmp.* 2> $null;
 
 # creazione file tmp perevitare l'esecuzione dei singoli moduli
 private_rand=$RANDOM;
 # file temporaneo
 tmp_file=`mktemp -p $_dev_shm_`;
-# applica una l'algoritmo di hashing su un numero random e scrivilo su un file temporaneo
+# applica un algoritmo di hashing su un numero random e scrivilo su un file temporaneo
 echo "$private_rand" | md5sum >> $tmp_file;
 
 # avvio moduli selezionati dall'utente
@@ -411,6 +431,8 @@ printf "${Y}\n\nRiavvia il PC per rendere effettive le modifiche${NC}\n";
 
 
 
+# verifica se cancellare o meno codici di identificazione precedenti
+[ $tmp_code != 0 ] && rm -f $_dev_shm_/tmp.* 2> $null;
 # eliminazione codice per evitarne il riutilizzo
 rm -f $tmp_file;
 # successo

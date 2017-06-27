@@ -20,7 +20,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 xdg="xdg-user-dir";
-echo "Vuoi creare un link simbolico di un file system temporaneo nella sezione Download?";
+printf "Vuoi creare un link simbolico di un file system temporaneo nella sezione Download?\n$choise_opt";
 read -n1 choise;
 if [ $choise == "y" ] && check_tool $xdg; then
 	scaricati="`$xdg DOWNLOAD`";
@@ -37,7 +37,7 @@ fi
 
 
 
-echo "Vuoi creare il link simbolico nella Scrivania?";
+printf "Vuoi creare il link simbolico nella Scrivania?\n$choise_opt";
 read -n1 choise;
 if [ $choise == "y" ] && check_tool $xdg; then
 	scrivania="`$xdg DESKTOP`";

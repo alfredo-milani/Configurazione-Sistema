@@ -48,12 +48,12 @@ which apt &> $null && apt_manager=apt;
 which apt-fast &> $null && apt_manager=apt-fast;
 
 echo "Upgrade e update dei pacchetti del sistema.";
-check_connection && sudo $apt_manager update -y && sudo $apt_manager upgrade -y;
+check_connection && $apt_manager update -y && $apt_manager upgrade -y;
 
 
 
 # Installazione e configurazione del tool apt-fast
-echo "Installare apt-fast? Premi 'y' per OK";
+printf "Installare apt-fast?\n$choise_opt";
 read -n1 choise;
 # la scrittura 'if check_connection; then' si può usare solo nel caso si debbano testare valori di ritorno di funzioni
 if [ $choise == "y" ] && check_connection; then
@@ -61,16 +61,16 @@ if [ $choise == "y" ] && check_connection; then
 	cd $_dev_shm_;
 	mkdir apt-fast;
 	cd apt-fast;
-	sudo $apt_manager install -y aria2;
+	$apt_manager install -y aria2;
 	wget $apt_fast;
 	unzip master.zip &> $null;
 	cd apt-fast-master;
-	sudo cp apt-fast /usr/bin;
+	cp apt-fast /usr/bin;
 	check_error "Installazione apt-fast";
-	sudo cp ./man/apt-fast.8 /usr/share/man/man8;
-	sudo gzip /usr/share/man/man8/apt-fast.8;
-	sudo cp ./man/apt-fast.conf.5 /usr/share/man/man5;
-	sudo gzip /usr/share/man/man5/apt-fast.conf.5;
+	cp ./man/apt-fast.8 /usr/share/man/man8;
+	gzip /usr/share/man/man8/apt-fast.8;
+	cp ./man/apt-fast.conf.5 /usr/share/man/man5;
+	gzip /usr/share/man/man5/apt-fast.conf.5;
 
 	echo "Configurazione apt-fast.conf";
 	mirror_apt_fast="MIRRORS=( 'http://ftp.it.debian.org/debian/,http://mi.mirror.garr.it/mirrors/debian/,http://mirror.units.it/debian/,http://debian.e4a.it/debian/' )";
@@ -87,7 +87,7 @@ if [ $choise == "y" ] && check_connection; then
 	echo "################################################################" >> $apt_fast_conf_file;
 	echo "###	Fine configurazione    ###" >> $apt_fast_conf_file;
 	echo "################################################################" >> $apt_fast_conf_file;
-	sudo cp apt-fast.conf /etc;
+	cp apt-fast.conf /etc;
 	check_error "Cofgurazione apt-fast.conf";
 else
 	printf "${DG}${U}apt-fast non installato${NC}\n";
@@ -96,24 +96,24 @@ fi
 
 
 ##### Installazione tools principali
-echo "Vuoi installare gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted? Premi y per OK";
+printf "Vuoi installare gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted?\n$choise_opt";
 read -n1 choise;
 if [ "$choise" = "y" ] && check_connection; then
 	echo "Installazione dei princiali tools: gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
-	sudo $apt_manager install gksu vim vlc preload curl redshift alacarte g++ gparted -y;
+	$apt_manager install gksu vim vlc preload curl redshift alacarte g++ gparted -y;
 	check_error "Installazione dei tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 
-	printf "Vuoi installare e configurare anche prelink? Premi y per OK\n";
+	printf "Vuoi installare e configurare anche prelink?\n$choise_opt";
 	read -n1 choise;
 	if [ "$choise" = "y" ]; then
-		sudo $apt_manager install prelink -y;
+		$apt_manager install prelink -y;
 		path_prelink="/etc/default/prelink";
 		files_da_modificare="prelink";
 		old_str="PRELINKING=unknown";
 		new_str="PRELINKING=yes";
 		cd $path_prelink;
-		sudo sed -i "s/$old_str/$new_str/g" $files_da_modificare;
-		sudo /etc/cron.daily/prelink;
+		sed -i "s/$old_str/$new_str/g" $files_da_modificare;
+		/etc/cron.daily/prelink;
 		check_error "Installazione ed avvio del tool prelink";
 	else
 		printf "${DG}${U}Il tool prelink non è stato installato${NC}\n";
@@ -122,15 +122,15 @@ else
 	printf "${DG}${U}Tools non installati${NC}\n";
 fi
 
-echo "Vuoi installare atom e google-chrome? Premi y per OK";
+printf "Vuoi installare atom e google-chrome?\n$choise_opt";
 read -n1 choise;
 if [ "$choise" = "y" ] && check_connection; then
-	sudo $apt_manager install git;
+	$apt_manager install git;
 	mkdir $_dev_shm_"atom";
 	cd $_dev_shm_"atom";
 	atom_link="https://atom.io/download/deb";
 	wget $atom_link;
-	sudo dpkg -i *deb;
+	dpkg -i *deb;
 	check_error "Installazione editor atom";
 
 	echo "Installazione google-chrome attraverso wget (molto simile a curl, ma wget è esclusivamente un command line tool)";
@@ -138,8 +138,8 @@ if [ "$choise" = "y" ] && check_connection; then
 	cd $_dev_shm_"google";
 	chrome_link="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb";
 	wget $chrome_link;
-	sudo dpkg -i *deb;
-	sudo $apt_manager -f install -y;
+	dpkg -i *deb;
+	$apt_manager -f install -y;
 	check_error "Installazione broswer google-chrome";
 
 	# se l'installazione di google-chrome è andata a buon fine
@@ -156,7 +156,7 @@ fi
 
 
 # Installazioe estensioni
-echo "Vuoi installare le estensioni con id: $extensions_id?";
+printf "Vuoi installare le estensioni con id: $extensions_id?\n$choise_opt";
 read -n1 choise;
 if [ "$choise" == "y" ] && check_connection; then
 	# abilitazione percentuale batteria
@@ -172,15 +172,15 @@ if [ "$choise" == "y" ] && check_connection; then
 
 		# disabilitazione intel_pstate a fronte dell'installazione di un'estensione per regolare la frequenza della CPU
 		if [ $el == 1082 ] || [ $el == 47 ] || [ $el == 444 ] && [ -f /etc/default/grub ]; then
-			echo "Disabilitare i driver intel_pstate?";
 			echo "Disabilitando il driver, con l'estensione cpufreq il TurboBoost potrebbe non funzionare";
+			printf "Disabilitare i driver intel_pstate?\n$choise_opt";
 			read -n1 choise;
 			if [ "$choise" == "y" ]; then
 				old_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet';
 				new_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet intel_pstate=disable';
-				sudo sed -i "s/$old_str/$new_str/" /etc/default/grub;
+				sed -i "s/$old_str/$new_str/" /etc/default/grub;
 				check_error "Modifica file /etc/default/grub";
-				sudo update-grub;
+				update-grub;
 			else
 				printf "${DG}${U}Driver intel_pstate non disabilitato\n${NC}";
 			fi

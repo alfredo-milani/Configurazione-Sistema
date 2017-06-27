@@ -19,14 +19,14 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 
-echo "Aggiungere gli alias in .bashrc?";
+printf "Aggiungere gli alias in .bashrc?\n$choise_opt";
 read -n1 choise;
 if [ "$choise" == "y" ]; then
-	sudo echo "# custom alias
-alias udug='sudo apt-fast update && sudo apt-fast upgrade'
-alias uu='sudo apt update && sudo apt upgrade'
-alias inst='sudo apt-fast install'
-alias shutdown='sudo shutdown -h now'
+	echo "# custom alias
+alias udug='apt-fast update && apt-fast upgrade'
+alias uu='apt update && apt upgrade'
+alias inst='apt-fast install'
+alias shutdown='shutdown -h now'
 
 # to use GPU NVIDIA
 alias gpu='primusrun'
@@ -37,7 +37,7 @@ alias emu2='primusrun /opt/Sdk/tools/emulator -avd device2 -netdelay none -netsp
 alias emu3='primusrun /opt/Sdk/tools/emulator -avd device3 -netdelay none -netspeed full -qemu -m 1536 -enable-kvm'
 
 # alias per impostare i diritti in lettura/scrittura su /dev/ttyACM0 per Arduino
-alias setele='sudo chmod a+rw /dev/ttyACM0'" >> ~/.bashrc;
+alias setele='chmod a+rw /dev/ttyACM0'" >> ~/.bashrc;
 
 	check_error "Inserimento alias in .bashrc"
 else

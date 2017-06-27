@@ -53,15 +53,15 @@ move_nw="move-to-corner-nw;['<Alt>Up']";
 move_se="move-to-corner-se;['<Alt>Right']";
 move_sw="move-to-corner-sw;['<Alt>Left']";
 other_shortcut_array=("$maximize" "$minimize" "$move_ne" "$move_nw" "$move_se" "$move_sw");
-echo "Vuoi impostare i keyboard shortcuts?";
+printf "Vuoi impostare i keyboard shortcuts?\n$choise_opt";
 read -n1 choise;
 if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	# modo alternativo per esprimere uno if statement...
 	# il comando "[]" server per valutare espressioni
-	! [ -d $script_path ] && sudo mkdir $script_path;
+	! [ -d $script_path ] && mkdir $script_path;
 	# redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
 	# copia di tutti gli scripts
-	sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
+	cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
 
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
 	# is very similar to the backticks ``.
