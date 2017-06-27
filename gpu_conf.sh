@@ -117,7 +117,7 @@ if [ "$choise" == "y" ]; then
 	arr_sdk_path=(`ls $sdk_path | grep $libstd`);
 
 	echo "Checking delle librerie in $lib_usr_path e $sdk_path";
-	! [ -d $lib_usr_path ] || ! [ -d $sdk_path ] && printf "${R}Path $lib_usr_path o $sdk_path non esisteni\n${NC}" && return 1;
+	! [ -d "$lib_usr_path" ] || ! [ -d "$sdk_path" ] && printf "${R}Path $lib_usr_path o $sdk_path non esisteni\n${NC}" && return 1;
 	# numero di versione corrente più alto in lib_usr_path
 	current_latest="0";
 

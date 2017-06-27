@@ -21,7 +21,7 @@ command -v wget >/dev/null 2>&1 || { zenity --error --text="Please install wget"
 
 # install path (user and system mode)
 USER_PATH="$HOME/.local/share/gnome-shell/extensions"
-[ -f /etc/debian_version ] && SYSTEM_PATH="/usr/share/gnome-shell/extensions" || SYSTEM_PATH="/usr/local/share/gnome-shell/extensions"
+[ -f "/etc/debian_version" ] && SYSTEM_PATH="/usr/share/gnome-shell/extensions" || SYSTEM_PATH="/usr/local/share/gnome-shell/extensions"
 
 # set gnome shell extension site URL
 GNOME_SITE="https://extensions.gnome.org"

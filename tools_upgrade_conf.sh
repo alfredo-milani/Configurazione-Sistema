@@ -178,7 +178,7 @@ if [ "$choise" == "y" ] && check_connection; then
 		check_error "Installazione estensione con id: $el";
 
 		# disabilitazione intel_pstate a fronte dell'installazione di un'estensione per regolare la frequenza della CPU
-		if [ $el == 1082 ] || [ $el == 47 ] || [ $el == 444 ] && [ -f /etc/default/grub ]; then
+		if [ $el == 1082 ] || [ $el == 47 ] || [ $el == 444 ] && [ -f "/etc/default/grub" ]; then
 			echo "Disabilitando il driver, con l'estensione cpufreq il TurboBoost potrebbe non funzionare";
 			printf "Disabilitare i driver intel_pstate?\n$choise_opt";
 			read -n1 choise;

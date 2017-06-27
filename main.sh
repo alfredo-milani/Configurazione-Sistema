@@ -58,7 +58,7 @@ export check_error_str success failure;
 
 # leggi i valori dal file di configurazione e inizializza gli arrays keys e values
 function fill_arrays {
-    if ! [ -f $conf_file ]; then
+    if ! [ -f "$conf_file" ]; then
         printf "${R}Devi specificare un file di configurazione valido.\nIl file $conf_file non è stato trovato.\n${NC}";
         exit 1;
     fi
@@ -93,7 +93,7 @@ COMM
             sdk )               sdk=$value ;;
             tmp )
                                 tmp_dev_shm_=$value;
-                                if [ ${#tmp_dev_shm_} == 0 ] || ! [ -d $tmp_dev_shm_ ]; then
+                                if [ ${#tmp_dev_shm_} == 0 ] || ! [ -d "$tmp_dev_shm_" ]; then
                                     printf "${R}Errore, il path $tmp_dev_shm_ non esiste o non è una directory valida.\nUtilizzo di quella di default ($_dev_shm_).\n${NC}";
                                 else
                                     _dev_shm_=$tmp_dev_shm_;
@@ -347,7 +347,7 @@ while [ $# -gt 0 ]; do
         -[cC] )
             shift;
             # path file di configurazione
-            if [ ${#1} != 0 ] && [ -f $1 ]; then
+            if [ ${#1} != 0 ] && [ -f "$1" ]; then
                 conf_file=$1;
             else
                 printf "${Y}File specificato ($arg) non trovato. Verrà usato il file di default ($conf_file).\n${NC}";

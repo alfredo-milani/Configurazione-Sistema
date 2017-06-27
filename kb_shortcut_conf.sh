@@ -59,7 +59,7 @@ printf "\n";
 if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	# modo alternativo per esprimere uno if statement...
 	# il comando "[]" server per valutare espressioni
-	! [ -d $script_path ] && sudo mkdir $script_path;
+	! [ -d "$script_path" ] && sudo mkdir $script_path;
 	# redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
 	# copia di tutti gli scripts
 	sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
