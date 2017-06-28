@@ -20,7 +20,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 xdg="xdg-user-dir";
-printf "Vuoi creare un link simbolico di un file system temporaneo nella sezione Download?\n$choise_opt";
+printf "Vuoi creare un link simbolico di un file system temporaneo nella sezione Downloads?\n$choise_opt";
 read -n1 choise;
 printf "\n";
 if [ "$choise" == "y" ] && check_tool $xdg; then

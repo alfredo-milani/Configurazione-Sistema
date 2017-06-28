@@ -60,7 +60,9 @@ fi
 
 
 
-printf "Copiare i driver contenuti in $path_driver_backup nella directory di sistema $path_sys_driver?\n$choise_opt";
+
+path_sys_driver=/lib/firmware/;
+printf "Copiare i drivers dalla partizione di backup a di sistema $path_sys_driver?\n$choise_opt";
 read -n1 choise;
 printf "\n";
 if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID_backup; then
@@ -68,7 +70,6 @@ if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID
 	# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
 	pc_version="`sudo dmidecode -s system-version | tr " " "_"`";
 	path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version;
-	path_sys_driver=/lib/firmware/;
 
 	if [ -d "$path_driver_backup" ]; then
 		for file in $path_driver_backup/*; do
@@ -82,7 +83,7 @@ if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID
 		printf "${R}Directory $path_driver_backup non esistene\n${NC}";
 	fi
 else
-	printf "${DG}${U}Driver non copiati in $path_sys_driver\n${NC}";
+	printf "${DG}${U}Drivers non copiati in $path_sys_driver\n${NC}";
 fi
 
 

@@ -50,7 +50,7 @@ _dev_shm_="/dev/shm";
 
 export null _dev_shm_ cmd;
 export mod_start mod_end;
-export choise_opt;
+export choise_opt choise_opt_net;
 export R Y G DG U NC;
 export check_error_str success failure;
 
@@ -63,7 +63,7 @@ function fill_arrays {
         exit 1;
     fi
 
-: <<'COMM'
+: <<'COMMENTO'
     sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' $conf_file |
     while IFS='=' read -r key value; do
         echo "K: $key      V: $value";
@@ -71,7 +71,7 @@ function fill_arrays {
         keys+=("$key");
         values+=("$value");
     done
-COMM
+COMMENTO
 
     # workaround
     # eliminazione commenti all'inizio riga ed inline prima di parsare i dati

@@ -117,23 +117,26 @@ if [ "$choise" == "y" ]; then
 	arr_sdk_path=(`ls $sdk_path | grep $libstd`);
 
 	echo "Checking delle librerie in $lib_usr_path e $sdk_path";
-	! [ -d "$lib_usr_path" ] || ! [ -d "$sdk_path" ] && printf "${R}Path $lib_usr_path o $sdk_path non esisteni\n${NC}" && return 1;
-	# numero di versione corrente più alto in lib_usr_path
-	current_latest="0";
+	if [ -d "$lib_usr_path" ] && [ -d "$sdk_path" ]; then
+		# numero di versione corrente più alto in lib_usr_path
+		current_latest="0";
 
-	# scrittura del numero di versione in current_latest
-	for lib in ${arr_lib_usr_path[@]}; do
-		lib_lenght=${#lib};
-		tmp_vers=`echo $lib | cut -c $(($libstd_lenght + 1))-$lib_lenght`;
-		get_latest_vers $current_latest $tmp_vers;
-	done
+		# scrittura del numero di versione in current_latest
+		for lib in ${arr_lib_usr_path[@]}; do
+			lib_lenght=${#lib};
+			tmp_vers=`echo $lib | cut -c $(($libstd_lenght + 1))-$lib_lenght`;
+			get_latest_vers $current_latest $tmp_vers;
+		done
 
-	for lib in ${arr_sdk_path[@]}; do
-		sudo mv $lib $lib"_orig";
-	done
-	# link simbolico della versione più recente delle lib
-	sudo ln -s $lib_usr_path/$libstd$current_latest $sdk_path;
-	check_error "Correzione errore libstdc++.so.6: version 'GLIBCXX_3.4.21'";
+		for lib in ${arr_sdk_path[@]}; do
+			sudo mv $lib $lib"_orig";
+		done
+		# link simbolico della versione più recente delle lib
+		sudo ln -s $lib_usr_path/$libstd$current_latest $sdk_path;
+		check_error "Correzione errore libstdc++.so.6: version 'GLIBCXX_3.4.21'";
+	else
+		printf "${R}Path $lib_usr_path o $sdk_path non esisteni\n${NC}";
+	fi	
 else
 	printf "${DG}${U}Errore non corretto\n${NC}";
 fi

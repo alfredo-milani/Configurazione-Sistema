@@ -20,10 +20,9 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 gs="gsettings";
-str_esito="Impostazione della chiave [%s] con valore [%s]\n";
+str_esito="Configurazione entry: key - [%s] | value - [%s]\n";
+str_esito2="Configurazione entry: key - [%s] | action - [%s] | value - [%s]\n";
 media_keys="org.gnome.settings-daemon.plugins.media-keys";
-# The characters in the value of the IFS variable are used to split the input line into words or tokens
-IFS=';'
 # sintassi:
 #	nome_var="Nome_Comando;'Combinazione_tasti'"
 browser_sc="www;'<Ctrl>G'";
@@ -37,11 +36,11 @@ custom_kb="custom-keybinding";
 terminal="Terminal;gnome-terminal;'<Ctrl><Alt>T'";
 redshift="RedShift;$script_path/redshift_regolator.sh;'<Ctrl><Shift>F'";
 home_sc="Home;nautilus;'<Ctrl>N'";
-home_sc2="Home2;nautilus;'<Ctrl>M'";
-chrome_sc="Google-Chrome;google-chrome --disk-cache-dir='/dev/shm';'<Ctrl>G'";
+home_sc2="Home 2;nautilus;'<Ctrl>M'";
+chrome_sc="Google Chrome;google-chrome --disk-cache-dir='/dev/shm';'<Ctrl>G'";
 ping_sc="Ping;gnome-terminal -e 'ping google.com';'<Ctrl><Shift>minus'";
 network_manager_sc="Network Manager Restart;gksudo service network-manager restart;'<Ctrl><Shift>R'";
-disable_cores="DisableCores;gksudo /opt/scripts/disable_half_cores.sh;'<Ctrl><Shift>D'";
+disable_cores="Disable Cores;gksudo /opt/scripts/disable_half_cores.sh;'<Ctrl><Shift>D'";
 # aggiungere le var che si vogliono attivare in quest'array
 custom_kb_array=("$terminal" "$redshift" "$home_sc2" "$chrome_sc" "$ping_sc" "$disable_cores" "$network_manager_sc");
 
@@ -62,7 +61,8 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	! [ -d "$script_path" ] && sudo mkdir $script_path;
 	# redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
 	# copia di tutti gli scripts
-	sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
+	debug=1
+	! [ $debug == 1 ] && sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
 
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
 	# is very similar to the backticks ``.
@@ -70,21 +70,15 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	# subshell. The command in the braces of $() or beween the backticks (``)
 	# is executed in a subshell and the output is then placed in the original command.
 
-: <<'COMMENTO'
-	# NOTA: sintassi commento:
-	#	: <<'COMMENT'
-	#	qui c'è il commento
-	#	COMMENT
-	#	Il plugin dell'editor atom non riconosce questo come commento
-COMMENTO
-
 	# elementi in org.gnome.settings-daemon.plugins.media-keys
 	for el in "${shortcuts_array[@]}"; do
+		# The characters in the value of the IFS variable are used to split the input line into words or tokens
 		# <<< --> It redirects the string to stdin of the command.
-		read -ra tmp_array <<< $el;
+		IFS=';' read -ra tmp_array <<< $el;
+		echo "T1: ${tmp_array[0]}   T2: ${tmp_array[1]}"
 		# flag -v: simile alla sprintf, stampa su una stringa
-		printf -v str "$str_esito" ${tmp_array[0]} ${tmp_array[1]};
-		$gs set $media_keys ${tmp_array[0]} ${tmp_array[1]};
+		printf -v str "$str_esito" "${tmp_array[0]}" "${tmp_array[1]}";
+		! [ $debug == 1 ] && $gs set "$media_keys" "${tmp_array[0]}" "${tmp_array[1]}";
 		check_error "$str";
 	done
 
@@ -95,41 +89,53 @@ COMMENTO
 	last=${custom_kb_array[$index]};
 	# NOTA: le virgolette sono NECESSARIE
 	for el in "${custom_kb_array[@]}"; do
-		read -ra tmp_array <<< $el;
-		printf -v tmp "'%s'" $path_custom_sc${tmp_array[0]}"/";
+		IFS=';' read -ra tmp_array <<< $el;
+
+		# eliminazione spazi
+		tmp=`echo "${tmp_array[0]}" | tr " " "-"`;
+		printf -v tmp "'%s'" "$path_custom_sc$tmp/";
 		# se è l'ultimo elemento non inserire ", "
-		if [[ $el == $last ]]; then
-			custom_list+=$tmp;
+		if [ "$el" == "$last" ]; then
+			custom_list+="$tmp";
 		else
-			custom_list+=$tmp", ";
+			custom_list+="$tmp, ";
 		fi
 	done
 	# inizializzazione valore della chiave custom-keybindings
 	printf -v custom_list "[%s]" "$custom_list";
-	$gs set $media_keys $custom_kb"s" "$custom_list";
+	echo "LIST: $custom_list"
+	! [ $debug == 1 ] && $gs set "$media_keys" $custom_kb"s" "$custom_list";
 	check_error "Impostazione chiave per abilitare una custom-list";
 
 	# inizializzazione valore sottochiavi custom
 	for el in "${custom_kb_array[@]}"; do
-		read -ra tmp_array <<< $el;
+		IFS=';' read -ra tmp_array <<< $el;
+
+		# eliminazione spazi
+		tmp=`echo "${tmp_array[0]}" | tr " " "-"`;
+		tmp_array[0]="$tmp";
+
 		# set name
-		printf -v str "$str_esito" ${tmp_array[0]} ${tmp_array[0]};
-		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" name "${tmp_array[0]}";
+		printf -v str "$str_esito2" "${tmp_array[0]}" "set name" "${tmp_array[0]}";
+		! [ $debug == 1 ] && $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" name "${tmp_array[0]}";
 		check_error "$str";
+
 		# set command
-		printf -v str "$str_esito" ${tmp_array[0]} ${tmp_array[1]};
-		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" command "${tmp_array[1]}";
+		printf -v str "$str_esito2" "${tmp_array[0]}" "set command" "${tmp_array[1]}";
+		! [ $debug == 1 ] && $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" command "${tmp_array[1]}";
 		check_error "$str";
+
 		# set key binding
-		printf -v str "$str_esito" ${tmp_array[0]} ${tmp_array[2]};
-		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" binding "${tmp_array[2]}";
+		printf -v str "$str_esito2" "${tmp_array[0]}" "set binding" "${tmp_array[2]}";
+		! [ $debug == 1 ] && $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" binding "${tmp_array[2]}";
 		check_error "$str";
 	done
 
 	for el in "${other_shortcut_array[@]}"; do
-		read -ra tmp_array <<< $el;
-		printf -v str "$str_esito" ${tmp_array[0]} ${tmp_array[1]};
-		$gs set $keybindings ${tmp_array[0]} ${tmp_array[1]};
+		IFS=';' read -ra tmp_array <<< $el;
+
+		printf -v str "$str_esito" "${tmp_array[0]}" "${tmp_array[1]}";
+		! [ $debug == 1 ] && $gs set "$keybindings" "${tmp_array[0]}" "${tmp_array[1]}";
 		check_error "$str";
 	done
 else
