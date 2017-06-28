@@ -61,7 +61,6 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	! [ -d "$script_path" ] && sudo mkdir $script_path;
 	# redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
 	# copia di tutti gli scripts
-	debug=1
 	! [ $debug == 1 ] && sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
 
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
@@ -75,10 +74,9 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 		# The characters in the value of the IFS variable are used to split the input line into words or tokens
 		# <<< --> It redirects the string to stdin of the command.
 		IFS=';' read -ra tmp_array <<< $el;
-		echo "T1: ${tmp_array[0]}   T2: ${tmp_array[1]}"
 		# flag -v: simile alla sprintf, stampa su una stringa
 		printf -v str "$str_esito" "${tmp_array[0]}" "${tmp_array[1]}";
-		! [ $debug == 1 ] && $gs set "$media_keys" "${tmp_array[0]}" "${tmp_array[1]}";
+		$gs set "$media_keys" "${tmp_array[0]}" "${tmp_array[1]}";
 		check_error "$str";
 	done
 
@@ -103,8 +101,7 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	done
 	# inizializzazione valore della chiave custom-keybindings
 	printf -v custom_list "[%s]" "$custom_list";
-	echo "LIST: $custom_list"
-	! [ $debug == 1 ] && $gs set "$media_keys" $custom_kb"s" "$custom_list";
+	$gs set "$media_keys" $custom_kb"s" "$custom_list";
 	check_error "Impostazione chiave per abilitare una custom-list";
 
 	# inizializzazione valore sottochiavi custom
@@ -117,17 +114,17 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 
 		# set name
 		printf -v str "$str_esito2" "${tmp_array[0]}" "set name" "${tmp_array[0]}";
-		! [ $debug == 1 ] && $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" name "${tmp_array[0]}";
+		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" name "${tmp_array[0]}";
 		check_error "$str";
 
 		# set command
 		printf -v str "$str_esito2" "${tmp_array[0]}" "set command" "${tmp_array[1]}";
-		! [ $debug == 1 ] && $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" command "${tmp_array[1]}";
+		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" command "${tmp_array[1]}";
 		check_error "$str";
 
 		# set key binding
 		printf -v str "$str_esito2" "${tmp_array[0]}" "set binding" "${tmp_array[2]}";
-		! [ $debug == 1 ] && $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" binding "${tmp_array[2]}";
+		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" binding "${tmp_array[2]}";
 		check_error "$str";
 	done
 
@@ -135,7 +132,7 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 		IFS=';' read -ra tmp_array <<< $el;
 
 		printf -v str "$str_esito" "${tmp_array[0]}" "${tmp_array[1]}";
-		! [ $debug == 1 ] && $gs set "$keybindings" "${tmp_array[0]}" "${tmp_array[1]}";
+		$gs set "$keybindings" "${tmp_array[0]}" "${tmp_array[1]}";
 		check_error "$str";
 	done
 else

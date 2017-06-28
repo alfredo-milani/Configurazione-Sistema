@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# Configurazione sistema
+# Configurazione sistema Debian based.
+# Testato su Linux debian 4.9.0-3-amd64 #1 SMP x86_64 GNU/Linux.
+#
+# Autore: Alfredo Milani
+# Data: 10 - 06 - 2017
+#
+# (script in utils/gnomeshell_extension_manage.sh di N. Bernaerts)
 
 ##### TODO --> SCRIVI NOTE NEL FILE BASH
 
