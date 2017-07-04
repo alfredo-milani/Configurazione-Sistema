@@ -51,13 +51,4 @@ fi
 
 
 
-printf "Installare librerie mancanti del motore GTK?\n$choise_opt";
-read -n1 choise;
-printf "\n";
-if [ "$choise" == "y" ] && check_connection; then
-	$apt_manager install murrine-themes libcanberra-gtk-module;
-fi
-
-
-
 printf "$str_end";
