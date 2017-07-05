@@ -74,9 +74,6 @@ sdk | Directory assoluta dove si trova la SDK
 tmp | Direzione files temporanei (default /dev/shm)
 
 
-> **NOTA:** Non utilizzare il carattere '=' nei commenti (stringhe precedute dal carattere '#')
-
-
 
 
 ## Utilizzo
