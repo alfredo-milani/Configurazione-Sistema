@@ -26,9 +26,9 @@ function get_OS {
 	IFS='=';
 	while read -r key val; do
 		case $val in
-			[dD]ebian ) return 1 ;;
+			[dD]ebian | DEBIAN ) return 1 ;;
 
-			[uU]buntu ) return 2 ;;
+			[uU]buntu | UBUNTU ) return 2 ;;
 		esac
 	done < "/etc/"*"-release";
 
