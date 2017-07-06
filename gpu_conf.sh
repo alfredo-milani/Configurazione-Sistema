@@ -26,7 +26,7 @@ function get_OS {
 	IFS='=';
 	while read -r key val; do
 		case $val in
-			[dD]ebian ) return $EXIT_SUCCESS ;;
+			[dD]ebian ) return 1 ;;
 
 			[uU]buntu ) return 2 ;;
 		esac
