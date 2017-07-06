@@ -20,8 +20,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 printf "Aggiungere gli alias in .bashrc?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ]; then
 	echo "# custom alias
 alias udug='sudo apt-fast update && sudo apt-fast upgrade'

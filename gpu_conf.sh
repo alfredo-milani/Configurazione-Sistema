@@ -37,8 +37,7 @@ function get_OS {
 }
 # Configurazione KVM
 printf "Installare i componenti necessari per KVM?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ]; then
 	kvm_pre_inst=`egrep -c '(vmx|svm)' /proc/cpuinfo`;
 	get_OS;
@@ -71,7 +70,7 @@ if [ "$choise" == "y" ]; then
 			;;
 	esac
 else
-	printf "${DG}${U}KVM non configurato\n${NC}";
+	printf "${DG}${U}KVM non configurato\n\n${NC}";
 fi
 
 
@@ -106,8 +105,7 @@ function get_latest_vers {
 }
 # check lib in /usr/lib/ e ~/sdk/emulator/
 printf "Correggere l'errore 'libstdc++.so.6: version GLIBCXX_3.4.21 not found'?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ]; then
 	libstd=libstdc++.so.;
 	libstd_lenght=${#libstd};
@@ -138,14 +136,13 @@ if [ "$choise" == "y" ]; then
 		printf "${R}Path $lib_usr_path o $sdk_path non esisteni\n${NC}";
 	fi
 else
-	printf "${DG}${U}Errore non corretto\n${NC}";
+	printf "${DG}${U}Errore non corretto\n\n${NC}";
 fi
 
 
 
 printf "Installare e configurare bumblebee?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ]; then
 	# controllo presenza GPU nel sistema
 	check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'nvidia'`;
@@ -202,7 +199,7 @@ if [ "$choise" == "y" ]; then
 	printf "${Y}Apertura sito $sito_visualgl\n${NC}";
 	firefox $sito_visualgl &> $null;
 	echo "Premere un pulsante una volta scaricato il file nella directory $_dev_shm_";
-	read -n1;
+	read;
 	printf "\n";
 	cd $_dev_shm_;
 	sudo dpkg -i virtual*.deb;
@@ -213,8 +210,7 @@ if [ "$choise" == "y" ]; then
 
 	bumblebee_conf=/etc/bumblebee/bumblebee.conf;
 	printf "Ottimizzare il file di configurazione $bumblebee_conf?\n$choise_opt";
-	read -n1 choise;
-	printf "\n";
+	read choise;
 	if [ "$choise" == "y" ]; then
 		# sed: ^ --> inizio riga
 		#      $ --> fine riga
@@ -236,7 +232,7 @@ if [ "$choise" == "y" ]; then
 		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
 		check_error "Modificare chiave $line_to_replace"
 	else
-		printf "${DG}${U}File $bumblebee_conf non ottimizzato\n${NC}";
+		printf "${DG}${U}File $bumblebee_conf non ottimizzato\n\n${NC}";
 	fi
 
 	sudo service bumblebeed restart;
@@ -247,8 +243,7 @@ if [ "$choise" == "y" ]; then
 	printf "Per utilizzare nvidia-settings usare il comando: 'optirun nvidia-settings -c :8'\n";
 	printf "${Y}Bisogna riavviare il pc per completare l'installazione.\n${NC}";
 	printf "${Y}Riavviare ora?\n$choise_opt${NC}";
-	read -n1 choise;
-	printf "\n";
+	read choise;
 	[ "$choise" == "y" ] && sudo reboot;
 else
 	printf "${DG}${U}Modulo bulmbelee non installato\n${NC}";

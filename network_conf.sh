@@ -20,8 +20,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 printf "Modificare impostazioni protocollo TCP?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ]; then
 	net_conf_file="/etc/sysctl.conf";
 	$cmd "echo 'net.core.wmem_max=12582912' >> $net_conf_file";
@@ -36,14 +35,13 @@ if [ "$choise" == "y" ]; then
 	sudo sysctl -p;
 	check_error "Modifica impostazioni protocollo TCP";
 else
-	printf "${DG}${U}Impostazioni protocollo TCP non modificate${NC}\n";
+	printf "${DG}${U}Impostazioni protocollo TCP non modificate${NC}\n\n";
 fi
 
 
 
 printf "Modificare il file /etc/modprob.d/iwlwifi.conf e il file /etc/default/crda con le impostazioni ottimali?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ]; then
 	$cmd 'echo "# Test per rendere la connessione stabile
 options iwlwifi 11n_disable=1
@@ -55,7 +53,7 @@ options iwlwifi 11n_disable=1
 	$cmd "sed -i 's/REGDOMAIN=/REGDOMAIN=IT/' /etc/default/crda";
 	check_error "Modifica files crda";
 else
-	printf "${DG}${U}File iwlwifi.conf non modificato${NC}\n";
+	printf "${DG}${U}File iwlwifi.conf non modificato${NC}\n\n";
 fi
 
 
@@ -63,8 +61,7 @@ fi
 
 path_sys_driver=/lib/firmware/;
 printf "Copiare i drivers dalla partizione di backup a di sistema $path_sys_driver?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID_backup; then
 	# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
 	# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
@@ -80,10 +77,10 @@ if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID
 			fi
 		done
 	else
-		printf "${R}Directory $path_driver_backup non esistene\n${NC}";
+		printf "${R}Directory $path_driver_backup non esistene\n\n${NC}";
 	fi
 else
-	printf "${DG}${U}Drivers non copiati in $path_sys_driver\n${NC}";
+	printf "${DG}${U}Drivers non copiati in $path_sys_driver\n\n${NC}";
 fi
 
 
@@ -91,8 +88,7 @@ fi
 # modifica file /etc/nsswitch.conf per evitare bug di Avahi-daemon
 _etc_nsswitch=/etc/nsswitch.conf;
 printf "Modificare file $_etc_nsswitch per evitare il bug nel software Avahi-daemon?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ]; then
 	sudo cp $_etc_nsswitch $_etc_nsswitch"_old";
 	new_str="hosts:          files dns";

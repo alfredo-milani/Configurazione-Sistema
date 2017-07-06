@@ -20,8 +20,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 printf "Vuoi configurare il tema GTK+ del sistema?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ] && check_tool "gsettings" && check_mount $UUID_backup; then
 	theme_scelto="T4G_3.0_theme";
 	path_backup_theme=$mount_point/$tree_dir/$themes_backup;
@@ -31,12 +30,11 @@ if [ "$choise" == "y" ] && check_tool "gsettings" && check_mount $UUID_backup; t
 	gsettings set org.gnome.desktop.interface gtk-theme $theme_scelto;
 	check_error "Impostazione del tema $theme_scelto in $path_sys_theme";
 else
-	printf "${DG}${U}Tema non configurato${NC}\n";
+	printf "${DG}${U}Tema non configurato${NC}\n\n";
 fi
 
 printf "Vuoi configurare le icone del sistema?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" = "y" ] && check_tool "gsettings" && check_mount $UUID_backup; then
 	icon_scelto="Flat_Remix";
 	path_backup_icon=$mount_point/$tree_dir/$icons_backup;

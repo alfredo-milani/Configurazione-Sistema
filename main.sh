@@ -125,17 +125,14 @@ function check_mount {
     mount_point=${UUID_dev[1]};
     if [ ${#mount_point} == 0 ]; then
         printf "Montare il device UUID=$1?\n$choise_opt";
-        read -n1 choise;
-        printf "\n";
+        read choise;
         if [ "$choise" == "y" ]; then
             mount_point=$_dev_shm_/$1;
             printf "Montare il device in un punto particolare (default: $mount_point)?\n$choise_opt"
-            read -n1 choise;
-            printf "\n";
+            read choise;
             if [ "$choise" == "y" ]; then
                 printf "Digita il punto di mount:\t";
                 read mount_point;
-                printf "\n";
             fi
             sudo mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
@@ -197,8 +194,7 @@ function check_connection {
     echo "Controllo accesso ad Internet. Attendere...";
 	while ! get_header; do
 		printf "${Y}Connessione assente.\n$choise_opt_net${NC}\n";
-		read -n1 choise;
-        printf "\n";
+		read choise;
 		if [ "$choise" == "j" ]; then
 			return $EXIT_FAILURE;
 		fi

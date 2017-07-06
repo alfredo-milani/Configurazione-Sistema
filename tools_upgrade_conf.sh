@@ -39,7 +39,7 @@ if check_connection; then
 	fi
 fi
 echo "Premi un tasto per continuare una volta aggiornato il file 'source.list'";
-read -n1 choise;
+read choise;
 printf "\n";
 
 
@@ -55,8 +55,7 @@ check_connection && sudo $apt_manager update -y && sudo $apt_manager upgrade -y;
 
 # Installazione e configurazione del tool apt-fast
 printf "Installare apt-fast?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 # la scrittura 'if check_connection; then' si può usare solo nel caso si debbano testare valori di ritorno di funzioni
 if [ "$choise" == "y" ] && check_connection; then
 	apt_fast="https://github.com/ilikenwf/apt-fast/archive/master.zip";
@@ -92,23 +91,21 @@ if [ "$choise" == "y" ] && check_connection; then
 	sudo cp apt-fast.conf /etc;
 	check_error "Cofgurazione apt-fast.conf";
 else
-	printf "${DG}${U}apt-fast non installato${NC}\n";
+	printf "${DG}${U}apt-fast non installato${NC}\n\n";
 fi
 
 
 
 ##### Installazione tools principali
 printf "Vuoi installare gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" = "y" ] && check_connection; then
 	echo "Installazione dei princiali tools: gksu, vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 	sudo $apt_manager install gksu vim vlc preload curl redshift alacarte g++ gparted -y;
 	check_error "Installazione dei tools: vim, vlc, preload, curl, redshift, alacarte, g++, gparted";
 
 	printf "Vuoi installare e configurare anche prelink?\n$choise_opt";
-	read -n1 choise;
-	printf "\n";
+	read choise;
 	if [ "$choise" = "y" ]; then
 		sudo $apt_manager install prelink -y;
 		path_prelink="/etc/default/prelink";
@@ -127,8 +124,7 @@ else
 fi
 
 printf "Vuoi installare atom e google-chrome?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" = "y" ] && check_connection; then
 	sudo $apt_manager install git;
 	mkdir $_dev_shm_"atom";
@@ -152,7 +148,7 @@ if [ "$choise" = "y" ] && check_connection; then
 		printf "${Y}Sposta la cache di Google-Chrome su RAMDISK con alacarte${NC}\n";
 		alacarte 2> $null;
 		echo "Una volta spostata la cache con alacarte premi un pulsante per continuare";
-		read -n1 choise;
+		read choise;
 		printf "\n";
 	fi
 else
@@ -163,8 +159,7 @@ fi
 
 # Installazioe estensioni
 printf "Vuoi installare le estensioni con id: $extensions_id?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ] && check_connection; then
 	# abilitazione percentuale batteria
 	gsettings set org.gnome.desktop.interface show-battery-percentage true
@@ -181,8 +176,7 @@ if [ "$choise" == "y" ] && check_connection; then
 		if [ $el == 1082 ] || [ $el == 47 ] || [ $el == 444 ] && [ -f "/etc/default/grub" ]; then
 			echo "Disabilitando il driver, con l'estensione cpufreq il TurboBoost potrebbe non funzionare";
 			printf "Disabilitare i driver intel_pstate?\n$choise_opt";
-			read -n1 choise;
-			printf "\n";
+			read choise;
 			if [ "$choise" == "y" ]; then
 				old_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet';
 				new_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet intel_pstate=disable';
@@ -190,12 +184,12 @@ if [ "$choise" == "y" ] && check_connection; then
 				check_error "Modifica file /etc/default/grub";
 				sudo update-grub;
 			else
-				printf "${DG}${U}Driver intel_pstate non disabilitato\n${NC}";
+				printf "${DG}${U}Driver intel_pstate non disabilitato\n\n${NC}";
 			fi
 		fi
 	done
 else
-	printf "${DG}${U}Estensioni non installate${NC}\n";
+	printf "${DG}${U}Estensioni non installate${NC}\n\n";
 fi
 
 
@@ -203,10 +197,11 @@ fi
 # Installazione librerie per il motore GTK
 missing_libs="murrine-themes libcanberra-gtk-module";
 printf "Installare le librerie mancanti del motore GTK ($missing_libs)?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ] && check_connection; then
 	$apt_manager install $missing_libs;
+else
+	printf "${DG}${U}Librerie --> $missing_libs <-- non installate\n${NC}";
 fi
 
 

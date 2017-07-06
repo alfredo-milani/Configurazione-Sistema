@@ -22,8 +22,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 # tool per vedere il path assoluto di una specifica direzione
 xdg="xdg-user-dir";
 printf "Vuoi modificare il file /etc/fstab per aggiungere RAMDISK?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ] && check_tool $xdg; then
 	home="`$xdg HOME`";
 
@@ -31,17 +30,14 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	user=`id -u`;
 	group=`id -g`;
 	printf "Utilizzare l'UUID di default (UUID default = $UUID_data)?\n$choise_opt";
-	read -n1 choise;
-	printf "\n";
+	read choise;
 	while ! [ "$choise" == "y" ]; do
 		echo "Esecuzione del comando 'lsblk -f' per vedere l'UUID del device...";
 		lsblk -f;
 		printf "Digitare l'UUID del device che si vuole utilizzare:\t";
 		read UUID_data;
-		printf "\n";
 		printf "L'UUID = '$UUID_data' è corretto?\n$choise_opt";
-		read -n1 choise;
-		printf "\n";
+		read choise;
 	done
 
 	fstab="#########################################################\n

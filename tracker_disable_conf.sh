@@ -20,8 +20,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 
 printf "Vuoi disabilitare tracker* tools?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ]; then
 	files_da_modificare="tracker-*";
 	path_as="/etc/xdg/autostart/";

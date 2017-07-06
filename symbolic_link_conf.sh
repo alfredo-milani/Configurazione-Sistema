@@ -21,8 +21,7 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 
 xdg="xdg-user-dir";
 printf "Vuoi creare un link simbolico di un file system temporaneo nella sezione Downloads?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ] && check_tool $xdg; then
 	scaricati="`$xdg DOWNLOAD`";
 
@@ -30,17 +29,16 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 		ln -s $_dev_shm_ $scaricati;
 		check_error "Creazione link simbolico in $scaricati";
 	else
-		printf "${DG}${U}File $scaricati/shm già esistente\n${NC}";
+		printf "${DG}${U}File $scaricati/shm già esistente\n\n${NC}";
 	fi
 else
-	printf "${DG}${U}Link simbolico in $scaricati non creato${NC}\n";
+	printf "${DG}${U}Link simbolico in $scaricati non creato${NC}\n\n";
 fi
 
 
 
 printf "Vuoi creare il link simbolico nella Scrivania?\n$choise_opt";
-read -n1 choise;
-printf "\n";
+read choise;
 if [ "$choise" == "y" ] && check_tool $xdg; then
 	scrivania="`$xdg DESKTOP`";
 	nome_link="Alfredo_files";
