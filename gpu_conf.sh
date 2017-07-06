@@ -26,14 +26,14 @@ function get_OS {
 	IFS='=';
 	while read -r key val; do
 		case $val in
-			[dD]ebian ) return 1 ;;
+			[dD]ebian ) return $EXIT_SUCCESS ;;
 
 			[uU]buntu ) return 2 ;;
 		esac
 	done < "/etc/"*"-release";
 
 	# errore sconosciuto
-	return 0;
+	return $EXIT_FAILURE;
 }
 # Configurazione KVM
 printf "Installare i componenti necessari per KVM?\n$choise_opt";
@@ -80,7 +80,7 @@ fi
 function get_latest_vers {
 	if [ ${#1} == 0 ] || [ ${#2} == 0 ]; then
 		printf "${R}Errore in ${FUNCNAME[0]}: argomenti mancanti\n${NC}";
-		return 1;
+		return $EXIT_SUCCESS;
 	fi
 
 	# scomposizione numero versione
@@ -93,16 +93,16 @@ function get_latest_vers {
 	fi
 	for (( i=0; i < $max_lenght; ++i )); do
 		# se uno dei campi è vuoto
-		[ ${#arr1[$i]} == 0 ] && current_latest=$2 && return 0;
-		[ ${#arr2[$i]} == 0 ] && current_latest=$1 && return 0;
+		[ ${#arr1[$i]} == 0 ] && current_latest=$2 && return $EXIT_FAILURE;
+		[ ${#arr2[$i]} == 0 ] && current_latest=$1 && return $EXIT_FAILURE;
 		# arr1[i] < arr2[i] --> aggiorna il massimo corrente e ritorna con esito positivo
-		[ ${arr1[$i]} -lt ${arr2[$i]} ] && current_latest=$2 && return 0;
+		[ ${arr1[$i]} -lt ${arr2[$i]} ] && current_latest=$2 && return $EXIT_FAILURE;
 		# arr1[i] > arr2[i] --> aggiorna il massimo corrente e ritorna con esito positivo
-		[ ${arr1[$i]} -gt ${arr2[$i]} ] && current_latest=$1 && return 0;
+		[ ${arr1[$i]} -gt ${arr2[$i]} ] && current_latest=$1 && return $EXIT_FAILURE;
 	done
 
 	# errore sconosciuto
-	return 1;
+	return $EXIT_SUCCESS;
 }
 # check lib in /usr/lib/ e ~/sdk/emulator/
 printf "Correggere l'errore 'libstdc++.so.6: version GLIBCXX_3.4.21 not found'?\n$choise_opt";
@@ -136,7 +136,7 @@ if [ "$choise" == "y" ]; then
 		check_error "Correzione errore libstdc++.so.6: version 'GLIBCXX_3.4.21'";
 	else
 		printf "${R}Path $lib_usr_path o $sdk_path non esisteni\n${NC}";
-	fi	
+	fi
 else
 	printf "${DG}${U}Errore non corretto\n${NC}";
 fi
@@ -150,13 +150,13 @@ if [ "$choise" == "y" ]; then
 	# controllo presenza GPU nel sistema
 	check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'nvidia'`;
 	[ ${#check_gpu} != 0 ];
-	! check_error "Verifica presenza GPU discreta" && printf "$str_end" && exit 1;
+	! check_error "Verifica presenza GPU discreta" && printf "$str_end" && exit $EXIT_FAILURE;
 
 	echo "Disabilitazione driver nouveau";
 	sudo modprobe -r nouveau;
 	! check_error "Disabilitazione driver nouveau" &&
 	printf "${Y}Prova ad aggiungere il flag 'nomodeset' durante la fase di boot\n${NC}" &&
-	printf "$str_end" && exit 1;
+	printf "$str_end" && exit $EXIT_FAILURE;
 
 	printf "Assicurati che il modulo 'vga_switcheroo' sia disabilitato (oppure che sia mancante)";
 	sudo modprobe -r vga_switcheroo;
@@ -175,7 +175,7 @@ if [ "$choise" == "y" ]; then
 	arch=`echo $tmp | cut -c 1-2`;
 	[ $arch != 64 ] && [ $arch != 32 ] &&
 	check_error "Controllo architettura di sistema" &&
-	printf "$str_end" && exit 1;
+	printf "$str_end" && exit $EXIT_FAILURE;
 
 	sudo $apt_manager update;
 	sudo $apt_manager install gcc make linux-headers-amd$arch;
@@ -188,7 +188,7 @@ if [ "$choise" == "y" ]; then
 	bbswitch_online=${bbswitch[1]};
 	[ "$bbswitch_online" != "ON" ] && [ "$bbswitch_online" != "OFF" ] &&
 	check_error "Test bbswitch" &&
-	printf "$str_end" && exit 1;
+	printf "$str_end" && exit $EXIT_FAILURE;
 
 	$cmd 'echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-blacklist.conf';
 	check_error "Modulo nouveau in blacklist";

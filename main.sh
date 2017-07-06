@@ -52,6 +52,8 @@ declare -r NC='\033[0m'; # No Color
 declare -r check_error_str="Azione: %s\tEsito: %s\n";
 declare -r success="Positivo";
 declare -r failure="Negativo";
+declare -r EXIT_SUCCESS=0;
+declare -r EXIT_FAILURE=1;
 _dev_shm_="/dev/shm";
 
 export null _dev_shm_ cmd;
@@ -59,6 +61,7 @@ export mod_start mod_end;
 export choise_opt choise_opt_net;
 export R Y G DG U NC;
 export check_error_str success failure;
+export EXIT_SUCCESS EXIT_FAILURE;
 
 
 
@@ -66,7 +69,7 @@ export check_error_str success failure;
 function fill_arrays {
     if ! [ -f "$conf_file" ]; then
         printf "${R}Devi specificare un file di configurazione valido.\nIl file $conf_file non è stato trovato.\n${NC}";
-        exit 1;
+        exit $EXIT_FAILURE;
     fi
 
 : <<'COMMENTO'
@@ -86,7 +89,7 @@ COMMENTO
     sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' $conf_file >> $file_to_parse;
     while IFS='=' read -r key value; do
         case "$key" in
-            tree_dir )          tree_dir="`echo $value`" ;;
+            tree_dir )          tree_dir=$value ;;
             UUID_backup )       UUID_backup=$value ;;
             UUID_data )         UUID_data=$value ;;
             script_path )       script_path=$value ;;
@@ -109,25 +112,6 @@ COMMENTO
     done < $file_to_parse;
 
     rm -f $file_to_parse;
-}
-
-# restituisce il valore corrispondente alla chiave in input
-# restituisce 0 in caso di errore
-# restituisce n > 0 che corrisponde al valore i + 1
-function get_value {
-    if [ $# == 0 ]; then
-        printf "${R}Errore nella funzione ${FUNCNAME[0]}. Nessun argomento ricevuto\n${NC}";
-        # la shell bash ritornerà un valore tra 0 e 255 --> -2 -> 254
-        return -2;
-    fi
-
-    # se trovo un matching ritorno il valore dell'indice
-    for ((i = 0; i < ${#keys[@]}; ++i)); do
-        [ "${keys[$i]}" == "$1" ] && return $i;
-    done
-
-    # la shell bash ritornerà un valore tra 0 e 255 --> errore = -1 -> 255
-    return -1;
 }
 
 # funzione che verifica se il device il cui UUID è ricevuto in input è montato
@@ -155,14 +139,14 @@ function check_mount {
             fi
             sudo mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
-            sudo mount UUID=$1 $mount_point && return 0;
+            sudo mount UUID=$1 $mount_point && return $EXIT_SUCCESS;
         fi
 
         printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
-        return 1;
+        return $EXIT_FAILURE;
     fi
 
-    return 0;
+    return $EXIT_SUCCESS;
 }
 
 # funzione per verificare l'esistenza di tutti i tools necessari nel sistema
@@ -181,9 +165,9 @@ function check_tool {
 
         [ $? != 0 ] &&
         printf "${R}Tool '%s' necessario per l'esecuzione di questo script\n${NC}" "$tool" &&
-        return 1;
+        return $EXIT_FAILURE;
 
-        return 0;
+        return $EXIT_SUCCESS;
     done
 }
 
@@ -193,10 +177,10 @@ function check_tool {
 function check_error {
 	if [ $? == 0 ]; then
 		printf "${G}$check_error_str${NC}" "$@" $success;
-        return 0;
+        return $EXIT_SUCCESS;
 	else
 		printf "${R}***$check_error_str${NC}" "$@" $failure;
-        return 1;
+        return $EXIT_FAILURE;
 	fi
 }
 
@@ -216,7 +200,7 @@ function check_connection {
 		read -n1 choise;
         printf "\n";
 		if [ "$choise" == "j" ]; then
-			return 1;
+			return $EXIT_FAILURE;
 		fi
 	done
 
@@ -239,11 +223,24 @@ function give_help {
     echo -e "\t-s | -S )\t\tConfigurazione dei keyboard shortcuts";
     echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
     echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
-    exit 0
+    exit $EXIT_SUCCESS
+}
+
+function delete_code {
+    # verifica se cancellare o meno codici di identificazione precedenti
+    [ $tmp_code != 0 ] && rm -f $_dev_shm_/tmp.* 2> $null;
+}
+
+function check_script {
+    for script in ${scripts_array[@]}; do
+        # script trovato in scripts_array
+        [ "$script" == "$1" ] && return 0;
+    done
+
+    return 1;
 }
 
 # flag -f per esportare le funzioni
-export -f get_value;
 export -f check_mount;
 export -f check_tool;
 export -f check_error;
@@ -297,10 +294,10 @@ export apt_manager;
 # controllo se l'utente non ha specificato il modulo da avviare
 if [ $# == 0 ]; then
     printf "${U}Utilizza il flag -h per conoscere le operazioni disponibili\n${NC}";
-    exit 0;
+    exit $EXIT_SUCCESS;
 fi
 
-# controllo se l'utente ha inserito il flag -h
+# controllo se l'utente ha inserito il flag -h o se ha specificato l'opzione --all
 for arg in $@; do
     if [ "$arg" == "-h" ] ||
         [ "$arg" == "-H" ] ||
@@ -311,6 +308,21 @@ for arg in $@; do
         [ "$arg" == "--help" ] ||
         [ "$arg" == "--HELP" ]; then
             give_help;
+    elif [ "$arg" == "--all" ] ||
+        [ "$arg" == "--ALL" ]; then
+            for script in $absolute_script_path*; do
+                tmp_script=`basename $script`;
+                ext=".sh"; ext_lenght=${#ext}; lenght_tmp_script=${#script};
+                lenght=$(($lenght_tmp_script - $ext_lenght));
+                # l'estensione di $script deve essere .sh
+                # per effettuare operazioni aritmetiche si usa l'espressione: var3=$(($var1 + $var2));
+                tmp_ext=`echo $script | cut -c $(($lenght + 1))-$lenght_tmp_script`;
+
+                # aggiunta script corrente all array scripts_array
+                [ "$tmp_ext" == "$ext" ] &&
+                [ "$current_script_name" != "$tmp_script" ] &&
+                scripts_array+=("$script");
+            done
     fi
 done
 
@@ -324,100 +336,115 @@ done
 while [ $# -gt 0 ]; do
     case "$1" in
         --all | --ALL )
-            for script in $absolute_script_path/*; do
-                tmp_script=`basename $script`;
-                ext=".sh"; ext_lenght=${#ext}; lenght_tmp_script=${#script};
-                lenght=$(($lenght_tmp_script - $ext_lenght));
-                # l'estensione di $script deve essere .sh
-                # per effettuare operazioni aritmetiche si usa l'espressione: var3=$(($var1 + $var2));
-                tmp_ext=`echo $script | cut -c $(($lenght + 1))-$lenght_tmp_script`;
-                if [ "$tmp_ext" == "$ext" ] && [ "$current_script_name" != "$tmp_script" ]; then
-                    scripts_array+=("$script");
-                fi
-            done
-            break;
+            shift;
             ;;
 
         -[aA] )
-            # configurazione aspetto
-            scripts_array+=($absolute_script_path"appearance_conf.sh");
             shift;
+            # configurazione aspetto
+            current_script="appearance_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -[bB] )
-            # configurazione del file .bashrc
-            scripts_array+=($absolute_script_path"bashrc_conf.sh");
             shift;
+            # configurazione del file .bashrc
+            current_script="bashrc_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -[cC] )
             shift;
             # path file di configurazione
             if [ ${#1} != 0 ] && [ -f "$1" ]; then
+                printf "${G}Utilizzo di --> $1 <-- come file di configurazione\n${NC}";
                 conf_file=$1;
             else
-                printf "${Y}File specificato ($arg) non trovato. Verrà usato il file di default ($conf_file).\n${NC}";
+                printf "${Y}File specificato --> $1 <-- non trovato. Verrà usato il file di default ($conf_file).\n${NC}";
             fi
             shift;
             ;;
 
         -[fF] )
-            # configurazione file /etc/fstab
-            scripts_array+=($absolute_script_path"fstab_conf.sh");
             shift;
+            # configurazione file /etc/fstab
+            current_script="fstab_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -gpu | -GPU )
-            # configurazione bumblebee
-            scripts_array+=($absolute_script_path"gpu_conf.sh");
             shift;
-            ;;
-
-        -[hH] | -help | -HELP | --[hH] | --help | --HELP )
-            # verificato in precedenza
-            give_help;
+            # configurazione bumblebee
+            current_script="gpu_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -jdk | -JDK )
-            # configurazione JDK Oracle
-            scripts_array+=($absolute_script_path"jdk_conf.sh");
             shift;
+            # configurazione JDK Oracle
+            current_script="jdk_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -[lL] )
-            # configurazione link simbolici
-            scripts_array+=($absolute_script_path"symbolic_link_conf.sh");
             shift;
+            # configurazione link simbolici
+            current_script="symbolic_link_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -[mM] )
+            shift;
             # tmp_code viene impostata ad 1 --> è possibile creare più istanze contemporaneamente dello script
             tmp_code=0;
-            shift;
             ;;
 
         -[nN] )
-            # configurazione di rete
-            scripts_array+=($absolute_script_path"network_conf.sh");
             shift;
+            # configurazione di rete
+            current_script="network_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -[sS] )
-            # configurazione keyboard shortcuts
-            scripts_array+=($absolute_script_path"kb_shortcut_conf.sh");
             shift;
+            # configurazione keyboard shortcuts
+            current_script="kb_shortcut_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -tr | -TR )
-            # disabilitazione tracker-*
-            scripts_array+=($absolute_script_path"tracker_disable_conf.sh");
             shift;
+            # disabilitazione tracker-*
+            current_script="tracker_disable_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         -[uU] )
-            # aggiornamento tools sistema
-            scripts_array+=($absolute_script_path"tools_upgrade_conf.sh");
             shift;
+            # aggiornamento tools sistema
+            current_script="tools_upgrade_conf.sh";
+            if ! check_script $absolute_script_path$current_script; then
+                scripts_array+=($absolute_script_path$current_script);
+            fi
             ;;
 
         * )
@@ -432,9 +459,8 @@ done
 
 # lettura file di configurazione
 fill_arrays;
-
-# verifica se cancellare o meno codici di identificazione precedenti
-[ $tmp_code != 0 ] && rm -f $_dev_shm_/tmp.* 2> $null;
+# eliminazione codici di identificazione precedenti
+delete_code;
 
 # creazione file tmp perevitare l'esecuzione dei singoli moduli
 private_rand=$RANDOM;
@@ -450,11 +476,9 @@ done
 
 printf "${Y}\n\nRiavvia il PC per rendere effettive le modifiche${NC}\n";
 
-
-
-# verifica se cancellare o meno codici di identificazione precedenti
-[ $tmp_code != 0 ] && rm -f $_dev_shm_/tmp.* 2> $null;
+# eliminazione codici di identificazione precedenti
+delete_code;
 # eliminazione codice per evitarne il riutilizzo
 rm -f $tmp_file;
 # successo
-exit 0;
+exit $EXIT_SUCCESS;
