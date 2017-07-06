@@ -234,10 +234,10 @@ function delete_code {
 function check_script {
     for script in ${scripts_array[@]}; do
         # script trovato in scripts_array
-        [ "$script" == "$1" ] && return 0;
+        [ "$script" == "$1" ] && return $EXIT_SUCCESS;
     done
 
-    return 1;
+    return $EXIT_FAILURE;
 }
 
 # flag -f per esportare le funzioni
