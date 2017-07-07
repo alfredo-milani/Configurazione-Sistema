@@ -118,10 +118,13 @@ COMMENTO
 # e restituisce il punto di mount nella variabile globale mount_point COMUNE A TUTTI MODULI
 # grep -w restituisce output sse la stringa ha un matching completo
 function check_mount {
+    if [ $# == 0 ]; then
+        printf "${R}Per questa operazione è necessario montare un device valido\n${NC}";
+        return $EXIT_FAILURE;
+    fi
     # oppure si poteva usare il comando awk --> var=`lsblk -o UUID,MOUNTPOINT | grep -w "$1" | awk '{if (NF == 2) print $2;}'`
     # oppure UUID_dev=(`lsblk -o UUID,MOUNTPOINT | grep -w "$1"`);
-    IFS=' ';
-    read -ra UUID_dev <<< `lsblk -o UUID,MOUNTPOINT | grep -w $1`;
+    IFS=' ' read -ra UUID_dev <<< `lsblk -o UUID,MOUNTPOINT | grep -w $1`;
     mount_point=${UUID_dev[1]};
     if [ ${#mount_point} == 0 ]; then
         printf "Montare il device UUID=$1?\n$choise_opt";
@@ -153,8 +156,8 @@ function check_tool {
         delimiter='_';
         tmp=`cut -d$delimiter -f1 <<< $tool`;
         if [ "$tmp" == "sudo" ]; then
-            echo "Checking tool $tmp nel sistema";
             sudo_tool=`cut -d$delimiter -f2 <<< $tool`
+            echo "Checking tool --> $sudo_tool <-- nel sistema";
             sudo which $sudo_tool &> $null;
         else
             which $tool &> $null;
@@ -353,7 +356,7 @@ while [ $# -gt 0 ]; do
                 printf "${G}Utilizzo di --> $1 <-- come file di configurazione\n${NC}";
                 conf_file=$1;
             else
-                printf "${Y}File specificato --> $1 <-- non trovato. Verrà usato il file di default ($conf_file).\n${NC}";
+                printf "${Y}File specificato dal flag -c / -C --> $1 <-- non trovato.\nSarà usato il file di default: $conf_file\n${NC}";
             fi
             shift;
             ;;
