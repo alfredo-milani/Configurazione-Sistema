@@ -8,7 +8,7 @@
 #
 # (script in utils/gnomeshell_extension_manage.sh di N. Bernaerts)
 
-##### TODO --> SCRIVI NOTE NEL FILE BASH
+
 
 ##### ##################################
 ##### Inizio controllo preliminare #####
@@ -54,7 +54,7 @@ declare -r success="Positivo";
 declare -r failure="Negativo";
 declare -r EXIT_SUCCESS=0;
 declare -r EXIT_FAILURE=1;
-_dev_shm_="/dev/shm";
+declare _dev_shm_="/dev/shm";
 
 export null _dev_shm_ cmd;
 export mod_start mod_end;
@@ -201,6 +201,7 @@ function check_connection {
 	done
 
 	printf "${G}Connessione internet presente${NC}\n";
+    return $EXIT_SUCCESS;
 }
 
 function give_help {
@@ -245,9 +246,7 @@ export -f check_connection;
 
 
 
-if ! check_tool "basename" "realpath"; then
-    exit $?;
-fi
+! check_tool "basename" "realpath" $$ exit $?;
 
 export mount_point;
 # nome root script
@@ -258,10 +257,6 @@ absolute_current_script_path=`realpath $0`;
 lenght=${#current_script_name};
 # sintassi: ${string::-n} --> taglia gli ultimi (-n) n elementi di string
 export absolute_script_path=${absolute_current_script_path::-$lenght};
-# chiavi/valori dal file di configurazione
-# NOTA: gli array non possono essere esportati
-declare -a keys=();
-declare -a values=();
 # contiene i moduli invocati dall'utente
 scripts_array=();
 # file di default contenuto nella stessa directory dello script corrente
@@ -339,18 +334,16 @@ while [ $# -gt 0 ]; do
             shift;
             # configurazione aspetto
             current_script="appearance_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -[bB] )
             shift;
             # configurazione del file .bashrc
             current_script="bashrc_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -[cC] )
@@ -369,36 +362,32 @@ while [ $# -gt 0 ]; do
             shift;
             # configurazione file /etc/fstab
             current_script="fstab_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -gpu | -GPU )
             shift;
             # configurazione bumblebee
             current_script="gpu_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -jdk | -JDK )
             shift;
             # configurazione JDK Oracle
             current_script="jdk_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -[lL] )
             shift;
             # configurazione link simbolici
             current_script="symbolic_link_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -[mM] )
@@ -411,36 +400,32 @@ while [ $# -gt 0 ]; do
             shift;
             # configurazione di rete
             current_script="network_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -[sS] )
             shift;
             # configurazione keyboard shortcuts
             current_script="kb_shortcut_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -tr | -TR )
             shift;
             # disabilitazione tracker-*
             current_script="tracker_disable_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         -[uU] )
             shift;
             # aggiornamento tools sistema
             current_script="tools_upgrade_conf.sh";
-            if ! check_script $absolute_script_path$current_script; then
-                scripts_array+=($absolute_script_path$current_script);
-            fi
+            ! check_script $absolute_script_path$current_script &&
+            scripts_array+=($absolute_script_path$current_script);
             ;;
 
         * )

@@ -117,10 +117,10 @@ if [ "$choise" = "y" ] && check_connection; then
 		sudo /etc/cron.daily/prelink;
 		check_error "Installazione ed avvio del tool prelink";
 	else
-		printf "${DG}${U}Il tool prelink non è stato installato${NC}\n";
+		printf "${DG}${U}Il tool prelink non è stato installato${NC}\n\n";
 	fi
 else
-	printf "${DG}${U}Tools non installati${NC}\n";
+	printf "${DG}${U}Tools non installati${NC}\n\n";
 fi
 
 printf "Vuoi installare atom e google-chrome?\n$choise_opt";
@@ -152,7 +152,7 @@ if [ "$choise" = "y" ] && check_connection; then
 		printf "\n";
 	fi
 else
-	printf "${DG}${U}Atom e Google-Chrome non installati${NC}\n";
+	printf "${DG}${U}Atom e Google-Chrome non installati${NC}\n\n";
 fi
 
 
