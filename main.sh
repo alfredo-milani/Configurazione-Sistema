@@ -148,7 +148,7 @@ function check_value {
 # grep -w restituisce output sse la stringa ha un matching completo
 function check_mount {
     if [ $# == 0 ]; then
-        printf "${R}Per questa operazione è necessario montare un device valido\n${NC}";
+        printf "${R}Per questa operazione è necessario specificare un device valido nel file di configurazione\n${NC}";
         return $EXIT_FAILURE;
     fi
     # oppure si poteva usare il comando awk --> var=`lsblk -o UUID,MOUNTPOINT | grep -w "$1" | awk '{if (NF == 2) print $2;}'`
