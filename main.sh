@@ -72,8 +72,14 @@ function fill_arrays {
         exit $EXIT_FAILURE;
     fi
 
+    # tmp=`cut -d'.' -f2 <<< $conf_file`;
+    # accesso agli ultimi 4 caratteri del nome del file
+    tmp=${conf_file:(-4)};
+    [ "$tmp" != "conf" ] &&
+    printf "${Y}Attenzione: formato del file --> $conf_file <-- insolito\n${NC}";
+
 : <<'COMMENTO'
-    sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' $conf_file |
+    sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' "$conf_file" |
     while IFS='=' read -r key value; do
         echo "K: $key      V: $value";
         # le variabili NON vengono assegnate agli arrays
@@ -82,11 +88,17 @@ function fill_arrays {
     done
 COMMENTO
 
+    # esportazione di tutte le variabili comuni a tutti i moduli
+    for var in ${var_array[@]}; do
+        export $var;
+    done
+
     # workaround
     # eliminazione commenti all'inizio riga ed inline prima di parsare i dati
     file_to_parse=`mktemp -p $_dev_shm_`;
     # nota: la d finale serve per cancellare gli spazi bianchi
-    sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' $conf_file >> $file_to_parse;
+    #   le chiavi preceduta da spazi bianchi non saranno considerate
+    sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' "$conf_file" >> $file_to_parse;
     while IFS='=' read -r key value; do
         case "$key" in
             tree_dir )          tree_dir=$value ;;
@@ -112,6 +124,23 @@ COMMENTO
     done < $file_to_parse;
 
     rm -f $file_to_parse;
+
+    # verifica sintattica varibili esportate
+    for var in ${var_array[@]}; do
+        check_value $var;
+    done
+}
+
+function check_value {
+    # sintassi per ottenere il valore della variabile
+    var_val=${!1};
+    if [ ${#var_val} == 0 ]; then
+        printf "${Y}Attenzione! Non è stato trovato alcun valore corretto per la chiave --> $1 <-- nel file di configurazione $conf_file\n${NC}";
+
+        return $EXIT_FAILURE;
+    fi
+
+    return $EXIT_SUCCESS;
 }
 
 # funzione che verifica se il device il cui UUID è ricevuto in input è montato
@@ -270,18 +299,9 @@ apt_manager=apt-get;
 tmp_code=1;
 
 export mod_="preliminare";
-export sdk;
-export tree_dir;
-export UUID_backup;
-export UUID_data;
-export script_path;
-export software;
-export themes_backup;
-export icons_backup;
-export driver_backup;
-export scripts_backup;
-export extensions_id;
 export apt_manager;
+# array contenete i nomi delle variabili da parsare contenute nel file di configurazione
+var_array=(tree_dir UUID_backup themes_backup icons_backup software script_path scripts_backup UUID_data driver_backup extensions_id sdk);
 
 
 
@@ -356,7 +376,7 @@ while [ $# -gt 0 ]; do
                 printf "${G}Utilizzo di --> $1 <-- come file di configurazione\n${NC}";
                 conf_file=$1;
             else
-                printf "${Y}File specificato dal flag -c / -C --> $1 <-- non trovato.\nSarà usato il file di default: $conf_file\n${NC}";
+                printf "${Y}File specificato dal flag -c / -C --> $1 <-- non trovato.\nSarà usato il file: $conf_file\n${NC}";
             fi
             shift;
             ;;

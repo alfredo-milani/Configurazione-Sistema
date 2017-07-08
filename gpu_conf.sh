@@ -40,35 +40,39 @@ printf "Installare i componenti necessari per KVM?\n$choise_opt";
 read choise;
 if [ "$choise" == "y" ]; then
 	kvm_pre_inst=`egrep -c '(vmx|svm)' /proc/cpuinfo`;
-	get_OS;
-	case $? in
-		0 )
-			printf "${R}Errore sconosciuto durante l'acquisizione dell'OS\n${NC}";
-			;;
+	if [ $kvm_pre_inst != 0 ]; then
+		if check_connection; then
+			get_OS;
+			case $? in
+				1 )
+					sudo $apt_manager install qemu-kvm libvirt-clients libvirt-daemon-system;
+					sudo adduser $USER libvirt;
+					check_error "Aggiunta $USER al gruppo libvirt";
 
-		1 )
-			if [ $kvm_pre_inst != 0 ]; then
-				sudo $apt_manager install qemu-kvm libvirt-clients libvirt-daemon-system;
-				sudo adduser $USER libvirt;
-				check_error "Aggiunta $USER al gruppo libvirt";
+					sudo adduser $USER libvirt-qemu;
+					check_error "Aggiunta $USER al gruppo libvirt-qemu";
 
-				sudo adduser $USER libvirt-qemu;
-				check_error "Aggiunta $USER al gruppo libvirt-qemu";
+					correct_virsh=" Id    Name                           State
+			----------------------------------------------------";
+					current_virsh=`virsh list --all`;
+					[ "$correct_virsh" == "$current_virsh" ];
+					check_error "Configurazione KVM";
+					;;
 
-				correct_virsh=" Id    Name                           State
-		----------------------------------------------------";
-				current_virsh=`virsh list --all`;
-				[ "$correct_virsh" == "$current_virsh" ];
-				check_error "Configurazione KVM";
-			else
-				printf "${R}Errore! Sembra che non sia possibile configurare KVM sul terminale corrente\n${NC}";
-			fi
-			;;
+				2 )
+					printf "${R}Funzione ancora non implementata per il sistema corrente\n\n${NC}";
+					;;
 
-		* )
-			printf "${R}Funzione ancora non implementata per il sistema corrente\n${NC}";
-			;;
-	esac
+				* )
+					printf "${R}Errore sconosciuto durante l'acquisizione dell'OS\n\n${NC}";
+					;;
+			esac
+		else
+			printf "${DG}${U}KVM non installata: impossibile connettersi ad Internet\n${NC}";
+		fi
+	else
+		printf "${R}Errore! KVM non supportata sul terminale corrente\n\n${NC}";
+	fi
 else
 	printf "${DG}${U}KVM non configurato\n\n${NC}";
 fi
@@ -164,14 +168,18 @@ if [ "$choise" == "y" ]; then
 		# TODO --> modifica automatica del file /etc/apt/source.list
 		printf "software-properties-gtk mancante.
 		Modifica il file /etc/apt/source.list manualmente per abilitare i repository 'main', 'contrib', 'non-free'";
-		sudo vi /etc/apt/source.list;
+		sudo nano /etc/apt/source.list;
 	fi
 
 	printf "Update, update del sistema e download tools necessari";
 	tmp=`lscpu | grep 'CPU op-mode(s):' | awk '{print $4}'`;
 	arch=`echo $tmp | cut -c 1-2`;
 	[ $arch != 64 ] && [ $arch != 32 ] &&
-	check_error "Controllo architettura di sistema" &&
+	printf "${R}Controllo architettura di sistema: architettura sconosciuta\n${NC}" &&
+	printf "$str_end" && exit $EXIT_FAILURE;
+
+	! check_connection &&
+	printf "${R}Connessiona assente: impossibile installare bumblebee\n${NC}" &&
 	printf "$str_end" && exit $EXIT_FAILURE;
 
 	sudo $apt_manager update;
@@ -189,6 +197,10 @@ if [ "$choise" == "y" ]; then
 
 	$cmd 'echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-blacklist.conf';
 	check_error "Modulo nouveau in blacklist";
+
+	! check_connection &&
+	printf "${R}Connessiona assente: impossibile installare bumblebee\n${NC}" &&
+	printf "$str_end" && exit $EXIT_FAILURE;
 
 	printf "Installazione dirver nvidia, bumblebee e dipendenze varie";
 	sudo $apt_manager install nvidia-kernel-dkms nvidia-xconfig nvidia-settings;
@@ -217,19 +229,19 @@ if [ "$choise" == "y" ]; then
 		#	   I --> case sensitive
 		#	  .* --> sostituzione intera riga
 		line_to_replace="VGLTransport="; new_str="VGLTransport=proxy";
-		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" "$bumblebee_conf";
 		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="PMMethod="; new_str="PMMethod=bbswitch";
-		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" "$bumblebee_conf";
 		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="Bridge="; new_str="Bridge=primus";
-		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" "$bumblebee_conf";
 		check_error "Modificare chiave $line_to_replace"
 
 		line_to_replace="Driver="; new_str="Driver=nvidia";
-		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" $bumblebee_conf;
+		sudo sed -i "/^$line_to_replace/s/.*/$new_str/" "$bumblebee_conf";
 		check_error "Modificare chiave $line_to_replace"
 	else
 		printf "${DG}${U}File $bumblebee_conf non ottimizzato\n\n${NC}";

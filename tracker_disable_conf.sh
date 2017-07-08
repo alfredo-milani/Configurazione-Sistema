@@ -26,7 +26,7 @@ if [ "$choise" == "y" ]; then
 	path_as="/etc/xdg/autostart/";
 	old_str="X-GNOME-Autostart-enabled=true";
 	new_str="X-GNOME-Autostart-enabled=false";
-	sudo sed -i "s/$old_str/$new_str/g" $path_as$files_da_modificare;
+	sudo sed -i "s/$old_str/$new_str/g" "$path_as$files_da_modificare";
 	check_error "Modifica files tracker-* in $path_as";
 	echo "Lancio del comando 'tracker-preferences' per disabilitare tracker-* completamente";
 	tracker-preferences &> $null;

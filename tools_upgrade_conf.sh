@@ -106,14 +106,14 @@ if [ "$choise" = "y" ] && check_connection; then
 
 	printf "Vuoi installare e configurare anche prelink?\n$choise_opt";
 	read choise;
-	if [ "$choise" = "y" ]; then
+	if [ "$choise" = "y" ] && check_connection; then
 		sudo $apt_manager install prelink -y;
 		path_prelink="/etc/default/prelink";
 		files_da_modificare="prelink";
 		old_str="PRELINKING=unknown";
 		new_str="PRELINKING=yes";
 		cd $path_prelink;
-		sudo sed -i "s/$old_str/$new_str/g" $files_da_modificare;
+		sudo sed -i "s/$old_str/$new_str/g" "$files_da_modificare";
 		sudo /etc/cron.daily/prelink;
 		check_error "Installazione ed avvio del tool prelink";
 	else
@@ -180,7 +180,7 @@ if [ "$choise" == "y" ] && check_connection; then
 			if [ "$choise" == "y" ]; then
 				old_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet';
 				new_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet intel_pstate=disable';
-				sudo sed -i "s/$old_str/$new_str/" /etc/default/grub;
+				sudo sed -i "s/$old_str/$new_str/" "/etc/default/grub";
 				check_error "Modifica file /etc/default/grub";
 				sudo update-grub;
 			else

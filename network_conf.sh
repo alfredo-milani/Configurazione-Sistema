@@ -50,7 +50,7 @@ options iwlwifi 11n_disable=1
 #options iwlwifi wd_disable=1" >> /etc/modprobe.d/iwlwifi.conf';
   	check_error "Modifica files iwlwifi.conf";
 
-	$cmd "sed -i 's/REGDOMAIN=/REGDOMAIN=IT/' /etc/default/crda";
+	$cmd "sed -i 's/REGDOMAIN=/REGDOMAIN=IT/' '/etc/default/crda'";
 	check_error "Modifica files crda";
 else
 	printf "${DG}${U}File iwlwifi.conf non modificato${NC}\n\n";
@@ -95,7 +95,7 @@ if [ "$choise" == "y" ]; then
 	line_to_replace=hosts;
 	# cerca il pattern $line_to_replace, sostituisci (s/) tutta la riga (.*) con $new_str
 	# -i (in-place) --> modifica direttamente nel file originale
-	sudo sed -i "/$line_to_replace/s/.*/$new_str/" $_etc_nsswitch;
+	sudo sed -i "/$line_to_replace/s/.*/$new_str/" "$_etc_nsswitch";
 	check_error "Modifica file $_etc_nsswitch";
 else
 	printf "${DG}${U}File $_etc_nsswitch non modificato\n${NC}";

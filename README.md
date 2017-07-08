@@ -28,7 +28,8 @@ Gli altri moduli sono:
 
 - sys.conf - definizione variabili.
 
-> Il file *sys.conf* **deve essere modificato** in funzione della struttura di directory ove sono locate le risorse.
+> Il file *sys.conf* **deve essere modificato** in funzione della struttura di directory ove sono locate le risorse. </br>
+Le chiavi non devo essere precedute da spazi altrimenti non verranno considerate.
 
 
 
@@ -51,27 +52,27 @@ Questo è un file di tipo *key/value*:
 
 keys | values
 --- | ---
-tree_dir | Directory di partenza. *Tutti gli altri indirizzi hanno questa radice di partenza*. Questa chiave può avere anche un valore vuoto
+tree_dir | Directory di partenza. *Tutti gli altri indirizzi hanno questa radice di partenza* (opzionale).
    |   
-UUID_backup | UUID del device contenente le risorse necessarie (temi, icone, softwares, extensions
+UUID_backup | UUID del device contenente le risorse necessarie (temi, icone, softwares, extensions.
    |   
 themes_backup | Directory dove è locato il tema da configurare (partendo da *tree_dir*)
-icons_backup | Directory dove è locato il set di icone da configurare (partendo da *tree_dir*)
+icons_backup | Directory dove è locato il set di icone da configurare (partendo da *tree_dir*).
    |   
-software | Directory dove è locato il software necessario (es. jdk*.tar.gz) (partendo da *tree_dir*)
+software | Directory dove è locato il software necessario (es. jdk*.tar.gz) (partendo da *tree_dir*).
    |   
 script_path | Directory dove si vogliono copiare gli scripts necessari
-scripts_backup | Directory dove sono locati gli scripts da copiare (partendo da *tree_dir*)
+scripts_backup | Directory dove sono locati gli scripts da copiare (partendo da *tree_dir*).
    |   
-UUID_data | UUID del device dal quale si vogliono creare dei *link simbolici*
+UUID_data | UUID del device dal quale si vogliono creare dei *link simbolici*.
    |   
-driver_backup | Directory dove si trovano i drivers necessari al sistema (partendo da *tree_dir*)
+driver_backup | Directory dove si trovano i drivers necessari al sistema (partendo da *tree_dir*).All'interno di questa cartella lo script cercherà una cartella avente il nome del dispositivo in uso (*il nome della cartella il questione deve coincidere con l'output del comando* **$ sudo dmidecode -s system-version &#124; tr " " "_"**).
    |   
-extensions_id | ID delle estensioni ottenibili dal sito "https://extensions.gnome.org/"
+extensions_id | ID delle estensioni ottenibili dal sito "https://extensions.gnome.org/".
    |   
-sdk | Directory assoluta dove si trova la SDK
+sdk | Directory assoluta dove si trova la SDK.
    |   
-tmp | Direzione files temporanei (default /dev/shm)
+tmp | Direzione files temporanei (default /dev/shm).
 
 
 
