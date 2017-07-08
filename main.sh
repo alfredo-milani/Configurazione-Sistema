@@ -300,8 +300,9 @@ tmp_code=1;
 
 export mod_="preliminare";
 export apt_manager;
+export tree_dir;
 # array contenete i nomi delle variabili da parsare contenute nel file di configurazione
-var_array=(tree_dir UUID_backup themes_backup icons_backup software script_path scripts_backup UUID_data driver_backup extensions_id sdk);
+var_array=(UUID_backup themes_backup icons_backup software script_path scripts_backup UUID_data driver_backup extensions_id sdk);
 
 
 
