@@ -168,7 +168,10 @@ function check_mount {
             fi
             sudo mkdir -p $mount_point;
             echo "Montaggio device UUID=$1 in $mount_point";
+
             sudo mount UUID=$1 $mount_point && return $EXIT_SUCCESS;
+            printf "${R}Errore durante il montaggio del device $1. Verifica che l'UUID sia corretto\n${NC}" &&
+            return $EXIT_FAILURE;
         fi
 
         printf "${R}Per questa operazione è necesario che il device $1 sia montato.\n${NC}";
