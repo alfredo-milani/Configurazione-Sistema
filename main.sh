@@ -163,9 +163,9 @@ function check_tool {
         [ $? != 0 ] &&
         printf "${R}Tool '%s' necessario per l'esecuzione di questo script\n${NC}" "$tool" &&
         return $EXIT_FAILURE;
-
-        return $EXIT_SUCCESS;
     done
+
+    return $EXIT_SUCCESS;
 }
 
 # "$@" --> expands to multiple words without performing expansions for the words (like "$1" "$2" ...).
@@ -246,7 +246,7 @@ export -f check_connection;
 
 
 
-! check_tool "basename" "realpath" $$ exit $?;
+! check_tool "basename" "realpath" && exit $?;
 
 export mount_point;
 # nome root script
