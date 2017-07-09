@@ -498,7 +498,7 @@ for script in "${scripts_array[@]}"; do
     $script $private_rand $tmp_file;
 done
 
-printf "${Y}\n\nOccorre riavvia il PC per rendere effettive le modifiche${NC}\n";
+printf "${Y}\n\nOccorre riavvia il PC per rendere effettive le modifiche.\n${NC}";
 printf "${Y}Riavviare ora?\n$choise_opt${NC}";
 read choise;
 [ "$choise" == "y" ] && sudo reboot;
