@@ -44,7 +44,6 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	nome_link="Alfredo_files";
 	dir_data_relative="Alfredo";
 
-	# TODO cercare possibile bug...
 	if ! [ -d "$scrivania/$nome_link" ] && check_mount $UUID_data; then
 		ln -s $mount_point/$dir_data_relative $scrivania/$nome_link;
 		check_error "Creazione link simbolico in $scrivania";

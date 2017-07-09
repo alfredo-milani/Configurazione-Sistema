@@ -11,22 +11,64 @@ Semplici script per configurare un sistema (*debian-based* - *gnome*).
 ------
 
 ## Descrizione
-Lo script principale è **_main.sh_** che ha il compito di invocare gli altri moduli a seconda della richiesta dell'utente.
-Gli altri moduli sono:
+Lo script principale è **_main.sh_** che ha il compito di invocare gli altri moduli a seconda della richiesta dell'utente. <br/>
+I moduli sono:
 
-- appearance_conf.sh - per la configurazione del *tema* e delle *icone*;
-- bashrc_conf.sh - configurazione del file `~/.bashrc`;
-- fstab.sh - configurazione del file `/etc/fstab`;
-- gpu_conf.sh - configurazione bumblebee per gestione GPU discreta NVIDIA;
-- jdk_conf.sh - copia e configurazione della *JDK Oracle*;
-- kb_shortcut_conf.sh - impostazione dei *keyboard shortcuts*;
-- network_conf.sh - ottimizzazione impostazioni protocollo *TCP* / *NIC*;
-- symbolic_link_conf.sh - creazione *link simbolici*;
-- tools_upgrade_conf.sh - *aggiornamento tools* sistema;
-- tracker_disable_conf.sh - disabilitazione _tracker-* tools_;
+- appearance_conf.sh - configurazione del *tema* e delle *icone*:
+    * imposta il tema specificato dalla chiave *`theme_scelto`* locato in *`themes_backup`*;
+    * imposta il set di icone specificato dalla chiave *`icon_scelto`* locato in *`icons_backup`*;
+- bashrc_conf.sh - configurazione del file `~/.bashrc`:
+    * aggiunge gli alias di alcuni comandi nel file ~/.bashrc;
+- fstab.sh - configurazione del file `/etc/fstab`:
+    * crea ramdisk nelle locazioni: /var/tmp; /var/log; /tmp;
+    * monta su ramdisk le cache dei principali browser (Chrome, Firefox, Chromium);
+    * monta il volume contenete dati condivisi da altri OS (e.g. Windows) nella posizione /media/Data. L'UUID del device che sarà montato può essere specificato dalla chiave *`UUID_data`*;
+- gpu_conf.sh - configurazione bumblebee per gestione GPU discreta NVIDIA:
+    * scarica e configura KVM nel terminale dell'utente (per ora c'è il supporto solo a distribuzioni Debian ed Ubuntu);
+    * corregge l'errore "libstdc++.so.6: version GLIBCXX_3.4.XXX not found" che si manifesta quando si utilizza l'IDE Android Studio con l'emulatore e la virtualizzazione KVM;
+    * scarica e configura il tool bumblebee per gestire le GPU NVidia con tecnologia Optimus;
+- jdk_conf.sh - copia e configurazione della *JDK Oracle*:
+    * configura la Oracle JDK locata in *`sdk`* come default di sistema; <br/>
+    se in *`sdk`* non c'è alcuna JDK, provvede a cercarla nel device con UUID *`UUID_backup`* nella directory specificata dalla chiava *`software`*;
+- kb_shortcut_conf.sh - impostazione dei *keyboard shortcuts*:
+    * copia gli script dalla directory *`scripts_backup`* (contenuta nel device *`UUID_backup`*) alla directory *`script_path`*;
+    * imposta le principali scorciatoie da tastiera;
+- network_conf.sh - ottimizzazione impostazioni protocollo *TCP* / *NIC*:
+    * ottimizza le impostazioni del protocollo TCP;
+    * ottimizza le impostazioni per la NIC Intel AC7260;
+    * copia i dirvers contenuti in *`driver_backup`* del device *`UUID_backup`* nella directory di sistema; <br/>
+    NOTA: i drivers contenuti nella direcotry *`driver_backup`* devono essere contenuti in una cartella avente come nome l'output del comando: `$ sudo dmidecode -s system-version | tr " " "_"`;
+    * risolve il bug dovuto al daemon Avahi-daemon che ostacola il corretto funzionamento delle NIC;
+- symbolic_link_conf.sh - creazione *link simbolici*:
+    * crea un collegamento di un path temporaneo (montato su ramdisk) nella directory di Download di default;
+    * crea un collegamento sul Desktop che punta ai files in comune (contenuti nel device *`UUID_data`*) tra i vari OS che il terminale ospita;
+- tools_upgrade_conf.sh - *aggiornamento tools* sistema:
+    * assiste la configurazione dei repository;
+    * scarica ed installa il gestore dei pacchetti apt-fast;
+    * installa i principali tools di utilità (e.g. gksu, vim, preload, redshift, gparted, ecc... );
+    * scarica ed installa l'editor Atom e il browser Google-Chrome;
+    * installa le estensioni con identificativo *`extensions_id`*; <br/> l'identificativo in questione è ricavabile dal sito "https://extensions.gnome.org/"; <br/>
+    e.g. vogliamo installare l'estensione dashToDock --> il suo URL è "https://extensions.gnome.org/extension/307/dash-to-dock/" --> *`extensions_id`*=307);
+    * scarica ed installa le principali librerie mancanti del motore GTK;
+- tracker_disable_conf.sh - disabilitazione _tracker-* tools_:
+    * disabilitazione dei tools di indicizzazione tracker-\*;
 - utils/gnomeshell_extension_manage.sh - download e installazione estensioni dal gnome-center (autore: *N. Bernaerts*);
+- sys.conf - definizione variabili:
+    * *`tree_dir`*: directory radice; tutti gli altri indirizzi hanno questa radice. Il suo valore può essere nullo;
+    * *`UUID_backup`*: UUID del device contenente le risorse necessarie alla configurazione del sistema;
+    * *`themes_backup`*: directory dove è locato il tema da configurare (partendo da tree_dir) ;
+    * *`theme_scelto`*: nome del file (se il file è compresso sarà estratto) contenente il tema desiderato;
+    * *`icons_backup`*: directory dove è locato il set di icone da configurare (partendo da tree_dir);
+    * *`icon_scelto`*: nome del file (se il file è compresso sarà estratto) contenente il set di icone desiderato;
+    * *`software`*: directory dove è locato il software necessario alla configurazione del sistema (partendo da tree_dir);
+    * *`script_path`*: directory dove si vogliono copiare gli scripts del sistema;
+    * *`scripts_backup`*: sirectory dove sono locati gli scripts da copiare (partendo da tree_dir);
+    * *`UUID_data`*: UUID del device contenente i files comuni ai vari OS contenuti nel terminale corrente;
+    * *`driver_backup`*: directory dove sono locati i drivers necessari al sistema (partendo da tree_dir);
+    * *`extensions_id`*: ID delle estensioni che si vogliono installare nel sistema. L'ID delle estensioni è ottenibile dal sito "https://extensions.gnome.org/";
+    * *`sdk`*: directory assoluta del sistema dove si trova la SDK Android;
+    * *`tmp`*: directory usata per la gestione dei files temporanei. Il suo valore può essere nullo;
 
-- sys.conf - definizione variabili.
 
 > Il file *sys.conf* **deve essere modificato** in funzione della struttura di directory ove sono locate le risorse. </br>
 Le chiavi non devo essere precedute da spazi altrimenti non verranno considerate.
