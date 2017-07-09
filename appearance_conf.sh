@@ -23,7 +23,8 @@ str_end="${Y}--${NC}$mod_end $mod_\n";
 # argomento #1 --> path di locazione
 # argomento #2 --> nome file
 function extract_files {
-	if [ -f "$1/$2" ] && ! [ -d "$1/$2" ]; then
+	# se è un file compresso --> decomprimilo
+	if [ -f "$1/$2" ]; then
 		tmp="${2##*.}";
 		case "$tmp" in
 			tar ) 	tar -xf "$1/$2" -C "$1" &> $null ;;
@@ -40,7 +41,9 @@ function extract_files {
 		printf "Vuoi rimuovere il file compresso?\n$choise_opt";
 		read choise;
 		[ "$choise" == "y" ] && rm -rf "$1/$2";
-	else
+
+	# se non è neanche una directory --> il nome del file è errato
+	elif ! [ -d "$1/$2" ]; then
 		printf "${R}Errore. Il file: $2 non esiste\n${NC}";
 		return $EXIT_FAILURE;
 	fi
@@ -51,7 +54,6 @@ function extract_files {
 printf "Vuoi configurare il tema GTK+ del sistema?\n$choise_opt";
 read choise;
 if [ "$choise" == "y" ] && check_tool "gsettings" && check_mount $UUID_backup; then
-	theme_scelto="T4G_3.0_theme.tar.xz";
 	path_backup_theme=$mount_point/$tree_dir/$themes_backup;
 	path_sys_theme=/usr/share/themes/;
 
@@ -69,7 +71,6 @@ fi
 printf "Vuoi configurare le icone del sistema?\n$choise_opt";
 read choise;
 if [ "$choise" = "y" ] && check_tool "gsettings" && check_mount $UUID_backup; then
-	icon_scelto="Flat_Remix.tar.xz";
 	path_backup_icon=$mount_point/$tree_dir/$icons_backup;
 	path_sys_icon="/usr/share/icons/";
 

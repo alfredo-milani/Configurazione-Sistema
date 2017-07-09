@@ -107,7 +107,9 @@ COMMENTO
             script_path )       script_path=$value ;;
             software )          software=$value ;;
             themes_backup )     themes_backup=$value ;;
+            theme_scelto )      theme_scelto=$value ;;
             icons_backup )      icons_backup=$value ;;
+            icon_scelto )       icon_scelto=$value ;;
             driver_backup )     driver_backup=$value ;;
             scripts_backup )    scripts_backup=$value ;;
             extensions_id )     extensions_id=$value ;;
@@ -126,9 +128,11 @@ COMMENTO
     rm -f $file_to_parse;
 
     # verifica sintattica varibili esportate
-    for var in ${var_array[@]}; do
-        check_value $var;
-    done
+    if [ $warnings == 0 ]; then
+        for var in ${var_array[@]}; do
+            check_value $var;
+        done
+    fi
 }
 
 function check_value {
@@ -255,6 +259,7 @@ function give_help {
     echo -e "\t-s | -S )\t\tConfigurazione dei keyboard shortcuts";
     echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
     echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
+    echo -e "\t--w | --W )\t\tDisabilitazione warnings";
     exit $EXIT_SUCCESS
 }
 
@@ -300,12 +305,15 @@ conf_file=$absolute_script_path"sys.conf";
 apt_manager=apt-get;
 # verifica rimozione files di autenticazione
 tmp_code=1;
+# flag per abilitare/disabilitare i warnings
+declare -i warnings=0;
 
 export mod_="preliminare";
 export apt_manager;
 export tree_dir;
+export warnings;
 # array contenete i nomi delle variabili da parsare contenute nel file di configurazione
-var_array=(UUID_backup themes_backup icons_backup software script_path scripts_backup UUID_data driver_backup extensions_id sdk);
+var_array=(UUID_backup themes_backup icons_backup software script_path scripts_backup UUID_data driver_backup extensions_id sdk theme_scelto icon_scelto);
 
 
 
@@ -453,6 +461,12 @@ while [ $# -gt 0 ]; do
             current_script="tools_upgrade_conf.sh";
             ! check_script $absolute_script_path$current_script &&
             scripts_array+=($absolute_script_path$current_script);
+            ;;
+
+        --[wW] )
+            shift;
+            # disabilitazine warnings
+            warnings=1;
             ;;
 
         * )

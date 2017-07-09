@@ -57,7 +57,9 @@ tree_dir | Directory di partenza. *Tutti gli altri indirizzi hanno questa radice
 UUID_backup | UUID del device contenente le risorse necessarie (temi, icone, softwares, extensions.
    |   
 themes_backup | Directory dove è locato il tema da configurare (partendo da *tree_dir*)
+theme_scelto | Nome del file compresso/directory contenente il tema
 icons_backup | Directory dove è locato il set di icone da configurare (partendo da *tree_dir*).
+icon_scelto | Nome del file compresso/directory contenente il set di icone
    |   
 software | Directory dove è locato il software necessario (es. jdk*.tar.gz) (partendo da *tree_dir*).
    |   
@@ -98,6 +100,7 @@ tmp | Direzione files temporanei (default /dev/shm).
     -s | -S )           Configurazione dei keyboard shortcuts
     -tr | -TR )         Disabilitazione tracker-* tools
     -u | -U )           Aggiornamento tools del sistema
+    --w | --W )         Disabilitazione warnings
 
 ```
 
