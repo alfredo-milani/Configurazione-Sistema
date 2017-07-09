@@ -7,6 +7,7 @@ Semplici script per configurare un sistema (*debian-based* - *gnome*).
     - [Personalizzazione](#personalizzazione)
     - [Utilizzo](#utilizzo)
     - [Note](#note)
+    - [Riferimenti](#riferimenti)
 
 ------
 
@@ -152,10 +153,13 @@ tmp | Direzione files temporanei (default /dev/shm).
 **Autore: Alfredo Milani** <br/>
 Data creazione: 10 - 06 - 2017
 
-Lo script ~/utils/gnomeshell_extension_manage.sh è stato creato da [**N. Bernaerts**](https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/ubuntugnome/gnomeshell-extension-manage).
-
 Testato su: *Linux debian 4.9.0-3-amd64 #1 SMP x86_64 GNU/Linux;* <br/>
 Notebook: *Lenovo Y50-70;* <br/>
 CPU: *Intel Core-i7;* <br/>
 GPU: *NVidia GTX 960M;* <br/>
 NIC: *Intel AC7260.*
+
+
+
+## Riferimenti
+Lo script ~/utils/gnomeshell_extension_manage.sh è stato creato da [**N. Bernaerts**](https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/ubuntugnome/gnomeshell-extension-manage).
