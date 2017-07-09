@@ -27,13 +27,12 @@ function get_OS {
 	while read -r key val; do
 		case $val in
 			[dD]ebian | DEBIAN ) return 1 ;;
-
 			[uU]buntu | UBUNTU ) return 2 ;;
 		esac
 	done < "/etc/"*"-release";
 
 	# errore sconosciuto
-	return $EXIT_FAILURE;
+	return 0;
 }
 
 # Configurazione KVM
