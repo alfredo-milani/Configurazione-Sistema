@@ -387,7 +387,8 @@ while [ $# -gt 0 ]; do
             shift;
             # path file di configurazione
             if [ ${#1} != 0 ] && [ -f "$1" ]; then
-                printf "${G}Utilizzo di --> $1 <-- come file di configurazione\n${NC}";
+                realpath_conf=`realpath $1`;
+                printf "${G}Utilizzo di --> $realpath_conf <-- come file di configurazione\n${NC}";
                 conf_file=$1;
             else
                 printf "${Y}File specificato dal flag -c / -C --> $1 <-- non trovato.\nSarà usato il file: $conf_file\n${NC}";
