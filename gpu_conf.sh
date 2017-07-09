@@ -35,6 +35,7 @@ function get_OS {
 	# errore sconosciuto
 	return $EXIT_FAILURE;
 }
+
 # Configurazione KVM
 printf "Installare i componenti necessari per KVM?\n$choise_opt";
 read choise;
@@ -43,7 +44,10 @@ if [ "$choise" == "y" ]; then
 	if [ $kvm_pre_inst != 0 ]; then
 		if check_connection; then
 			get_OS;
-			case $? in
+			OS_type=$?;
+			correct_virsh=" Id    Name                           State
+----------------------------------------------------";
+			case $OS_type in
 				1 )
 					sudo $apt_manager install qemu-kvm libvirt-clients libvirt-daemon-system;
 					sudo adduser $USER libvirt;
@@ -52,15 +56,25 @@ if [ "$choise" == "y" ]; then
 					sudo adduser $USER libvirt-qemu;
 					check_error "Aggiunta $USER al gruppo libvirt-qemu";
 
-					correct_virsh=" Id    Name                           State
-			----------------------------------------------------";
 					current_virsh=`virsh list --all`;
 					[ "$correct_virsh" == "$current_virsh" ];
 					check_error "Configurazione KVM";
 					;;
 
 				2 )
-					printf "${R}Funzione ancora non implementata per il sistema corrente\n\n${NC}";
+					sudo $apt_manager install qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils;
+					sudo adduser $USER kvm;
+					check_error "Aggiunta $USER al gruppo kvm";
+					sudo adduser $USER libvirtd;
+					check_error "Aggiunta $USER al gruppo libvirtd";
+
+					OS_arch=`uname -m`;
+					[ "$OS_arch" != "x86_64" ] &&
+					sudo $apt_manager install libstdc++6:i386 libgcc1:i386 zlib1g:i386 libncurses5:i386;
+
+					current_virsh=`virsh list --all`;
+					[ "$correct_virsh" == "$current_virsh" ];
+					check_error "Configurazione KVM";
 					;;
 
 				* )
@@ -145,19 +159,17 @@ fi
 
 
 
-printf "Installare e configurare bumblebee?\n$choise_opt";
-read choise;
-if [ "$choise" == "y" ]; then
+function manage_bumblebee {
 	# controllo presenza GPU nel sistema
 	check_gpu=`lspci -v | egrep -i 'vga|3d|nvidia' | grep -i 'nvidia'`;
 	[ ${#check_gpu} != 0 ];
-	! check_error "Verifica presenza GPU discreta" && printf "$str_end" && exit $EXIT_FAILURE;
+	! check_error "Verifica presenza GPU discreta" && return $EXIT_FAILURE;
 
 	echo "Disabilitazione driver nouveau";
 	sudo modprobe -r nouveau;
 	! check_error "Disabilitazione driver nouveau" &&
 	printf "${Y}Prova ad aggiungere il flag 'nomodeset' durante la fase di boot\n${NC}" &&
-	printf "$str_end" && exit $EXIT_FAILURE;
+	return $EXIT_FAILURE;
 
 	printf "Assicurati che il modulo 'vga_switcheroo' sia disabilitato (oppure che sia mancante)";
 	sudo modprobe -r vga_switcheroo;
@@ -176,11 +188,11 @@ if [ "$choise" == "y" ]; then
 	arch=`echo $tmp | cut -c 1-2`;
 	[ $arch != 64 ] && [ $arch != 32 ] &&
 	printf "${R}Controllo architettura di sistema: architettura sconosciuta\n${NC}" &&
-	printf "$str_end" && exit $EXIT_FAILURE;
+	return $EXIT_FAILURE;
 
 	! check_connection &&
 	printf "${R}Connessiona assente: impossibile installare bumblebee\n${NC}" &&
-	printf "$str_end" && exit $EXIT_FAILURE;
+	return $EXIT_FAILURE;
 
 	sudo $apt_manager update;
 	sudo $apt_manager install gcc make linux-headers-amd$arch;
@@ -193,14 +205,14 @@ if [ "$choise" == "y" ]; then
 	bbswitch_online=${bbswitch[1]};
 	[ "$bbswitch_online" != "ON" ] && [ "$bbswitch_online" != "OFF" ] &&
 	check_error "Test bbswitch" &&
-	printf "$str_end" && exit $EXIT_FAILURE;
+	return $EXIT_FAILURE;
 
 	$cmd 'echo "blacklist nouveau" >> /etc/modprobe.d/nouveau-blacklist.conf';
 	check_error "Modulo nouveau in blacklist";
 
 	! check_connection &&
 	printf "${R}Connessiona assente: impossibile installare bumblebee\n${NC}" &&
-	printf "$str_end" && exit $EXIT_FAILURE;
+	return $EXIT_FAILURE;
 
 	printf "Installazione dirver nvidia, bumblebee e dipendenze varie";
 	sudo $apt_manager install nvidia-kernel-dkms nvidia-xconfig nvidia-settings;
@@ -219,6 +231,7 @@ if [ "$choise" == "y" ]; then
 
 	printf "Per utilizzare la GPU NVIDIA sono necessari i peremessi di root quindi aggiungiamo l'username al gruppo bumblebee\n";
 	sudo usermod -aG bumblebee $USER;
+	check_error "Aggiunta di $USER al gruppo bumblebee";
 
 	bumblebee_conf=/etc/bumblebee/bumblebee.conf;
 	printf "Ottimizzare il file di configurazione $bumblebee_conf?\n$choise_opt";
@@ -248,16 +261,18 @@ if [ "$choise" == "y" ]; then
 	fi
 
 	sudo service bumblebeed restart;
+	check_error "Riavvio del servizio bumblebeed";
 
 	printf "NOTA: è consigliato usare primusrun rispetto ad optirun perchè più veloce\n";
 	printf "NOTA: per testare bumblebee: $ primusrun/optirun -vv glxgears\n";
 	printf "Per tools di benchmarking visitare questo sito: 'http://www.geeks3d.com/gputest/download/'\n";
 	printf "Per utilizzare nvidia-settings usare il comando: 'optirun nvidia-settings -c :8'\n";
 	printf "${Y}Bisogna riavviare il pc per completare l'installazione.\n${NC}";
-	printf "${Y}Riavviare ora?\n$choise_opt${NC}";
-	read choise;
-	[ "$choise" == "y" ] && sudo reboot;
-else
+}
+
+printf "Installare e configurare bumblebee?\n$choise_opt";
+read choise;
+if ! ([ "$choise" == "y" ] && manage_bumblebee); then
 	printf "${DG}${U}Modulo bulmbelee non installato\n${NC}";
 fi
 

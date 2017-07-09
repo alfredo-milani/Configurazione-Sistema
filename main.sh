@@ -69,7 +69,7 @@ export EXIT_SUCCESS EXIT_FAILURE;
 function fill_arrays {
     if ! [ -f "$conf_file" ]; then
         printf "${R}Devi specificare un file di configurazione valido.\nIl file $conf_file non è stato trovato.\n${NC}";
-        exit $EXIT_FAILURE;
+        return $EXIT_FAILURE;
     fi
 
     # tmp=`cut -d'.' -f2 <<< $conf_file`;
@@ -133,6 +133,8 @@ COMMENTO
             check_value $var;
         done
     fi
+
+    return $EXIT_SUCCESS;
 }
 
 function check_value {
@@ -480,7 +482,7 @@ done
 
 
 # lettura file di configurazione
-fill_arrays;
+! fill_arrays && exit $EXIT_FAILURE;
 # eliminazione codici di identificazione precedenti
 delete_code;
 
@@ -496,7 +498,10 @@ for script in "${scripts_array[@]}"; do
     $script $private_rand $tmp_file;
 done
 
-printf "${Y}\n\nRiavvia il PC per rendere effettive le modifiche${NC}\n";
+printf "${Y}\n\nOccorre riavvia il PC per rendere effettive le modifiche${NC}\n";
+printf "${Y}Riavviare ora?\n$choise_opt${NC}";
+read choise;
+[ "$choise" == "y" ] && sudo reboot;
 
 # eliminazione codici di identificazione precedenti
 delete_code;
