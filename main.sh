@@ -263,7 +263,7 @@ function give_help {
     echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
     echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
     echo -e "\t--w | --W )\t\tDisabilitazione warnings";
-    on_exit;
+    on_exit $EXIT_SUCCESS;
 }
 
 function check_script {
@@ -291,11 +291,12 @@ function reboot_req {
 }
 
 # on exit
-# il passaggio di qualsiasi argomento indica la ricezione di un segnale
+# arg #1 = exit type --> 0 / 1
+# arg #2 = signal received --> s
 function on_exit {
     rm -f $tmp_file &> $null;
-    [ ${#1} != 0 ] && printf "${R}\nProcesso interrotto... Uscita.\n${NC}";
-    exit $EXIT_FAILURE;
+    [ "$2" == "s" ] && printf "${R}\nProcesso interrotto... Uscita.\n${NC}";
+    exit $1;
 }
 
 # flag -f per esportare le funzioni
@@ -318,8 +319,8 @@ declare -r tmp_file=`mktemp -p $_dev_shm_`;
 echo "$private_rand" | md5sum >> $tmp_file;
 
 # intercetta SIGINT SIGKILL e SIGTERM
-trap 'on_exit 1' SIGINT SIGKILL SIGTERM SIGUSR1 SIGUSR2;
-! check_tool "basename" "realpath" && exit $?;
+trap "on_exit $EXIT_FAILURE s" SIGINT SIGKILL SIGTERM SIGUSR1 SIGUSR2;
+! check_tool "basename" "realpath" && on_exit $?;
 
 export mount_point;
 # nome root script
@@ -353,7 +354,7 @@ var_array=(UUID_backup themes_backup icons_backup software script_path scripts_b
 # controllo se l'utente non ha specificato il modulo da avviare
 if [ $# == 0 ]; then
     printf "${U}Utilizza il flag -h per conoscere le operazioni disponibili\n${NC}";
-    exit $EXIT_SUCCESS;
+    on_exit $EXIT_SUCCESS;
 fi
 
 # controllo se l'utente ha inserito il flag -h o se ha specificato l'opzione --all
@@ -518,7 +519,7 @@ printf "${R}Specificare un'azione!\n${NC}" &&
 give_help;
 
 # lettura file di configurazione
-! fill_arrays && exit $EXIT_FAILURE;
+! fill_arrays && on_exit $EXIT_FAILURE;
 
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
@@ -535,7 +536,4 @@ else
     printf "${R}Errore: file temporaneo ($tmp_file) non trovato.\n${NC}";
 fi
 
-# eliminazione codice per evitarne il riutilizzo
-rm -f $tmp_file;
-# successo
-exit $EXIT_SUCCESS;
+on_exit $EXIT_SUCCESS;
