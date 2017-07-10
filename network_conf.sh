@@ -8,7 +8,7 @@ file_hash=`cat "$2" 2> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
 [ "$hash_check" != "$file_hash" ] &&
-printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+printf "\nAttenzione! Lo script `basename $0` DEVE essere lanciato dallo script principale.\n\n" &&
 exit 1;
 ##################################
 ##### Configurazione di rete #####
@@ -16,6 +16,7 @@ exit 1;
 mod_="configurazione di rete";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
 str_end="${Y}--${NC}$mod_end $mod_\n";
+father_file=$2;
 
 
 
@@ -36,7 +37,7 @@ if [ "$choise" == "y" ]; then
 	check_error "Modifica impostazioni protocollo TCP";
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}Impostazioni protocollo TCP non modificate${NC}\n\n";
 fi
@@ -57,7 +58,7 @@ options iwlwifi 11n_disable=1
 	check_error "Modifica files crda";
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}File iwlwifi.conf non modificato${NC}\n\n";
 fi
@@ -82,7 +83,7 @@ if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID
 				check_error "Aggiunta driver $file";
 
 				# riavvio richiesto
-				reboot_req=0;
+				reboot_req "$father_file";
 			fi
 		done
 	else
@@ -108,11 +109,12 @@ if [ "$choise" == "y" ]; then
 	check_error "Modifica file $_etc_nsswitch";
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}File $_etc_nsswitch non modificato\n${NC}";
 fi
 
 
 
+restore_tmp_file $1 $2;
 printf "$str_end";

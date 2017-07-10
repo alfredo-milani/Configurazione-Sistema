@@ -8,7 +8,7 @@ file_hash=`cat "$2" 2> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
 [ "$hash_check" != "$file_hash" ] &&
-printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+printf "\nAttenzione! Lo script `basename $0` DEVE essere lanciato dallo script principale.\n\n" &&
 exit 1;
 ##########################################
 ##### Aggiornamento tools di sistema #####
@@ -16,6 +16,7 @@ exit 1;
 mod_="aggiornamento sistema";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
 str_end="${Y}--${NC}$mod_end $mod_\n";
+father_file=$2;
 
 
 
@@ -52,7 +53,7 @@ echo "Upgrade e update dei pacchetti del sistema.";
 check_connection && sudo $apt_manager update -y &&
 sudo $apt_manager upgrade -y &&
 # riavvio richiesto
-reboot_req=0;
+reboot_req "$father_file";
 
 
 
@@ -95,7 +96,7 @@ if [ "$choise" == "y" ] && check_connection; then
 	check_error "Cofgurazione apt-fast.conf";
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}apt-fast non installato${NC}\n\n";
 fi
@@ -127,7 +128,7 @@ if [ "$choise" = "y" ] && check_connection; then
 	fi
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}Tools non installati${NC}\n\n";
 fi
@@ -162,7 +163,7 @@ if [ "$choise" = "y" ] && check_connection; then
 	fi
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}Atom e Google-Chrome non installati${NC}\n\n";
 fi
@@ -202,7 +203,7 @@ if [ "$choise" == "y" ] && check_connection; then
 	done
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}Estensioni non installate${NC}\n\n";
 fi
@@ -217,11 +218,12 @@ if [ "$choise" == "y" ] && check_connection; then
 	$apt_manager install $missing_libs;
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}Librerie --> $missing_libs <-- non installate\n${NC}";
 fi
 
 
 
+restore_tmp_file $1 $2;
 printf "$str_end";

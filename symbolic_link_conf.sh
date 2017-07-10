@@ -8,7 +8,7 @@ file_hash=`cat "$2" 2> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
 [ "$hash_check" != "$file_hash" ] &&
-printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+printf "\nAttenzione! Lo script `basename $0` DEVE essere lanciato dallo script principale.\n\n" &&
 exit 1;
 ####################################
 ##### Creazione link simbolici #####
@@ -16,6 +16,7 @@ exit 1;
 mod_="configurazione link simbolici";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
 str_end="${Y}--${NC}$mod_end $mod_\n";
+father_file=$2;
 
 
 
@@ -56,4 +57,5 @@ fi
 
 
 
+restore_tmp_file $1 $2;
 printf "$str_end";

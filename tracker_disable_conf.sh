@@ -8,7 +8,7 @@ file_hash=`cat "$2" 2> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
 [ "$hash_check" != "$file_hash" ] &&
-printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+printf "\nAttenzione! Lo script `basename $0` DEVE essere lanciato dallo script principale.\n\n" &&
 exit 1;
 ####################################
 ##### Disabilitazione tracker* #####
@@ -16,6 +16,7 @@ exit 1;
 mod_="disabilitazione tracker-*";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
 str_end="${Y}--${NC}$mod_end $mod_\n";
+father_file=$2;
 
 
 
@@ -32,11 +33,12 @@ if [ "$choise" == "y" ]; then
 	tracker-preferences &> $null;
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}tracker* tools non disabilitato${NC}\n";
 fi
 
 
 
+restore_tmp_file $1 $2;
 printf "$str_end";

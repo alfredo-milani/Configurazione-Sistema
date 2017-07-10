@@ -50,6 +50,7 @@ declare -r U='\033[4m'; # underlined
 declare -r NC='\033[0m'; # No Color
 # stringhe per la funzione check_error
 declare -r check_error_str="Azione: %s\tEsito: %s\n";
+declare -r missing_val="Valore non definito per la chiave: %s.\nModifica il file %s con le informazioni mancanti.\n";
 declare -r success="Positivo";
 declare -r failure="Negativo";
 declare -r EXIT_SUCCESS=0;
@@ -60,7 +61,7 @@ export null _dev_shm_ cmd;
 export mod_start mod_end;
 export choise_opt choise_opt_net;
 export R Y G DG U NC;
-export check_error_str success failure;
+export check_error_str missing_val success failure;
 export EXIT_SUCCESS EXIT_FAILURE;
 
 
@@ -214,10 +215,10 @@ function check_tool {
 # funzione per verificare l'esito di una azione
 function check_error {
 	if [ $? == 0 ]; then
-		printf "${G}$check_error_str${NC}" "$@" $success;
+		printf "${G}$check_error_str${NC}" "$@" "$success";
         return $EXIT_SUCCESS;
 	else
-		printf "${R}***$check_error_str${NC}" "$@" $failure;
+		printf "${R}***$check_error_str${NC}" "$@" "$failure";
         return $EXIT_FAILURE;
 	fi
 }
@@ -265,11 +266,6 @@ function give_help {
     exit $EXIT_SUCCESS
 }
 
-function delete_code {
-    # verifica se cancellare o meno codici di identificazione precedenti
-    [ $tmp_code != 0 ] && rm -f $_dev_shm_/tmp.* 2> $null;
-}
-
 function check_script {
     for script in ${scripts_array[@]}; do
         # script trovato in scripts_array
@@ -279,15 +275,49 @@ function check_script {
     return $EXIT_FAILURE;
 }
 
+function print_missing_val {
+    printf "${R}$missing_val${NC}" "$@" "$conf_file";
+}
+
+# per ripristinare il file temporaneo in caso di errori sconosciuti
+function restore_tmp_file {
+    ! [ -f "$2" ] && echo "$1" | md5sum > $_dev_shm_/`basename $2`;
+}
+
+# richiesta di reboot
+function reboot_req {
+    grep -r -w "reboot" "$1" &> $null ||
+    echo "reboot" >> $1;
+}
+
+# on exit
+function on_signal {
+    rm -f $tmp_file &> $null;
+    printf "${R}\nProcesso interrotto... Uscita.\n${NC}";
+    exit $EXIT_FAILURE;
+}
+
 # flag -f per esportare le funzioni
 export -f check_mount;
 export -f check_tool;
 export -f check_error;
 export -f get_header;
 export -f check_connection;
+export -f print_missing_val;
+export -f restore_tmp_file;
+export -f reboot_req;
 
 
 
+# creazione file tmp perevitare l'esecuzione dei singoli moduli
+declare -r -i private_rand=$RANDOM;
+# file temporaneo
+declare -r tmp_file=`mktemp -p $_dev_shm_`;
+# applica un algoritmo di hashing su un numero random e scrivilo su un file temporaneo
+echo "$private_rand" | md5sum >> $tmp_file;
+
+# intercetta SIGINT SIGKILL e SIGTERM
+trap on_signal SIGINT SIGKILL SIGTERM SIGUSR1 SIGUSR2;
 ! check_tool "basename" "realpath" && exit $?;
 
 export mount_point;
@@ -309,13 +339,11 @@ apt_manager=apt-get;
 tmp_code=1;
 # flag per abilitare/disabilitare i warnings
 declare -i warnings=0;
-# variabile di reboot
-declare -i reboot_req=1;
 
 export mod_="preliminare";
 export apt_manager;
 export tree_dir;
-export warnings reboot_req;
+export warnings conf_file;
 # array contenete i nomi delle variabili da parsare contenute nel file di configurazione
 var_array=(UUID_backup themes_backup icons_backup software script_path scripts_backup UUID_data driver_backup extensions_id sdk theme_scelto icon_scelto);
 
@@ -490,29 +518,22 @@ give_help;
 
 # lettura file di configurazione
 ! fill_arrays && exit $EXIT_FAILURE;
-# eliminazione codici di identificazione precedenti
-delete_code;
-
-# creazione file tmp perevitare l'esecuzione dei singoli moduli
-private_rand=$RANDOM;
-# file temporaneo
-tmp_file=`mktemp -p $_dev_shm_`;
-# applica un algoritmo di hashing su un numero random e scrivilo su un file temporaneo
-echo "$private_rand" | md5sum >> $tmp_file;
 
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
-    $script $private_rand $tmp_file;
+    $script $private_rand $tmp_file $$;
 done
 
-[ $reboot_req == 0 ] &&
-printf "${Y}\n\nOccorre riavvia il PC per rendere effettive le modifiche.\n${NC}" &&
-printf "${Y}Riavviare ora?\n$choise_opt${NC}" &&
-read choise &&
-[ "$choise" == "y" ] && sudo reboot;
+if [ -f "$tmp_file" ]; then
+    grep -r -w "reboot" "$tmp_file" &> $null &&
+    printf "${Y}\n\nOccorre riavvia il PC per rendere effettive le modifiche.\n${NC}" &&
+    printf "${Y}Riavviare ora?\n$choise_opt${NC}" &&
+    read choise &&
+    [ "$choise" == "y" ] && sudo reboot;
+else
+    printf "${R}Errore: file temporaneo ($tmp_file) non trovato.\n${NC}";
+fi
 
-# eliminazione codici di identificazione precedenti
-delete_code;
 # eliminazione codice per evitarne il riutilizzo
 rm -f $tmp_file;
 # successo

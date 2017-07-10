@@ -8,7 +8,7 @@ file_hash=`cat "$2" 2> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
 [ "$hash_check" != "$file_hash" ] &&
-printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+printf "\nAttenzione! Lo script `basename $0` DEVE essere lanciato dallo script principale.\n\n" &&
 exit 1;
 ##################################
 ##### Configurazione aspetto #####
@@ -16,6 +16,7 @@ exit 1;
 mod_="configurazione aspetto";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
 str_end="${Y}--${NC}$mod_end $mod_\n";
+father_file=$2;
 
 
 
@@ -85,18 +86,23 @@ function manage_icon {
 
 printf "Vuoi configurare il tema GTK+ del sistema?\n$choise_opt";
 read choise;
-if ! ([ "$choise" == "y" ] && check_tool "gsettings" &&
-	check_mount $UUID_backup && manage_theme); then
+if ! ([ "$choise" == "y" ] && check_tool "gsettings" && check_mount $UUID_backup &&
+	# () --> subshell
+	([ ${#theme_scelto} == 0 ] && print_missing_val "theme_scelto" && exit 1 || exit 0) &&
+	manage_theme); then
 	printf "${DG}${U}Tema non configurato${NC}\n\n";
 fi
 
 printf "Vuoi configurare le icone del sistema?\n$choise_opt";
 read choise;
 if ! ([ "$choise" = "y" ] && check_tool "gsettings" &&
-	check_mount $UUID_backup && manage_icon); then
+	check_mount $UUID_backup &&
+	([ ${#icon_scelto} == 0 ] && print_missing_val "icon_scelto" && exit 1 || exit 0) &&
+	manage_icon); then
 	printf "${DG}${U}Icone non configurate${NC}\n";
 fi
 
 
 
+restore_tmp_file $1 $2;
 printf "$str_end";

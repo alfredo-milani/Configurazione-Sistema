@@ -8,7 +8,7 @@ file_hash=`cat "$2" 2> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
 [ "$hash_check" != "$file_hash" ] &&
-printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+printf "\nAttenzione! Lo script `basename $0` DEVE essere lanciato dallo script principale.\n\n" &&
 exit 1;
 #####################################
 ##### Configurazione file fstab #####
@@ -16,6 +16,7 @@ exit 1;
 mod_="configurazione file fstab";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
 str_end="${Y}--${NC}$mod_end $mod_\n";
+father_file=$2;
 
 
 
@@ -77,11 +78,12 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	check_error "Modifica file $_etc_$file_fstab";
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 else
 	printf "${DG}${U}File /etc/fstab non moficato${NC}\n";
 fi
 
 
 
+restore_tmp_file $1 $2;
 printf "$str_end";

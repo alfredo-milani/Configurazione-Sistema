@@ -8,7 +8,7 @@ file_hash=`cat "$2" 2> /dev/null`;
 [ ${#1} -eq 0 ] ||
 [ ${#2} -eq 0 ] ||
 [ "$hash_check" != "$file_hash" ] &&
-printf "Attenzione! Questo script DEVE essere lanciato dallo script principale.\n" &&
+printf "\nAttenzione! Lo script `basename $0` DEVE essere lanciato dallo script principale.\n\n" &&
 exit 1;
 ###########################################################
 ##### Installazione bumblebee per utilizzo GPU NVIDIA #####
@@ -16,6 +16,7 @@ exit 1;
 mod_="installazione bumblebee";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
 str_end="${Y}--${NC}$mod_end $mod_\n";
+father_file=$2;
 
 
 
@@ -82,7 +83,7 @@ if [ "$choise" == "y" ]; then
 			esac
 
 			# riavvio richiesto
-			reboot_req=0;
+			reboot_req "$father_file";
 		else
 			printf "${DG}${U}KVM non installata: impossibile connettersi ad Internet\n${NC}";
 		fi
@@ -174,7 +175,7 @@ function manage_bumblebee {
 	return $EXIT_FAILURE;
 
 	# riavvio richiesto
-	reboot_req=0;
+	reboot_req "$father_file";
 
 	printf "Assicurati che il modulo 'vga_switcheroo' sia disabilitato (oppure che sia mancante)";
 	sudo modprobe -r vga_switcheroo;
@@ -283,4 +284,5 @@ fi
 
 
 
+restore_tmp_file $1 $2;
 printf "$str_end";
