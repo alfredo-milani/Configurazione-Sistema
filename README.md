@@ -49,7 +49,7 @@ I moduli sono:
     * installa i principali tools di utilità (e.g. gksu, vim, preload, redshift, gparted, ecc... );
     * scarica ed installa l'editor Atom e il browser Google-Chrome;
     * installa le estensioni con identificativo *`extensions_id`*; <br/> l'identificativo in questione è ricavabile dal sito "https://extensions.gnome.org/"; <br/>
-    e.g. vogliamo installare l'estensione dashToDock --> il suo URL è "https://extensions.gnome.org/extension/307/dash-to-dock/" --> *`extensions_id`*=307);
+    e.g. vogliamo installare l'estensione dashToDock --> il suo URL è "https://extensions.gnome.org/extension/307/dash-to-dock/" --> *`extensions_id`*=307;
     * scarica ed installa le principali librerie mancanti del motore GTK;
 - **tracker_disable_conf.sh** - disabilitazione _tracker-* tools_:
     * disabilitazione dei tools di indicizzazione tracker-\*;
