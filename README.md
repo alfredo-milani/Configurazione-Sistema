@@ -24,7 +24,7 @@ I moduli sono:
     * crea ramdisk nelle locazioni: /var/tmp; /var/log; /tmp;
     * monta su ramdisk le cache dei principali browser (Chrome, Firefox, Chromium);
     * monta il volume contenete dati condivisi da altri OS (e.g. Windows) nella posizione /media/Data. L'UUID del device che sarà montato può essere specificato dalla chiave *`UUID_data`*;
-- **gpu_conf.sh** - configurazione bumblebee per gestione GPU discreta NVIDIA:
+- **gpu_conf.sh** - configurazione *bumblebee* per gestione GPU discreta NVIDIA:
     * scarica e configura KVM nel terminale dell'utente (per ora c'è il supporto solo a distribuzioni Debian ed Ubuntu);
     * corregge l'errore "libstdc++.so.6: version GLIBCXX_3.4.XXX not found" che si manifesta quando si utilizza l'IDE Android Studio con l'emulatore e la virtualizzazione KVM;
     * scarica e configura il tool bumblebee per gestire le GPU NVidia con tecnologia Optimus;
@@ -43,7 +43,7 @@ I moduli sono:
 - **symbolic_link_conf.sh** - creazione *link simbolici*:
     * crea un collegamento di un path temporaneo (montato su ramdisk) nella directory di Download di default;
     * crea un collegamento sul Desktop che punta ai files in comune (contenuti nel device *`UUID_data`*) tra i vari OS che il terminale ospita;
-- **tools_upgrade_conf.sh** - *aggiornamento tools* sistema:
+- **tools_upgrade_conf.sh** - aggiornamento *tools* sistema:
     * assiste la configurazione dei repository;
     * scarica ed installa il gestore dei pacchetti apt-fast;
     * installa i principali tools di utilità (e.g. gksu, vim, preload, redshift, gparted, ecc... );
