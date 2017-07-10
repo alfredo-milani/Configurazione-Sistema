@@ -263,7 +263,7 @@ function give_help {
     echo -e "\t-tr | -TR )\t\tDisabilitazione tracker-* tools";
     echo -e "\t-u | -U )\t\tAggiornamento tools del sistema";
     echo -e "\t--w | --W )\t\tDisabilitazione warnings";
-    exit $EXIT_SUCCESS
+    on_exit;
 }
 
 function check_script {
@@ -291,9 +291,10 @@ function reboot_req {
 }
 
 # on exit
-function on_signal {
+# il passaggio di qualsiasi argomento indica la ricezione di un segnale
+function on_exit {
     rm -f $tmp_file &> $null;
-    printf "${R}\nProcesso interrotto... Uscita.\n${NC}";
+    [ ${#1} != 0 ] && printf "${R}\nProcesso interrotto... Uscita.\n${NC}";
     exit $EXIT_FAILURE;
 }
 
@@ -317,7 +318,7 @@ declare -r tmp_file=`mktemp -p $_dev_shm_`;
 echo "$private_rand" | md5sum >> $tmp_file;
 
 # intercetta SIGINT SIGKILL e SIGTERM
-trap on_signal SIGINT SIGKILL SIGTERM SIGUSR1 SIGUSR2;
+trap 'on_exit 1' SIGINT SIGKILL SIGTERM SIGUSR1 SIGUSR2;
 ! check_tool "basename" "realpath" && exit $?;
 
 export mount_point;
