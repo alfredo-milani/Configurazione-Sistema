@@ -30,6 +30,9 @@ if [ "$choise" == "y" ]; then
 	check_error "Modifica files tracker-* in $path_as";
 	echo "Lancio del comando 'tracker-preferences' per disabilitare tracker-* completamente";
 	tracker-preferences &> $null;
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}tracker* tools non disabilitato${NC}\n";
 fi

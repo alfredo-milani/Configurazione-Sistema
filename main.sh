@@ -75,7 +75,7 @@ function fill_arrays {
     # tmp=`cut -d'.' -f2 <<< $conf_file`;
     # accesso agli ultimi 4 caratteri del nome del file
     tmp=${conf_file:(-4)};
-    [ "$tmp" != "conf" ] &&
+    [ "$tmp" != "conf" ] && [ $warnings == 0 ] &&
     printf "${Y}Attenzione: formato del file --> $conf_file <-- insolito\n${NC}";
 
 : <<'COMMENTO'
@@ -309,11 +309,13 @@ apt_manager=apt-get;
 tmp_code=1;
 # flag per abilitare/disabilitare i warnings
 declare -i warnings=0;
+# variabile di reboot
+declare -i reboot_req=1;
 
 export mod_="preliminare";
 export apt_manager;
 export tree_dir;
-export warnings;
+export warnings reboot_req;
 # array contenete i nomi delle variabili da parsare contenute nel file di configurazione
 var_array=(UUID_backup themes_backup icons_backup software script_path scripts_backup UUID_data driver_backup extensions_id sdk theme_scelto icon_scelto);
 
@@ -482,6 +484,10 @@ done
 
 
 
+[ ${#scripts_array[@]} == 0 ] &&
+printf "${R}Specificare un'azione!\n${NC}" &&
+give_help;
+
 # lettura file di configurazione
 ! fill_arrays && exit $EXIT_FAILURE;
 # eliminazione codici di identificazione precedenti
@@ -499,9 +505,10 @@ for script in "${scripts_array[@]}"; do
     $script $private_rand $tmp_file;
 done
 
-printf "${Y}\n\nOccorre riavvia il PC per rendere effettive le modifiche.\n${NC}";
-printf "${Y}Riavviare ora?\n$choise_opt${NC}";
-read choise;
+[ $reboot_req == 0 ] &&
+printf "${Y}\n\nOccorre riavvia il PC per rendere effettive le modifiche.\n${NC}" &&
+printf "${Y}Riavviare ora?\n$choise_opt${NC}" &&
+read choise &&
 [ "$choise" == "y" ] && sudo reboot;
 
 # eliminazione codici di identificazione precedenti

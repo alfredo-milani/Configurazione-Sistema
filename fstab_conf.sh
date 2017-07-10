@@ -75,6 +75,9 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	sudo mv $_etc_$file_fstab $_etc_$file_fstab"_old";
 	sudo cp $file_fstab $_etc_;
 	check_error "Modifica file $_etc_$file_fstab";
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}File /etc/fstab non moficato${NC}\n";
 fi

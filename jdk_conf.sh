@@ -49,6 +49,9 @@ function config_profile {
 		sudo /bin/su -c "echo 'export PATH' >> $file_profile";
 		check_error "Modifica file $file_profile";
 	fi
+
+	# riavvio richiesto
+	reboot_req=0;
 }
 
 # Impostazione JDK Oracle come default di sistema

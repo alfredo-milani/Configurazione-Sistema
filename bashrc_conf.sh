@@ -40,6 +40,9 @@ alias emu3='primusrun /opt/Sdk/tools/emulator -avd device3 -netdelay none -netsp
 alias setele='sudo chmod a+rw /dev/ttyACM0'" >> ~/.bashrc;
 
 	check_error "Inserimento alias in .bashrc"
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}Il file .bashrc non è stato modificato${NC}\n";
 fi

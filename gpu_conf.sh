@@ -80,6 +80,9 @@ if [ "$choise" == "y" ]; then
 					printf "${R}Errore sconosciuto durante l'acquisizione dell'OS\n\n${NC}";
 					;;
 			esac
+
+			# riavvio richiesto
+			reboot_req=0;
 		else
 			printf "${DG}${U}KVM non installata: impossibile connettersi ad Internet\n${NC}";
 		fi
@@ -169,6 +172,9 @@ function manage_bumblebee {
 	! check_error "Disabilitazione driver nouveau" &&
 	printf "${Y}Prova ad aggiungere il flag 'nomodeset' durante la fase di boot\n${NC}" &&
 	return $EXIT_FAILURE;
+
+	# riavvio richiesto
+	reboot_req=0;
 
 	printf "Assicurati che il modulo 'vga_switcheroo' sia disabilitato (oppure che sia mancante)";
 	sudo modprobe -r vga_switcheroo;

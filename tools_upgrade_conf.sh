@@ -49,7 +49,10 @@ which apt &> $null && apt_manager=apt;
 which apt-fast &> $null && apt_manager=apt-fast;
 
 echo "Upgrade e update dei pacchetti del sistema.";
-check_connection && sudo $apt_manager update -y && sudo $apt_manager upgrade -y;
+check_connection && sudo $apt_manager update -y &&
+sudo $apt_manager upgrade -y &&
+# riavvio richiesto
+reboot_req=0;
 
 
 
@@ -90,6 +93,9 @@ if [ "$choise" == "y" ] && check_connection; then
 	echo "################################################################" >> $apt_fast_conf_file;
 	sudo cp apt-fast.conf /etc;
 	check_error "Cofgurazione apt-fast.conf";
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}apt-fast non installato${NC}\n\n";
 fi
@@ -119,6 +125,9 @@ if [ "$choise" = "y" ] && check_connection; then
 	else
 		printf "${DG}${U}Il tool prelink non è stato installato${NC}\n\n";
 	fi
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}Tools non installati${NC}\n\n";
 fi
@@ -151,6 +160,9 @@ if [ "$choise" = "y" ] && check_connection; then
 		read choise;
 		printf "\n";
 	fi
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}Atom e Google-Chrome non installati${NC}\n\n";
 fi
@@ -188,6 +200,9 @@ if [ "$choise" == "y" ] && check_connection; then
 			fi
 		fi
 	done
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}Estensioni non installate${NC}\n\n";
 fi
@@ -200,6 +215,9 @@ printf "Installare le librerie mancanti del motore GTK ($missing_libs)?\n$choise
 read choise;
 if [ "$choise" == "y" ] && check_connection; then
 	$apt_manager install $missing_libs;
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}Librerie --> $missing_libs <-- non installate\n${NC}";
 fi

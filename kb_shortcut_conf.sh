@@ -135,6 +135,9 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 		$gs set "$keybindings" "${tmp_array[0]}" "${tmp_array[1]}";
 		check_error "$str";
 	done
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}Keyboard shortcuts non impostati${NC}\n";
 fi

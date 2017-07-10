@@ -34,6 +34,9 @@ if [ "$choise" == "y" ]; then
 	$cmd "echo 'net.core.netdev_max_backlog = 5000' >> $net_conf_file";
 	sudo sysctl -p;
 	check_error "Modifica impostazioni protocollo TCP";
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}Impostazioni protocollo TCP non modificate${NC}\n\n";
 fi
@@ -52,6 +55,9 @@ options iwlwifi 11n_disable=1
 
 	$cmd "sed -i 's/REGDOMAIN=/REGDOMAIN=IT/' '/etc/default/crda'";
 	check_error "Modifica files crda";
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}File iwlwifi.conf non modificato${NC}\n\n";
 fi
@@ -74,6 +80,9 @@ if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID
 			if [ "$tmp" != "INFO" ]; then
 				sudo cp -r $file $path_sys_driver;
 				check_error "Aggiunta driver $file";
+
+				# riavvio richiesto
+				reboot_req=0;
 			fi
 		done
 	else
@@ -97,6 +106,9 @@ if [ "$choise" == "y" ]; then
 	# -i (in-place) --> modifica direttamente nel file originale
 	sudo sed -i "/$line_to_replace/s/.*/$new_str/" "$_etc_nsswitch";
 	check_error "Modifica file $_etc_nsswitch";
+
+	# riavvio richiesto
+	reboot_req=0;
 else
 	printf "${DG}${U}File $_etc_nsswitch non modificato\n${NC}";
 fi
