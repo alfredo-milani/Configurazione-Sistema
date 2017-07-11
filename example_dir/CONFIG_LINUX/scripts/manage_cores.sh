@@ -131,7 +131,7 @@ function enable_cores {
 		if [ $cpu_status == 0 ]; then
 			(echo $operation > $status_file) &> $null;
 
-			[ $? == 1 ] &&
+			[ $? != 1 ] &&
 			! print_str 0 "Permessi non sufficienti per eseguire lo script" &&
 			return $EXIT_FAILURE;
 
@@ -160,7 +160,7 @@ function disable_cores {
 		if [ $cpu_status == 1 ]; then
 			(echo $operation > $status_file) &> $null;
 
-			[ $? == 1 ] &&
+			[ $? != 1 ] &&
 			! print_str 0 "Permessi non sufficienti per eseguire lo script" &&
 			return $EXIT_FAILURE;
 
