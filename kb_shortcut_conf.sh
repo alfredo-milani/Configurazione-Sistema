@@ -41,8 +41,8 @@ home_sc2="Home 2;nautilus;'<Ctrl>M'";
 chrome_sc="Google Chrome;google-chrome --disk-cache-dir='/dev/shm';'<Ctrl>G'";
 ping_sc="Ping;gnome-terminal -e 'ping google.com';'<Ctrl><Shift>minus'";
 network_manager_sc="Network Manager Restart;$script_path/check_psw.sh service network-manager restart;'<Ctrl><Shift>R'";
-disable_cores="Disable Cores;$script_path/check_psw.sh $script_path/manage_cores.sh 0;'<Ctrl><Shift>D'";
-enable_cores="Enable Cores;$script_path/check_psw.sh $script_path/manage_cores.sh 1;'<Ctrl><Shift>E'";
+disable_cores="Disable Cores;$script_path/check_psw.sh $script_path/manage_cores.sh /;'<Ctrl><Shift>D'";
+enable_cores="Enable Cores;$script_path/check_psw.sh $script_path/manage_cores.sh °°;'<Ctrl><Shift>E'";
 # aggiungere le var che si vogliono attivare in quest'array
 custom_kb_array=("$terminal" "$redshift" "$home_sc2" "$chrome_sc" "$ping_sc" "$disable_cores" "$enable_cores" "$network_manager_sc");
 
