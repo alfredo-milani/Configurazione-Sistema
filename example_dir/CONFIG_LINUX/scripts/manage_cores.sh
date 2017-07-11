@@ -1,88 +1,242 @@
 #!/bin/bash
 
-# NOTA: questo scritp DEVE essere eseguito da gksudo per ottenere i privilegi necessari
-# Questo script è usato per disattivare temporanemante la metà dei threads di una CPU sse sono >= 2
-
-# FUNZIONAMENTO: se questo script non riceve come argomento alcun valore --> alla prima invocazione: disabilita metà dei cores attivi
-# 																			 alla seconda invocazione: riabilita i cores non attivi
-# 				 se riceve un valore --> valore '1': attiva tutti i cores disabilitati
-# 				 						 valore '0': disabilita
-
-# controllo presenza tools
-which egrep nproc 1> /dev/null;
-if [ $? != 0 ]; then
-	err_str="Tool egrep o nproc non presenti nel sistema";
-	echo $err_str;
-	zenity --error --text="$err_str";
-	exit 5;
-fi
+# NOTA: questo scritp DEVE essere eseguito da gksudo per ottenere i privilegi necessari (vedi script ./check_psw.sh)
+#####
+# FUNZIONAMENTO: 4 operazioni possibili: n +  -->  abilita n cores del sistema;
+#										 n -  -->  disabilita n cores del sistema;
+#										 n °  -->  abilita cores_tot/n cores attivi nel del sistema;
+#										 °    -->  come sopra ma con n=2;
+#										 °°   -->  abilita tutti i cores disattivati
+#										 n /  -->  disabilita cores_tot/n cores attivi nel sistema;
+#										 /    -->  come sopra ma con n=2.
 
 
 
+# presenza del tool zenity nel sistema
+declare zen;
+# dimensioni alert dialog
+declare -r dialog_width=600;
+declare -r dialog_height=20;
+# exit status
+declare -r EXIT_SUCCESS=0;
+declare -r EXIT_FAILURE=5;
+# redir trash output
+declare -r null=/dev/null;
+# path di sistema contenente i files necessari
+declare -r path=/sys/devices/system/cpu;
+# operazione da performare
+declare -i operation;
+declare OP='?';
 # numero TOTALI di cores presenti nel sistema
 # tmp=(`lscpu | egrep 'CPU\(s\):'`);
 # cores=${tmp[1]};
 # oppure:
-cores=`nproc --all`;
+declare -r cores=`nproc --all`;
 # nproc restituisce il numero di cpu ATTIVE
 # 	si potrebbe anche elaborare meglio la stringa ottenuta dal comando lscpu
 # varrà sempre metà del valore iniziale
-cores_online=`nproc`;
-# numero di cores da disattivare
-cores_to_change=$(($cores_online >> 1));
+declare -r cores_online=`nproc`;
+# numero di cores da gestire; input dell'utente
+declare -i cores_to_manage=2;
+# cores utili --> cores attivi
+declare -i cores_available=$((cores - cores_online));
 
 
 
-if  [ $cores -le 2 ] || ([ $cores_online -le 2 ] &&
-	[ ${#1} != 0 ] && [ $1 != 1 ]); then
-	# errore
-	err_str='Attenzione: numero di cores online minore o uguale a 2!';
-	zenity --error --text="$err_str";
-	echo $err_str;
-	exit 5;
-fi
+function usage {
+	printf "\n";
+	printf "`realpath $0` [cores to manage] [operations]\n";
+	printf "\n";
+	printf "\tCores to manage\n";
+	printf "\t\tn :  numero di cores su cui operare (default n=2)\n";
+	printf "\n";
+	printf "\tOperations\n";
+	printf "\t\tn + :  attiva n cores\n";
+	printf "\t\tn - :  disattiva n cores\n";
+	printf "\t\tn / :  disabilita cores_tot/n cores attivi del sistema\n";
+	printf "\t\t  / :  come sopra ma con n=2\n";
+	printf "\t\tn ° :  abilita cores_tot/n cores attivi del sistema\n";
+	printf "\t\t  ° :  come sopra ma con n=2\n";
+	printf "\t\t °° :  attiva tutti cores disattivati\n";
+	printf "\n";
+	printf "Esempio: ./`basename $0` + 3 -->  attiva 3 cores del sistema\n";
+	printf "Esempio: ./`basename $0` / 3 -->  se ad esempio il sistema ha 12 cores attivi, ne verranno disattivati 4\n";
 
+	exit $EXIT_SUCCESS;
+}
 
-
-# scelta operazione: 1 --> attivazione; 0 --> disattivazione cores
-if [ ${#1} != 0 ]; then
-	# disabilitazione metà cores alla volta
-	if [ $1 == 0 ]; then
-		# disabilitazione
-		cores=$cores_online;
-	elif [ $1 == 1 ]; then
-		cores_to_change=$(($cores - $cores_online));
-	else
-		err_str="Argomento ---  $1  --- non valido";
-		zenity --error --text="$err_str";
-		echo $err_str;
-		exit 5;
+# stampa una stringa con output su CLI e su GUI
+# se il primo argomento è 0 --> stampa una scritta di errore
+function print_str {
+	reason="\t\t*** $2 ***\n";
+	[ "$1" == "0" ] && printf "$reason" &&
+	(
+	if [ $zen == 0 ]; then
+		zenity --width=$dialog_width --height=$dialog_height --error --text="$reason" &> $null;
 	fi
+	) &&
+	return 1;
 
-	op=$1;
-else
-	# disabilitazione metà cores
-	if [ $cores_online -lt $cores ]; then
-		# abilitazione
-		op=1;
-		cores_to_change=$(($cores - $cores_online));
+	printf "$1" && return 0;
+}
+
+# alert dialog con richiesta interazione utente
+function decision {
+	question="\t\t $1 \n";
+	if [ $zen == 0 ]; then
+		zenity --width=$dialog_width --height=$dialog_height --question --text="$question" &> $null &&
+		return $EXIT_SUCCESS;
+		return $EXIT_FAILURE;
 	else
-		# disabilitazione
-		op=0;
+		printf "$question";
+		printf "[y=procedi / others=annulla]\t";
+		read -t 45 choise || return $EXIT_FAILURE;
+
+		[ "$choise" == "y" ] && return $EXIT_SUCCESS ||
+		return $EXIT_FAILURE;
 	fi
-fi
+}
+
+# gestione operazioni '+' e '*'
+function enable_cores {
+	# l'indice parte da 1 perché la cpu0 non può essere
+	# disabilitata per problemi di stabilità e sicurezza
+	for ((j = 1; j < $cores && $cores_to_manage != 0; ++j)); do
+		status_file=$path'/cpu'$j'/online';
+		cpu_status=`cat $status_file`;
+
+		if [ $cpu_status == 0 ]; then
+			echo $operation > $status_file;
+			cores_to_manage=$((cores_to_manage - 1));
+		fi
+	done
+}
+
+# gestione operazioni '-' e '/'
+function disable_cores {
+	# l'indice parte da 1 perché la cpu0 non può essere
+	# disabilitata per problemi di stabilità e sicurezza
+	for ((j = $((cores - 1)); j > 0 && $cores_to_manage != 0; --j)); do
+		status_file=$path'/cpu'$j'/online';
+		cpu_status=`cat $status_file`;
+
+		if [ $cpu_status == 1 ]; then
+			echo $operation > $status_file;
+			cores_to_manage=$((cores_to_manage - 1));
+		fi
+	done
+}
 
 
 
-# path di sistema contenente i files necessari
-path=/sys/devices/system/cpu;
-for (( ; $cores_to_change > 0; cores_to_change=$(($cores_to_change - 1)) )); do
-	# disabilito i cores partendo dagli ultimi
-	echo $op > $path'/cpu'$(($cores - 1))'/online';
-	cores=$(($cores - 1));
+# verifica compatibilità sistema
+[ $cores -le 2 ] && ! print_str 0 "Sistema incompatibile.\nNumero di cores totali nel sistema=$cores." && exit $EXIT_FAILURE;
+# controllo presenza tools necessari per l'operazione
+which egrep nproc 1> $null;
+[ $? != 0 ] && ! print_str 0 "Tool egrep o nproc non presenti nel sistema" && exit $EXIT_FAILURE;
+which zenity 1> $null;
+zen=$?;
+# verifica numero argomenti ricevuti
+(
+([ $# -gt 2 ] && ! print_str 0 "Troppi argomenti ricevuti!") ||
+([ $# -lt 1 ] && ! print_str 0 "Argomenti mancanti!")
+) && usage;
+
+
+
+# parsing input utente
+while [ $# -gt 0 ]; do
+	case "$1" in
+		'+' | '°' | '°°' )
+			[ "$OP" == "?" ] &&
+			OP=$1 &&
+			operation=1 &&
+			shift &&
+			continue;
+
+			! print_str 0 "Errore interno sconosciuto" && exit $EXIT_FAILURE;
+			;;
+
+		'-' | '/' )
+			[ "$OP" == "?" ] &&
+			OP=$1 &&
+			operation=0 &&
+			shift &&
+			continue;
+
+			! print_str 0 "Errore interno sconosciuto" && exit $EXIT_FAILURE;
+			;;
+
+		[0-9] )
+			cores_to_manage=$1;
+			shift;
+			;;
+
+		* )
+			! print_str 0 "Sintassi errata!" && usage;
+			;;
+	esac
 done
 
 
 
+# verifica presenza operazione
+[ "$OP" == "?" ] && ! print_str 0 "Operazione non specificata." && exit $EXIT_FAILURE;
+# verifica che ci sia un numero sufficiente di cores da poter gestire
+if [ $cores_online -le 2 ] && ([ "$OP" == '/' ] || [ "$OP" == '-' ]); then
+	decision "Attenzione: numero di cores online=$cores_online.\tProcedere comunque?" ||
+	exit $EXIT_FAILURE;
+fi
+
+
+
+# gestione operazioni
+case "$OP" in
+	'+' )
+		# controllo sul numero di cores da gestire
+		[ $cores_to_manage -gt $cores_available ] &&
+		! print_str 0 "Errore! Non è possibile attivare più di $cores_available cores." &&
+		exit $EXIT_FAILURE;
+
+		enable_cores;
+		;;
+
+	'°' )
+		# controllo sul numero di cores da gestire
+		cores_to_manage=$((cores_online * cores_to_manage));
+		[ $cores_to_manage -gt $cores_available ] &&
+		! print_str 0 "Errore! Non è possibile attivare più di $cores_available cores." &&
+		exit $EXIT_FAILURE;
+
+		enable_cores;
+		;;
+
+	'°°' )
+		# controllo sul numero di cores da gestire
+		cores_to_manage=$cores_available;
+
+		enable_cores;
+		;;
+
+	'-' )
+		# controllo sul numero di cores da gestire
+		[ $cores_to_manage -ge $cores_online ] &&
+		! print_str 0 "Errore! Non è possibile disattivare più di $cores_online cores." &&
+		exit $EXIT_FAILURE;
+
+		disable_cores;
+		;;
+
+	'/' )
+		# controllo sul numero di cores da gestire
+		cores_to_manage=$((cores_online / cores_to_manage));
+		[ $cores_to_manage -ge $cores_online ] &&
+		! print_str 0 "Errore! Non è possibile disattivare più di $cores_online cores." &&
+		exit $EXIT_FAILURE;
+
+		disable_cores;
+		;;
+esac
+
 # successo
-exit 0;
+exit $EXIT_SUCCESS;
