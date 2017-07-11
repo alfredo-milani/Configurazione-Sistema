@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Autore: Alfredo Milani
-# Data: 12 - 05 - 2017
+# Data: 15 - 05 - 2017
 
 gksudo $@;
 
 if [ $? == 1 ]; then
     err_str="Password sbagliata";
     echo $err_str;
-    zenity --error --text="$err_str";
+    zenity --error --text="$err_str" &> /dev/null;
     exit 1;
 fi
 
