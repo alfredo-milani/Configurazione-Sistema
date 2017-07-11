@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Autore: Alfredo Milani
+# Data: 07 - 03 - 2017
+
 icon_path="/usr/share/icons/Adwaita/48x48/status/display-brightness-symbolic.symbolic.png";
 tool="redshift";
 lat=41.6;

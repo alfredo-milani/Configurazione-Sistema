@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Autore: Alfredo Milani
+# Data: 12 - 05 - 2017
+
 # NOTA: questo scritp DEVE essere eseguito da gksudo per ottenere i privilegi necessari
 # Questo script è usato per disattivare temporanemante la metà dei threads di una CPU sse sono >= 2
 

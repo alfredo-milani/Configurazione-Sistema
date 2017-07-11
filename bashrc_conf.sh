@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Autore: Alfredo Milani
+# Data: 10 - 06 - 2017
+
 # per evitare che lo script sia lanciato in modo diretto, cioè non lanciato dal main script
 # applico l'algorimto di hashing sul numero casuale generato dal modulo
 # principale e lo confronto con il file tmp

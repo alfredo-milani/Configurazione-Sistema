@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Autore: Alfredo Milani
+# Data: 12 - 05 - 2017
+
 gksudo $@;
 
 if [ $? == 1 ]; then

@@ -160,6 +160,12 @@ GPU: *NVidia GTX 960M;* <br/>
 NIC: *Intel AC7260.*
 
 
+In `example_dir/CONFIG_LINUX/scripts/` ci sono degli scripts utili:
+* *`manage_cores.sh`*: per gestire il numero di cores attivi nel sistema;
+* *`check_psw.sh`*: per eseguire il tool/script passatogli come argomento come super utente;
+* *`redshift_regolator.sh`*: gestisce il tool redshift per ridurre l'emissione dei raggi blu dello schermo;
+
+
 
 ## Riferimenti
 Lo script ~/utils/gnomeshell_extension_manage.sh è stato creato da [**N. Bernaerts**](https://github.com/NicolasBernaerts/ubuntu-scripts/blob/master/ubuntugnome/gnomeshell-extension-manage).
