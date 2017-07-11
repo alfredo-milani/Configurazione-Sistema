@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Autore: Alfredo Milani
-# Data: 15 - 05 - 2017
+# Data: 07 - 05 - 2017
 
 gksudo $@;
 
