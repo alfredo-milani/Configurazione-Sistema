@@ -161,7 +161,7 @@ NIC: *Intel AC7260.*
 
 
 In `example_dir/CONFIG_LINUX/scripts/` ci sono degli scripts utili:
-* *`manage_cores.sh`*: per gestire il numero di cores attivi nel sistema;
+* *`manage_cores.sh`*: per gestire il numero di threads attivi nel sistema;
 * *`check_psw.sh`*: per eseguire il tool/script passatogli come argomento come super utente;
 * *`redshift_regolator.sh`*: gestisce il tool redshift per ridurre l'emissione dei raggi blu dello schermo;
 
