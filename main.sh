@@ -235,7 +235,7 @@ function check_connection {
 	# mentre get_header ritorna una valore maggiore di 0 ()--> mentre wget riscontra errori) chiedi all'utente come procedere
     echo "Controllo accesso ad Internet. Attendere...";
 	while ! get_header; do
-		printf "${Y}Connessione assente.\n$choise_opt_net${NC}\n";
+		printf "${Y}Connessione assente.\n$choise_opt_net${NC}";
 		read choise;
 		if [ "$choise" == "j" ]; then
 			return $EXIT_FAILURE;
@@ -524,7 +524,8 @@ give_help;
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
     $script $private_rand $tmp_file $$;
-    /usr/bin/clear;
+    # printf '\033[2J'; printf '\033[u';
+    # /usr/bin/clear;
 done
 
 if [ -f "$tmp_file" ]; then
