@@ -190,10 +190,14 @@ if [ "$choise" == "y" ] && check_connection; then
 
 		# disabilitazione intel_pstate a fronte dell'installazione di un'estensione per regolare la frequenza della CPU
 		if [ $el == 1082 ] || [ $el == 47 ] || [ $el == 444 ] && [ -f "/etc/default/grub" ]; then
-			echo "Disabilitando il driver, con l'estensione cpufreq il TurboBoost potrebbe non funzionare";
+			echo "Disabilitando il driver, con l'estensione cpufreq il Turbo Boost potrebbe non funzionare";
 			printf "Disabilitare i driver intel_pstate?\n$choise_opt";
 			read choise;
 			if [ "$choise" == "y" ]; then
+				! [ -f "/etc/default/grub" ] &&
+				printf "${R}File /etc/default/grub non trovato.\nImpossibile disabilitare il Turbo Boost\n${NC}" &&
+				continue;
+
 				old_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet';
 				new_str='GRUB_CMDLINE_LINUX_DEFAULT=\"quiet intel_pstate=disable';
 				sudo sed -i "s/$old_str/$new_str/" "/etc/default/grub";

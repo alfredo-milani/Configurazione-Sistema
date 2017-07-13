@@ -43,7 +43,7 @@ alias emu3='primusrun /opt/Sdk/tools/emulator -avd device3 -netdelay none -netsp
 # alias per impostare i diritti in lettura/scrittura su /dev/ttyACM0 per Arduino
 alias setele='sudo chmod a+rw /dev/ttyACM0'" >> ~/.bashrc;
 
-	check_error "Inserimento alias in .bashrc"
+	check_error "Inserimento alias in .bashrc";
 
 	# riavvio richiesto
 	reboot_req "$father_file";

@@ -70,6 +70,8 @@ function manage_theme {
 	check_error "Copia tema in $path_sys_theme";
 	gsettings set org.gnome.desktop.interface gtk-theme $theme_scelto;
 	check_error "Impostazione del tema $theme_scelto in $path_sys_theme";
+
+	return $EXIT_SUCCESS;
 }
 
 function manage_icon {
@@ -83,6 +85,8 @@ function manage_icon {
 	check_error "Copia set di icone in $path_sys_icon";
 	gsettings set org.gnome.desktop.interface icon-theme $icon_scelto;
 	check_error "Impostazione del set di icone $icon_scelto in $path_sys_icon";
+
+	return $EXIT_SUCCESS;
 }
 
 
@@ -91,7 +95,7 @@ printf "Vuoi configurare il tema GTK+ del sistema?\n$choise_opt";
 read choise;
 if ! ([ "$choise" == "y" ] && check_tool "gsettings" && check_mount $UUID_backup &&
 	# () --> subshell
-	([ ${#theme_scelto} == 0 ] && print_missing_val "theme_scelto" && exit 1 || exit 0) &&
+	([ ${#theme_scelto} == 0 ] && print_missing_val "theme_scelto" && exit $EXIT_FAILURE || exit $EXIT_SUCCESS) &&
 	manage_theme); then
 	printf "${DG}${U}Tema non configurato${NC}\n\n";
 fi
@@ -100,7 +104,7 @@ printf "Vuoi configurare le icone del sistema?\n$choise_opt";
 read choise;
 if ! ([ "$choise" = "y" ] && check_tool "gsettings" &&
 	check_mount $UUID_backup &&
-	([ ${#icon_scelto} == 0 ] && print_missing_val "icon_scelto" && exit 1 || exit 0) &&
+	([ ${#icon_scelto} == 0 ] && print_missing_val "icon_scelto" && exit $EXIT_FAILURE || exit $EXIT_SUCCESS) &&
 	manage_icon); then
 	printf "${DG}${U}Icone non configurate${NC}\n";
 fi

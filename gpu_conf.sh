@@ -223,7 +223,7 @@ function manage_bumblebee {
 	printf "${R}Connessiona assente: impossibile installare bumblebee\n${NC}" &&
 	return $EXIT_FAILURE;
 
-	printf "Installazione dirver nvidia, bumblebee e dipendenze varie";
+	printf "Installazione dirver nvidia, bumblebee e dipendenze varie\n";
 	sudo $apt_manager install nvidia-kernel-dkms nvidia-xconfig nvidia-settings;
 	sudo $apt_manager install nvidia-vdpau-driver vdpau-va-driver mesa-utils;
 	sudo $apt_manager install bumblebee-nvidia;
