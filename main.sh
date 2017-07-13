@@ -351,12 +351,6 @@ var_array=(UUID_backup themes_backup icons_backup software script_path scripts_b
 
 
 
-# controllo se l'utente non ha specificato il modulo da avviare
-if [ $# == 0 ]; then
-    printf "${U}Utilizza il flag -h per conoscere le operazioni disponibili\n${NC}";
-    on_exit $EXIT_SUCCESS;
-fi
-
 # controllo se l'utente ha inserito il flag -h o se ha specificato l'opzione --all
 for arg in $@; do
     if [ "$arg" == "-h" ] ||
@@ -514,9 +508,10 @@ done
 
 
 
+# controllo se l'utente ha specificato un modulo da avviare
 [ ${#scripts_array[@]} == 0 ] &&
-printf "${R}Specificare un'azione!\n${NC}" &&
-give_help;
+printf "${R}Specificare un'azione!\nUtilizza il flag -h per conoscere le operazioni disponibili\n${NC}" &&
+on_exit $EXIT_FAILURE;
 
 # lettura file di configurazione
 ! fill_arrays && on_exit $EXIT_FAILURE;
