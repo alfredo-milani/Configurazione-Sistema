@@ -377,6 +377,8 @@ for arg in $@; do
                 [ "$current_script_name" != "$tmp_script" ] &&
                 scripts_array+=("$script");
             done
+
+            break;
     fi
 done
 
