@@ -524,6 +524,7 @@ give_help;
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
     $script $private_rand $tmp_file $$;
+    /usr/bin/clear;
 done
 
 if [ -f "$tmp_file" ]; then

@@ -78,7 +78,7 @@ function usage {
 function print_str {
 	reason="\t\t*** $2 ***\n";
 	if [ "$1" == "0" ]; then
-		printf "$reason";
+		printf "$reason" 1>&2;
 
 		[ $zen == 0 ] &&
 		zenity --width=$dialog_width --height=$dialog_height --error --text="$reason" &> $null;
@@ -93,7 +93,7 @@ function print_str {
 function decision {
 	question="\t\t $1 \n";
 	if [ $zen == 0 ]; then
-		zenity --width=$dialog_width --height=$dialog_height --question --text="$question" &> $null &&
+		zenity --width=$dialog_width --height=$dialog_height --question --timeout $read_to --text="$question" &> $null &&
 		return $EXIT_SUCCESS;
 		return $EXIT_FAILURE;
 	else
