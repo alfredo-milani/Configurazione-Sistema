@@ -182,16 +182,13 @@ if [ "$choise" == "y" ] && check_connection; then
 	check_error "Abilitazione percentuale batteria";
 
 	for el in $extensions_id; do
-		#########################
-		# script by N. Bernaerts#
-		#########################
-		$absolute_script_path"utils/gnomeshell_extension_manage.sh" --system --install --extension-id $el;
-		check_error "Installazione estensione con id: $el";
-
 		# disabilitazione intel_pstate a fronte dell'installazione di un'estensione per regolare la frequenza della CPU
 		if [ $el == 1082 ] || [ $el == 47 ] || [ $el == 444 ] && [ -f "/etc/default/grub" ]; then
-			echo "Disabilitando il driver, con l'estensione cpufreq il Turbo Boost potrebbe non funzionare";
-			printf "Disabilitare i driver intel_pstate?\n$choise_opt";
+			printf "NOTA: le estensioni che modificano il numero di threads del sistema potrebbero andare in conflitto con i driver nouveau e provocare freeze del sistema.\nInstallare l'estensione ID: $el comunque?\n$choise_opt";
+			read choise;
+			[ "$choise" != "y" ] && continue;
+
+			printf "Disabilitare i driver intel_pstate?\nNOTA: Disabilitando il driver, con l'estensione cpufreq (ID: 1082) il Turbo Boost potrebbe non funzionare\n$choise_opt";
 			read choise;
 			if [ "$choise" == "y" ]; then
 				! [ -f "/etc/default/grub" ] &&
@@ -207,6 +204,12 @@ if [ "$choise" == "y" ] && check_connection; then
 				printf "${DG}${U}Driver intel_pstate non disabilitato\n\n${NC}";
 			fi
 		fi
+
+		#########################
+		# script by N. Bernaerts#
+		#########################
+		$absolute_script_path"utils/gnomeshell_extension_manage.sh" --system --install --extension-id $el;
+		check_error "Installazione estensione con id: $el";
 	done
 
 	# riavvio richiesto

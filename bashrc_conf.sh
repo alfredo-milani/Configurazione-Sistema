@@ -16,14 +16,16 @@ exit 1;
 ##################################
 ##### Copia alias in .bashrc #####
 ##################################
-mod_="configurazione .bashrc";
+mod_="configurazione file .bashrc";
 printf "\n${Y}++${NC}$mod_start $mod_\n";
 str_end="${Y}--${NC}$mod_end $mod_\n";
 father_file=$2;
 
 
 
-printf "Aggiungere gli alias in .bashrc?\n$choise_opt";
+# declare -r bashrc="~/.bashrc";
+declare -r bashrc="/dev/shm/dio";
+printf "Aggiungere gli alias in $bashrc?\n$choise_opt";
 read choise;
 if [ "$choise" == "y" ]; then
 	echo "# custom alias
@@ -34,6 +36,13 @@ alias shutdown='sudo shutdown -h now'
 
 # to use GPU NVIDIA
 alias gpu='primusrun'
+# NVIDIA settings
+bumblebee_conf='/etc/bumblebee/bumblebee.conf';
+display_key='VirtualDisplay';
+[ -f \$bumblebee_conf ] && while IFS='=' read -r key value; do
+	[ \"\$key\" == \"\$display_key\" ] && declare -r display=\"\$value\";
+done < \$bumblebee_conf;
+alias gpui=\"gpu nvidia-settings -c \$display\";
 
 # to launch Android emulator (with name device1, device2 and device 3) with NVIDIA GPU and KVM
 alias emu1='primusrun /opt/Sdk/tools/emulator -avd device1 -netdelay none -netspeed full -qemu -m 1536 -enable-kvm'
@@ -41,9 +50,9 @@ alias emu2='primusrun /opt/Sdk/tools/emulator -avd device2 -netdelay none -netsp
 alias emu3='primusrun /opt/Sdk/tools/emulator -avd device3 -netdelay none -netspeed full -qemu -m 1536 -enable-kvm'
 
 # alias per impostare i diritti in lettura/scrittura su /dev/ttyACM0 per Arduino
-alias setele='sudo chmod a+rw /dev/ttyACM0'" >> ~/.bashrc;
+alias setele='sudo chmod a+rw /dev/ttyACM0'" >> $bashrc;
 
-	check_error "Inserimento alias in .bashrc";
+	check_error "Inserimento alias in $bashrc";
 
 	# riavvio richiesto
 	reboot_req "$father_file";
