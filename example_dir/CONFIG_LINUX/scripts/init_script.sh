@@ -125,6 +125,8 @@ function select_editor {
 
 
 
+printf "Directory corrente: `realpath .`\n\n";
+
 select_title;
 
 printf "Inserisci una descrizione:\t";
@@ -144,16 +146,18 @@ printf "Inserisci le note:\t";
 read -r notes;
 [ ${#notes} == 0 ] && notes="--/--";
 
-printf "#!/bin/bash
+printf "\
+# $div$div
+%s
 #
-# Titolo:           $title
-# Descrizione:      $description
-# Autore:           $name
-# Data:             $data
-# Versione:         $version
-# Note:             $notes
-# Versione bash:    $BASH_VERSION
-# $div$div" > $title;
+%-20s%s
+%-20s%s
+%-20s%s
+%-20s%s
+%-20s%s
+%-20s%s
+%-20s%s
+# $div$div\n" "#!/bin/bash" "# Titolo:" "$title" "# Descrizione:" "$description" "# Autore:" "$name" "# Data:" "$data" "# Versione:" "$version" "# Note:" "$notes" "# Versione bash:" "$BASH_VERSION" > "$title";
 
 # rendi eseguibile lo script
 chmod +x $title;
