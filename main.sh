@@ -73,33 +73,6 @@ function fill_arrays {
         return $EXIT_FAILURE;
     fi
 
-    # tmp=`cut -d'.' -f2 <<< $conf_file`;
-    # accesso agli ultimi 4 caratteri del nome del file
-    tmp=${conf_file:(-4)};
-    [ "$tmp" != "conf" ] && [ $warnings == 0 ] &&
-    printf "${Y}Attenzione: formato del file --> $conf_file <-- insolito\n${NC}";
-
-: <<'COMMENTO'
-    sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' "$conf_file" |
-    while IFS='=' read -r key value; do
-        echo "K: $key      V: $value";
-        # le variabili NON vengono assegnate agli arrays
-        keys+=("$key");
-        values+=("$value");
-    done
-COMMENTO
-
-    # esportazione di tutte le variabili comuni a tutti i moduli
-    for var in ${var_array[@]}; do
-        export $var;
-    done
-
-    # workaround
-    # eliminazione commenti all'inizio riga ed inline prima di parsare i dati
-    file_to_parse=`mktemp -p $_dev_shm_`;
-    # nota: la d finale serve per cancellare gli spazi bianchi
-    #   le chiavi preceduta da spazi bianchi non saranno considerate
-    sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' "$conf_file" >> $file_to_parse;
     while IFS='=' read -r key value; do
         case "$key" in
             tree_dir )          tree_dir=$value ;;
@@ -124,11 +97,21 @@ COMMENTO
                                 fi
                                 ;;
         esac
-    done < $file_to_parse;
+    # oppure $ done < <(sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' "$conf_file");
+    done <<< `sed -e 's/[[:space:]]*#.*// ; /^[[:space:]]*$/d' "$conf_file"`;
 
-    rm -f $file_to_parse;
+    # tmp=`cut -d'.' -f2 <<< $conf_file`;
+    # accesso agli ultimi 4 caratteri del nome del file
+    tmp=${conf_file:(-4)};
+    [ "$tmp" != "conf" ] && [ $warnings == 0 ] &&
+    printf "${Y}Attenzione: formato del file --> $conf_file <-- insolito\n${NC}";
 
-    # verifica sintattica varibili esportate
+    # esportazione di tutte le variabili comuni a tutti i moduli
+    for var in ${var_array[@]}; do
+        export $var;
+    done
+
+    # verifica consistenza varibili esportate
     if [ $warnings == 0 ]; then
         for var in ${var_array[@]}; do
             check_value $var;
