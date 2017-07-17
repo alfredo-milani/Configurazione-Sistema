@@ -1,11 +1,12 @@
 #!/bin/bash
-#
+# ============================================================================
+
 # Titolo:           init_script.sh
 # Descrizione:      Inizializza uno script inserendo un header
 # Autore:           Alfreod Milani
 # Data:             sab 15 lug 2017, 15.48.36, CEST
 # Versione:         1.0.0
-# Note:             Usage: ./init_script.sh
+# Note:             Usage: ./init_script.sh -h  /  .../path_salavataggio/
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
 
@@ -15,6 +16,8 @@ declare -r clear=/usr/bin/clear;
 declare -r EXIT_SUCCESS=0;
 declare -r EXIT_FAILURE=1;
 declare -r null=/dev/null;
+declare shell='/bin/bash';
+declare path_to_store='.';
 declare description;
 declare name;
 declare version;
@@ -29,6 +32,8 @@ function select_title {
     read -r title;
     printf "\n";
 
+    [ ${#title} == 0 ] && select_title;
+
     # sostituisci gli spazi bianchi con _
     title=${title// /_};
 
@@ -39,8 +44,8 @@ function select_title {
     [ "${title: -3}" != '.sh' ] && title="$title.sh";
 
     # controlla l'esistenza di un file con lo stesso nome nella directory corrente
-    if [ -e "$title" ] ; then
-        printf "File \"$title\" già esistente.\n" \
+    if [ -e "$path_to_store/$title" ] ; then
+        printf "File \"$title\" già esistente in \"$path_to_store\".\n" \
         "Inserisci un nome diverso per continuare.\n";
 
         select_title;
@@ -72,7 +77,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 $title;
+            $ed +13 "$path_to_store/$title";
             ;;
 
         2 )
@@ -80,7 +85,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 $title;
+            $ed +13 "$path_to_store/$title";
             ;;
 
         3 )
@@ -88,7 +93,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 $title;
+            $ed +13 "$path_to_store/$title";
             ;;
 
         4 )
@@ -96,7 +101,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 $title;
+            $ed +13 "$path_to_store/$title";
             ;;
 
         5 )
@@ -104,7 +109,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed $title;
+            $ed "$path_to_store/$title";
             ;;
 
         6 )
@@ -112,7 +117,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 $title;
+            $ed +13 "$path_to_store/$title";
             ;;
 
         * )
@@ -123,9 +128,47 @@ function select_editor {
     esac
 }
 
+function select_shell {
+    printf "\nInserisci il path della shell da utilizzare (default: /bin/bash):\t";
+    read -r tmp_shell;
+    printf "\n";
+    if [ ${#tmp_shell} != 0 ]; then
+        if which $tmp_shell &> $null; then
+            shell=$tmp_shell;
+            return $EXIT_SUCCESS;
+        else
+            printf "Shell \"$tmp_shell\" non esistente.\nInserire una shell valida oppure clicca invio per la shell di default ($shell).\n";
+            select_shell;
+        fi
+    fi
+
+    return $EXIT_SUCCESS;
+}
+
+# uso
+function usage {
+    echo "$0 [args]";
+    echo "";
+    echo -e "\t\t      -h :\tmostra questo aiuto\n";
+    echo -e "\t\t../path/ :\tpath di salvataggio del file";
+    echo "";
+
+    exit $EXIT_SUCCESS;
+}
 
 
-printf "Directory corrente: `realpath .`\n\n";
+
+# controllo sul numero di argomenti ricevuti in input
+[ $# -gt 1 ] && usage;
+# impostazione path di salvataggio
+[ ${#1} != 0 ] && if [ -d "$1" ]; then
+        path_to_store=$1;
+    else
+        printf "Directory \"$1\" non valida\n";
+    fi
+printf "Directory selezionata: `realpath $path_to_store`\n\n";
+
+select_shell;
 
 select_title;
 
@@ -147,9 +190,8 @@ read -r notes;
 [ ${#notes} == 0 ] && notes="--/--";
 
 printf "\
-# $div$div
 %s
-#
+# $div$div\n
 %-20s%s
 %-20s%s
 %-20s%s
@@ -157,10 +199,10 @@ printf "\
 %-20s%s
 %-20s%s
 %-20s%s
-# $div$div\n" "#!/bin/bash" "# Titolo:" "$title" "# Descrizione:" "$description" "# Autore:" "$name" "# Data:" "$data" "# Versione:" "$version" "# Note:" "$notes" "# Versione bash:" "$BASH_VERSION" > "$title";
+# $div$div\n" "#!$shell" "# Titolo:" "$title" "# Descrizione:" "$description" "# Autore:" "$name" "# Data:" "$data" "# Versione:" "$version" "# Note:" "$notes" "# Versione bash:" "$BASH_VERSION" > "$path_to_store/$title";
 
 # rendi eseguibile lo script
-chmod +x $title;
+chmod +x "$path_to_store/$title";
 
 $clear;
 
