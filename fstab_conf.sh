@@ -44,27 +44,29 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 		read choise;
 	done
 
-	fstab="#########################################################\n
-	### RAMDISK ###\n
-	####################################################################################################################\n
-	# File di log, cache di browser e temporanei montati su ramdisk\n
-	tmpfs /tmp tmpfs defaults,noatime 0 0\n\n
+	fstab="#########################################################
+### RAMDISK ###
+####################################################################################################################
+# File di log, cache di browser e temporanei montati su ramdisk
+tmpfs /tmp tmpfs defaults,noatime 0 0
 
-	#tmpfs $home/.cache/google-chrome/Default tmpfs defaults,noatime 0 0\n
-	#tmpfs $home/.cache/chromium/Default tmpfs defaults,noatime 0 0\n
-	#tmpfs $home/.cache/mozilla/firefox/k7t3gsx4.default/cache2 tmpfs defaults,noatime 0 0\n\n
+#tmpfs $home/.cache/google-chrome/Default tmpfs defaults,noatime 0 0
+#tmpfs $home/.cache/chromium/Default tmpfs defaults,noatime 0 0
+#tmpfs $home/.cache/mozilla/firefox/k7t3gsx4.default/cache2 tmpfs defaults,noatime 0 0
 
-	tmpfs /var/tmp tmpfs defaults,noatime 0 0\n
-	tmpfs /var/log tmpfs defaults,noatime 0 0\n
-	####################################################################################################################\n\n\n
+tmpfs /var/tmp tmpfs defaults,noatime 0 0
+tmpfs /var/log tmpfs defaults,noatime 0 0
+####################################################################################################################
 
 
-	#################################################################################\n
-	### Windows partition ###\n
-	####################################################################################################################\n
-	# VEDI ~/INFORMATICA/ISTRUZIONI UTILI/Bash per maggiori informazioni\n
-	UUID=\"$UUID_data\" /media/Data ntfs auto,uid=$user,gid=$group,umask=037,nls=utf8 0 0\n
-	####################################################################################################################";
+#########################################################
+### Windows partition ###
+####################################################################################################################
+# VEDI ~/INFORMATICA/ISTRUZIONI UTILI/Bash per maggiori informazioni
+UUID=\"$UUID_data\" /media/Data ntfs auto,uid=$user,gid=$group,umask=037,nls=utf8 0 0
+####################################################################################################################";
+
+	echo "$fstab" >> /dev/shm/dio; exit 0;
 
 	# metodo alternativo all'uso del comando '/bin/su -c "cmd"'
 	cd $_dev_shm_;
@@ -75,7 +77,7 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	cd $tmp_etc;
 	cp $_etc_$file_fstab .;
 	# flag '-e' per abilitare l'interpretazione del backslash
-	echo -e $fstab >> $file_fstab;
+	echo "$fstab" >> "$file_fstab";
 	sudo mv $_etc_$file_fstab $_etc_$file_fstab"_old";
 	sudo cp $file_fstab $_etc_;
 	check_error "Modifica file $_etc_$file_fstab";
