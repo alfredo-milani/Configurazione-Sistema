@@ -15,35 +15,35 @@ Semplici script per configurare un sistema (*debian-based* - *gnome*).
 Lo script principale è **main.sh** che ha il compito di invocare gli altri moduli a seconda della richiesta dell'utente. <br/>
 I moduli sono:
 
-- **appearance_conf.sh** - configurazione del *tema* e delle *icone*:
+- **modules/appearance_conf.sh** - configurazione del *tema* e delle *icone*:
     * imposta il tema specificato dalla chiave *`theme_scelto`* locato in *`themes_backup`*;
     * imposta il set di icone specificato dalla chiave *`icon_scelto`* locato in *`icons_backup`*;
-- **bashrc_conf.sh** - configurazione del file `~/.bashrc`:
+- **modules/bashrc_conf.sh** - configurazione del file `~/.bashrc`:
     * aggiunge gli alias di alcuni comandi nel file ~/.bashrc;
-- **fstab.sh** - configurazione del file `/etc/fstab`:
+- **modules/fstab.sh** - configurazione del file `/etc/fstab`:
     * crea ramdisk nelle locazioni: /var/tmp; /var/log; /tmp;
     * monta su ramdisk le cache dei principali browser (Chrome, Firefox, Chromium);
     * monta il volume contenete dati condivisi da altri OS (e.g. Windows) nella posizione /media/Data. L'UUID del device che sarà montato può essere specificato dalla chiave *`UUID_data`*;
-- **gpu_conf.sh** - configurazione *bumblebee* per gestione GPU discreta NVIDIA:
+- **modules/gpu_conf.sh** - configurazione *bumblebee* per gestione GPU discreta NVIDIA:
     * scarica e configura KVM nel terminale dell'utente (per ora c'è il supporto solo a distribuzioni Debian ed Ubuntu);
     * corregge l'errore "libstdc++.so.6: version GLIBCXX_3.4.XXX not found" che si manifesta quando si utilizza l'IDE Android Studio con l'emulatore e la virtualizzazione KVM;
     * scarica e configura il tool bumblebee per gestire le GPU NVidia con tecnologia Optimus;
-- **jdk_conf.sh** - copia e configurazione della *JDK Oracle*:
+- **modules/jdk_conf.sh** - copia e configurazione della *JDK Oracle*:
     * configura la Oracle JDK locata in *`sdk`* come default di sistema; <br/>
     se in *`sdk`* non c'è alcuna JDK, provvede a cercarla nel device con UUID *`UUID_backup`* nella directory specificata dalla chiava *`software`*;
-- **kb_shortcut_conf.sh** - impostazione dei *keyboard shortcuts*:
+- **modules/kb_shortcut_conf.sh** - impostazione dei *keyboard shortcuts*:
     * copia gli script dalla directory *`scripts_backup`* (contenuta nel device *`UUID_backup`*) alla directory *`script_path`*;
     * imposta le principali scorciatoie da tastiera;
-- **network_conf.sh** - ottimizzazione impostazioni protocollo *TCP* / *NIC*:
+- **modules/network_conf.sh** - ottimizzazione impostazioni protocollo *TCP* / *NIC*:
     * ottimizza le impostazioni del protocollo TCP;
     * ottimizza le impostazioni per la NIC Intel AC7260;
     * copia i dirvers contenuti in *`driver_backup`* del device *`UUID_backup`* nella directory di sistema; <br/>
     NOTA: i drivers contenuti nella direcotry *`driver_backup`* devono essere contenuti in una cartella avente come nome l'output del comando: `$ sudo dmidecode -s system-version | tr " " "_"`;
     * risolve il bug dovuto al daemon Avahi-daemon che ostacola il corretto funzionamento delle NIC;
-- **symbolic_link_conf.sh** - creazione *link simbolici*:
+- **modules/symbolic_link_conf.sh** - creazione *link simbolici*:
     * crea un collegamento di un path temporaneo (montato su ramdisk) nella directory di Download di default;
     * crea un collegamento sul Desktop che punta ai files in comune (contenuti nel device *`UUID_data`*) tra i vari OS che il terminale ospita;
-- **tools_upgrade_conf.sh** - aggiornamento *tools* sistema:
+- **modules/tools_upgrade_conf.sh** - aggiornamento *tools* sistema:
     * assiste la configurazione dei repository;
     * scarica ed installa il gestore dei pacchetti apt-fast;
     * installa i principali tools di utilità (e.g. gksu, vim, preload, redshift, gparted, ecc... );
@@ -51,7 +51,7 @@ I moduli sono:
     * installa le estensioni con identificativo *`extensions_id`*; <br/> l'identificativo in questione è ricavabile dal sito "https://extensions.gnome.org/"; <br/>
     e.g. vogliamo installare l'estensione dashToDock --> il suo URL è "https://extensions.gnome.org/extension/307/dash-to-dock/" --> *`extensions_id`*=307;
     * scarica ed installa le principali librerie mancanti del motore GTK;
-- **tracker_disable_conf.sh** - disabilitazione _tracker-* tools_:
+- **modules/tracker_disable_conf.sh** - disabilitazione _tracker-* tools_:
     * disabilitazione dei tools di indicizzazione tracker-\*;
 - **utils/gnomeshell_extension_manage.sh** - download e installazione estensioni dal gnome-center (autore: *N. Bernaerts*);
 - **sys.conf** - definizione variabili:
