@@ -5,6 +5,7 @@
 # Descrizione:      Inizializza uno script inserendo un header
 # Autore:           Alfredo Milani
 # Data:             sab 15 lug 2017, 15.48.36, CEST
+# Licenza:          MIT License
 # Versione:         1.0.0
 # Note:             Usage: ./init_script.sh  [ -h | ../path_salavataggio/ ]
 # Versione bash:    4.4.12(1)-release
@@ -18,12 +19,14 @@ declare -r EXIT_FAILURE=1;
 declare -r null=/dev/null;
 declare shell='/bin/bash';
 declare path_to_store='.';
-declare description;
-declare name;
-declare version;
-declare notes;
+declare description="--/--";
+declare name="$USER";
+# versione secondo le sintassi: version.revision.release
+declare version="0.0.1";
+declare notes="--/--";
 declare editor;
 declare title;
+declare license="MIT License";
 
 # selezione titolo
 function select_title {
@@ -185,21 +188,24 @@ select_shell;
 select_title;
 
 printf "Inserisci una descrizione:\t";
-read -r description;
-[ ${#description} == 0 ] && description="--/--";
+read -r tmp;
+[ ${#tmp} != 0 ] && description="$tmp";
 
 printf "Inserisci il tuo nome (default: $USER):\t";
-read -r name;
-[ ${#name} == 0 ] && name=$USER;
+read -r tmp;
+[ ${#tmp} != 0 ] && name=$tmp;
 
-printf "Inserisci il numero di versione
-(default: 0.0.1 - versione.revisione.release):\t";
-read -r version;
-[ ${#version} == 0 ] && version="0.0.1";
+printf "Inserisci il numero di versione (default: 0.0.1):\t";
+read -r tmp;
+[ ${#tmp} != 0 ] && version="$tmp";
+
+printf "Inserisci la licenza di rilascio (default: MIT License):\t";
+read -r tmp;
+[ ${#tmp} != 0 ] && license="$tmp";
 
 printf "Inserisci le note:\t";
-read -r notes;
-[ ${#notes} == 0 ] && notes="--/--";
+read -r tmp;
+[ ${#tmp} != 0 ] && notes="$tmp";
 
 # nota: %-Xs --> lascia un segnaposto lungo X caratteri per una stringa
 printf "\
@@ -212,7 +218,8 @@ printf "\
 %-20s%s
 %-20s%s
 %-20s%s
-# $div$div\n" "#!$shell" "# Titolo:" "$title" "# Descrizione:" "$description" "# Autore:" "$name" "# Data:" "$data" "# Versione:" "$version" "# Note:" "$notes" "# Versione bash:" "$BASH_VERSION" > "$path_to_store/$title";
+%-20s%s
+# $div$div\n" "#!$shell" "# Titolo:" "$title" "# Descrizione:" "$description" "# Autore:" "$name" "# Data:" "$data" "# Licenza:" "$license" "# Versione:" "$version" "# Note:" "$notes" "# Versione bash:" "$BASH_VERSION" > "$path_to_store/$title";
 
 # rendi eseguibile lo script
 chmod +x "$path_to_store/$title";
