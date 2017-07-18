@@ -3,10 +3,10 @@
 
 # Titolo:           init_script.sh
 # Descrizione:      Inizializza uno script inserendo un header
-# Autore:           Alfreod Milani
+# Autore:           Alfredo Milani
 # Data:             sab 15 lug 2017, 15.48.36, CEST
 # Versione:         1.0.0
-# Note:             Usage: ./init_script.sh -h  /  .../path_salavataggio/
+# Note:             Usage: ./init_script.sh  [ -h | ../path_salavataggio/ ]
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
 
@@ -156,10 +156,22 @@ function usage {
     exit $EXIT_SUCCESS;
 }
 
+# controllo sull'input dell'utente
+function check_input {
+    [ $# -gt 1 ] && return $EXIT_FAILURE;
+
+    for arg in $@; do
+        case "$arg" in
+            ? | -[hH] | --[hH] | -help | --help | -HELP | --HELP ) return $EXIT_FAILURE ;;
+        esac
+    done
+
+    return $EXIT_SUCCESS;
+}
 
 
 # controllo sul numero di argomenti ricevuti in input
-[ $# -gt 1 ] && usage;
+! check_input $@ && usage;
 # impostazione path di salvataggio
 [ ${#1} != 0 ] && if [ -d "$1" ]; then
         path_to_store=$1;
@@ -189,6 +201,7 @@ printf "Inserisci le note:\t";
 read -r notes;
 [ ${#notes} == 0 ] && notes="--/--";
 
+# nota: %-Xs --> lascia un segnaposto lungo X caratteri per una stringa
 printf "\
 %s
 # $div$div\n
