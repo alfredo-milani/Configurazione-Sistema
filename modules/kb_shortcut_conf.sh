@@ -46,8 +46,10 @@ ping_sc="Ping;gnome-terminal -e 'ping google.com';'<Ctrl><Shift>minus'";
 network_manager_sc="Network Manager Restart;$script_path/check_psw.sh service network-manager restart;'<Ctrl><Shift>R'";
 disable_threads="Disable Threads;$script_path/check_psw.sh $script_path/manage_threads.sh /;'<Ctrl><Shift>D'";
 enable_threads="Enable Threads;$script_path/check_psw.sh $script_path/manage_threads.sh °°;'<Ctrl><Shift>E'";
+system_monitor="System Monitor;gnome-system-monitor;'<Ctrl><Shift>M'";
+gpu_monitor="GPU Monitor;gpui;'<Ctrl><Shift>I'";
 # aggiungere le var che si vogliono attivare in quest'array
-custom_kb_array=("$terminal" "$redshift" "$home_sc2" "$chrome_sc" "$ping_sc" "$disable_threads" "$enable_threads" "$network_manager_sc");
+custom_kb_array=("$terminal" "$redshift" "$home_sc2" "$chrome_sc" "$ping_sc" "$system_monitor");
 
 keybindings="org.gnome.desktop.wm.keybindings";
 maximize="maximize;['<Super>Up']";
