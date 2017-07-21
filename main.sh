@@ -229,6 +229,7 @@ function check_connection {
     return $EXIT_SUCCESS;
 }
 
+# uso
 function give_help {
     echo "$current_script_name -options";
     echo "";
@@ -249,6 +250,7 @@ function give_help {
     on_exit $EXIT_SUCCESS;
 }
 
+# controllo esistenza file nell'array scripts_array
 function check_script {
     for script in ${scripts_array[@]}; do
         # script trovato in scripts_array
@@ -258,6 +260,7 @@ function check_script {
     return $EXIT_FAILURE;
 }
 
+# stampa stringa
 function print_missing_val {
     printf "${R}$missing_val${NC}" "$@" "$conf_file";
 }
@@ -440,6 +443,13 @@ function parse_input {
     done
 }
 
+# verifica permessi esecuzione
+function check_ex_perm {
+    for el in ${1}; do
+        ! [ -e "$el" ] && chmod +x "$el";
+    done
+}
+
 # flag -f per esportare le funzioni
 export -f check_mount;
 export -f check_tool;
@@ -461,7 +471,7 @@ echo "$private_rand" | md5sum >> $tmp_file;
 
 # intercetta SIGINT SIGKILL e SIGTERM
 trap "on_exit $EXIT_FAILURE s" SIGINT SIGKILL SIGTERM SIGUSR1 SIGUSR2;
-! check_tool "basename" "realpath" && on_exit $?;
+! check_tool "basename" "realpath" "chmod" && on_exit $?;
 
 export mount_point;
 # nome root script
@@ -504,6 +514,9 @@ on_exit $EXIT_FAILURE;
 
 # lettura file di configurazione
 ! fill_arrays && on_exit $EXIT_FAILURE;
+
+# controllo permessi di esecuzione
+check_ex_perm ${scripts_array[@]};
 
 # avvio moduli selezionati dall'utente
 for script in "${scripts_array[@]}"; do
