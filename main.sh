@@ -446,7 +446,7 @@ function parse_input {
 # verifica permessi esecuzione
 function check_ex_perm {
     for el in ${1}; do
-        ! [ -e "$el" ] && chmod +x "$el";
+        ! [ -x "$el" ] && chmod +x "$el";
     done
 }
 
