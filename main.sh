@@ -346,7 +346,7 @@ function parse_input {
                 shift;
                 # path file di configurazione
                 if [ ${#1} != 0 ] && [ -f "$1" ]; then
-                    realpath_conf=`realpath $1`;
+                    realpath_conf=`realpath -e $1`;
                     printf "${G}Utilizzo di --> $realpath_conf <-- come file di configurazione\n${NC}";
                     conf_file=$1;
                 else
@@ -467,7 +467,7 @@ export mount_point;
 # nome root script
 export current_script_name=`basename "$0"`;
 # path assoluto script corrente
-absolute_current_script_path=`realpath $0`;
+absolute_current_script_path=`realpath -e $0`;
 # l'operatore unario # restituisce la lunghezza della scringa/array
 lenght=${#current_script_name};
 # path relativo che serve per comporre il path assoluto per i veri moduli di configurazione

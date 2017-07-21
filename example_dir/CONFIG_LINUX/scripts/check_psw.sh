@@ -1,7 +1,17 @@
 #!/bin/bash
+# ============================================================================
 
-# Autore: Alfredo Milani
-# Data: 07 - 05 - 2017
+# Titolo:           check_psw.sh
+# Descrizione:      GUI per richiedere maggiori privilegi
+# Autore:           Alfredo Milani  (alfredo.milani@gmail.com)
+# Data:             sab 22 lug 2017, 00.21.59, CEST
+# Licenza:          MIT License
+# Versione:         1.0.0
+# Note:             --/--
+# Versione bash:    4.4.12(1)-release
+# ============================================================================
+
+
 
 gksudo $@;
 

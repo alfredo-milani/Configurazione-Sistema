@@ -1,17 +1,15 @@
 #!/bin/bash
+# ============================================================================
 
-# Autore: Alfredo Milani
-# Data: 12 - 05 - 2017
-
-# NOTA: questo scritp DEVE essere eseguito da gksudo per ottenere i privilegi necessari (vedi script ./check_psw.sh)
-#####
-# FUNZIONAMENTO: 4 operazioni possibili: n +  -->  abilita n threads del sistema;
-#										 n -  -->  disabilita n threads del sistema;
-#										 n °  -->  abilita threads_tot/n threads attivi nel del sistema;
-#										 n /  -->  disabilita threads_tot/n threads attivi nel sistema;
-#															 NOTA: di default n=2;
-#										 °°   -->  abilita tutti i threads disattivati;
-#										 //   -->  porta il sistema al numero di default (n=2) di threads attivi.
+# Titolo:           manage_threads.sh
+# Descrizione:      Gestisce il numero di threads attivi del sistema
+# Autore:           Alfredo Milani  (alfredo.milani.94@gmail.com)
+# Data:             gio 20 lug 2017, 18.45.46, CEST
+# Licenza:          MIT License
+# Versione:         1.5.4
+# Note:             Utilizzare il flag -h per avere informazioni sulle modalità d'uso
+# Versione bash:    4.4.12(1)-release
+# ============================================================================
 
 
 
@@ -50,9 +48,10 @@ declare -i threads_available=$((threads - threads_online));
 
 
 
+# uso
 function usage {
 	printf "\n";
-	printf "`realpath $0` [threads to manage] [operations]\n";
+	printf "`realpath -e $0` [threads to manage] [operations]\n";
 	printf "\n";
 	printf "\tthreads to manage\n";
 	printf "\t\tn :  numero di threads su cui operare (default n=2)\n";
@@ -191,26 +190,15 @@ zen=$?;
 # parsing input utente
 while [ $# -gt 0 ]; do
 	case "$1" in
-		'+' | '°' | '°°' )
-			[ "$OP" == "?" ] && OP=$1 && shift && continue;
+		'+' | '°' | '°°' ) [ "$OP" == "?" ] && OP=$1 && shift && continue ;;
 
-			! print_str 0 "Errore interno sconosciuto" && exit $EXIT_FAILURE;
-			;;
+		'-' | '/' | '//' ) [ "$OP" == "?" ] && OP=$1 && shift && continue ;;
 
-		'-' | '/' | '//' )
-			[ "$OP" == "?" ] && OP=$1 && shift && continue;
+		[0-9] ) threads_to_manage=$1 && shift ;;
 
-			! print_str 0 "Errore interno sconosciuto" && exit $EXIT_FAILURE;
-			;;
+		-[hH] | --[hH] | -[hH][eE][lL][pP] | --[hH][eE][lL][pP] ) usage ;;
 
-		[0-9] )
-			threads_to_manage=$1;
-			shift;
-			;;
-
-		* )
-			! print_str 0 "Sintassi errata!" && usage;
-			;;
+		* )	! print_str 0 "Sintassi errata!" && usage ;;
 	esac
 done
 

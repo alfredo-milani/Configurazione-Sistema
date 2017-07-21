@@ -3,13 +3,15 @@
 
 # Titolo:           init_script.sh
 # Descrizione:      Inizializza uno script inserendo un header
-# Autore:           Alfredo Milani
-# Data:             sab 15 lug 2017, 15.48.36, CEST
+# Autore:           Alfredo Milani  (alfredo.milani.94@gmail.com)
+# Data:             gio 20 lug 2017, 01.41.23, CEST
 # Licenza:          MIT License
-# Versione:         1.0.0
+# Versione:         1.1.11
 # Note:             Usage: ./init_script.sh  [ -h | ../path_salavataggio/ ]
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
+
+
 
 declare -r data=`date`;
 declare -r div="======================================";
@@ -18,7 +20,6 @@ declare -r EXIT_SUCCESS=0;
 declare -r EXIT_FAILURE=1;
 declare -r null=/dev/null;
 declare shell='/bin/bash';
-declare path_to_store='.';
 declare description="--/--";
 declare name="$USER";
 # versione secondo le sintassi: version.revision.release
@@ -26,16 +27,33 @@ declare version="0.0.1";
 declare notes="--/--";
 declare editor;
 declare title;
+declare extension='.sh';
 declare license="MIT License";
+
+# file a cui aggiungere / rimuovere l'header
+declare file="";
+# path di salvataggio dell'header file
+declare rescue_path='.';
+# header da completare
+declare header;
+# array contenente le funzioni da eseguire
+declare operations=();
+
+
 
 # selezione titolo
 function select_title {
+    # se file esiste --> l'operazione selezionata è -i (con l'opzione -f file)
+    [ ${#file} != 0 ] &&
+    title=`basename $file` &&
+    return $EXIT_SUCCESS;
+
     # titolo script
-    printf "Inserisci un titolo:\t";
+    [ "$1" != $EXIT_FAILURE ] && printf "Inserisci un titolo:\t";
     read -r title;
     printf "\n";
 
-    [ ${#title} == 0 ] && select_title;
+    [ ${#title} == 0 ] && select_title && return;
 
     # sostituisci gli spazi bianchi con _
     title=${title// /_};
@@ -43,15 +61,19 @@ function select_title {
     # conversione uppercase to lowercase.
     title=${title,,};
 
-    # aggiungi l'estensione .sh se non presente
-    [ "${title: -3}" != '.sh' ] && title="$title.sh";
+    printf "Inserisci l'estensione dello script (default: .sh):\t";
+    read -r tmp;
+    [ ${#tmp} != 0 ] && extension="$tmp" && add_ext=0;
+
+    # aggiungi l'estensione se non presente
+    ([[ "$title" != *.* ]] || [ "$add_ext" == 0 ]) && title="$title$extension";
 
     # controlla l'esistenza di un file con lo stesso nome nella directory corrente
-    if [ -e "$path_to_store/$title" ] ; then
-        printf "File \"$title\" già esistente in \"$path_to_store\".\n" \
-        "Inserisci un nome diverso per continuare.\n";
+    if [ -e "$rescue_path/$title" ] ; then
+        printf "File \"$title\" già esistente in \"$rescue_path\".
+Inserisci un nome diverso per continuare.\t";
 
-        select_title;
+        select_title $EXIT_FAILURE && return;
     fi
 }
 
@@ -66,6 +88,7 @@ function check_editor {
 function select_editor {
     # seleziona l'editor preferito
     printf "Seleziona un editor per aprire lo script appena creato:\n
+    0 - ESCI
     1 - vi
     2 - vim
     3 - emacs
@@ -75,12 +98,14 @@ function select_editor {
     read -r editor;
 
     case $editor in
+        0 ) return $EXIT_SUCCESS ;;
+
         1 )
             ed="vi";
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 "$path_to_store/$title";
+            $ed +15 `realpath -e "$file"`;
             ;;
 
         2 )
@@ -88,7 +113,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 "$path_to_store/$title";
+            $ed +15 `realpath -e "$file"`;
             ;;
 
         3 )
@@ -96,7 +121,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 "$path_to_store/$title";
+            $ed +15 `realpath -e "$file"`;
             ;;
 
         4 )
@@ -104,7 +129,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 "$path_to_store/$title";
+            $ed +15 `realpath -e "$file"`;
             ;;
 
         5 )
@@ -112,7 +137,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed "$path_to_store/$title";
+            $ed +15 `realpath -e "$file"`;
             ;;
 
         6 )
@@ -120,7 +145,7 @@ function select_editor {
             check_editor $ed ||
             ($clear && printf "$ed non installato nel sistema.\nRiprovare.\n" && select_editor);
 
-            $ed +13 "$path_to_store/$title";
+            $ed +15 `realpath -e "$file"`;
             ;;
 
         * )
@@ -136,9 +161,9 @@ function select_shell {
     read -r tmp_shell;
     printf "\n";
     if [ ${#tmp_shell} != 0 ]; then
-        if which $tmp_shell &> $null; then
-            shell=$tmp_shell;
-            return $EXIT_SUCCESS;
+        cmd_path=`which $tmp_shell`;
+        if [ $? == 0 ]; then
+            shell=$cmd_path;
         else
             printf "Shell \"$tmp_shell\" non esistente.\nInserire una shell valida oppure clicca invio per la shell di default ($shell).\n";
             select_shell;
@@ -148,15 +173,122 @@ function select_shell {
     return $EXIT_SUCCESS;
 }
 
+# controllo consistenza risorse
+function check_res {
+    for el in ${operations[@]}; do
+        case "$el" in
+            create_header_file )
+                ! [ -d "$rescue_path" ] &&
+                printf "Directory \"$rescue_path\" non valida.\n" &&
+                return $EXIT_FAILURE;
+                ;;
+
+            push_header | remove_header )
+                ! [ -f "$file" ] &&
+                printf "File \"$file\" non valido.\n" &&
+                return $EXIT_FAILURE;
+                ;;
+        esac
+    done
+
+    return $EXIT_SUCCESS;
+}
+
 # uso
 function usage {
-    echo "$0 [args]";
+    echo "$0  [args]";
     echo "";
-    echo -e "\t\t      -h :\tmostra questo aiuto\n";
-    echo -e "\t\t../path/ :\tpath di salvataggio del file";
+    echo -e "\t            -h :\tmostra questo aiuto";
+    echo -e "\t-p    ../path/ :\tpath di salvataggio del file";
+    echo -e "\t-f ../path/file:\tfile a cui aggiungere/rimuovere l'header";
+    echo -e "\t      -rm n1-n2:\trimuove da n1 a n2 righe nel file specificato con il flag -f";
+    echo -e "\t            -i :\tinserisce un header nel file specificato dal flag -f";
     echo "";
+    echo -e "Nota: se non vine specificato alcun argomento lo script provvederà a creare un file ed a inserire l'header specificato";
 
-    exit $EXIT_SUCCESS;
+    exit $EXIT_FAILURE;
+}
+
+# controllo preliminare sull'input dell'utente
+function preliminar_input_check {
+    for arg in $@; do
+        case "$arg" in
+            -[hH] | --[hH] | -help | -HELP | --help | --HELP ) usage ;;
+        esac
+    done
+}
+
+# parsing input
+function parse_input {
+    while [ $# -gt 0 ]; do
+        case $1 in
+            -f )
+                shift;
+                ! [ -f "$1" ] && printf "File \"$1\" non valido.\n" && exit $EXIT_FAILURE;
+                file="$1";
+                shift;
+                ;;
+
+            -i )
+                operations+=("fill_header" "push_header");
+                shift;
+                ;;
+
+            -p )
+                shift;
+                ! [ -d "$1" ] && printf "Directory \"$1\" non valida.\n" && exit $EXIT_FAILURE;
+                rescue_path="$1";
+                printf "Directory selezionata: `realpath -e "$rescue_path"`\n\n";
+                shift;
+                ;;
+
+            -rm )
+                shift;
+                # controllo sintattico argomento -rm
+                ! [[ $1 == *'-'* ]] && printf "Sintassi errata per l'argomento -rm.\n" && usage;
+                # parse input
+                tmp=`cut -d'-' -f1 <<< $1`;
+                [ "$tmp" == "" ] && n=1 || n=$tmp;
+                m=`cut -d'-' -f2 <<< $1`;
+                # controllo semantico argomneto -rm
+                [ $n -gt $m ] && printf "Argomento -rm: n1-n2 --> n1 deve essere minore di n2.\nSe si omette n1 si assumerà uguale a 0.\n";
+
+                # se l'operazione push_header è presente nell'elenco delle operazioni
+                # inserisco l'operazione remove_header prima di push_header
+                for op in "${operations[@]}"; do
+                    if [ "$op" == "push_header" ]; then
+                        new_array=();
+                        for op in "${operations[@]}"; do
+                            if [ "$op" == "push_header" ]; then
+                                new_array+=("remove_header $n $m" "push_header");
+                            else
+                                new_array+=("$op");
+                            fi
+                        done
+
+                        operations=(${new_array[@]});
+                        el_founded=0;
+                        break;
+                    fi
+                done
+
+                [ "$el_founded" != 0 ] && operations+=("remove_header $n $m");
+                shift;
+                ;;
+
+            * )
+                printf "Operazione \"$1\" non riconosciuta.\nUtilizza il flag \"-h\" per ottenere maggiori informazioni sulle operazioni supportate.\n";
+                shift;
+                ;;
+        esac
+    done
+
+    if [ ${#operations} == 0 ]; then
+        # comportamento di default
+        operations+=("fill_header" "create_header_file" "select_editor");
+    else
+        operations+=("select_editor");
+    fi
 }
 
 # controllo sull'input dell'utente
@@ -172,43 +304,35 @@ function check_input {
     return $EXIT_SUCCESS;
 }
 
+# funzione deputata a riempire l'header con le informazioni inserite dall'utente
+function fill_header {
+    select_shell;
 
-# controllo sul numero di argomenti ricevuti in input
-! check_input $@ && usage;
-# impostazione path di salvataggio
-[ ${#1} != 0 ] && if [ -d "$1" ]; then
-        path_to_store=$1;
-    else
-        printf "Directory \"$1\" non valida\n";
-    fi
-printf "Directory selezionata: `realpath $path_to_store`\n\n";
+    select_title;
 
-select_shell;
+    printf "Inserisci una descrizione:\t";
+    read -r tmp;
+    [ ${#tmp} != 0 ] && description="$tmp";
 
-select_title;
+    printf "Inserisci il tuo nome (default: $USER):\t";
+    read -r tmp;
+    [ ${#tmp} != 0 ] && name=$tmp;
 
-printf "Inserisci una descrizione:\t";
-read -r tmp;
-[ ${#tmp} != 0 ] && description="$tmp";
+    printf "Inserisci il numero di versione (default: 0.0.1):\t";
+    read -r tmp;
+    [ ${#tmp} != 0 ] && version="$tmp";
 
-printf "Inserisci il tuo nome (default: $USER):\t";
-read -r tmp;
-[ ${#tmp} != 0 ] && name=$tmp;
+    printf "Inserisci la licenza di rilascio (default: MIT License):\t";
+    read -r tmp;
+    [ ${#tmp} != 0 ] && license="$tmp";
 
-printf "Inserisci il numero di versione (default: 0.0.1):\t";
-read -r tmp;
-[ ${#tmp} != 0 ] && version="$tmp";
+    printf "Inserisci le note:\t";
+    read -r tmp;
+    [ ${#tmp} != 0 ] && notes="$tmp";
 
-printf "Inserisci la licenza di rilascio (default: MIT License):\t";
-read -r tmp;
-[ ${#tmp} != 0 ] && license="$tmp";
-
-printf "Inserisci le note:\t";
-read -r tmp;
-[ ${#tmp} != 0 ] && notes="$tmp";
-
-# nota: %-Xs --> lascia un segnaposto lungo X caratteri per una stringa
-printf "\
+    # nota: %-Xs --> lascia un segnaposto lungo X caratteri per una stringa
+    #       -v var --> stampa dentro la variabile var
+    printf -v header "\
 %s
 # $div$div\n
 %-20s%s
@@ -219,13 +343,71 @@ printf "\
 %-20s%s
 %-20s%s
 %-20s%s
-# $div$div\n" "#!$shell" "# Titolo:" "$title" "# Descrizione:" "$description" "# Autore:" "$name" "# Data:" "$data" "# Licenza:" "$license" "# Versione:" "$version" "# Note:" "$notes" "# Versione bash:" "$BASH_VERSION" > "$path_to_store/$title";
+# $div$div\n\n\n" "#!$shell" "# Titolo:" "$title" "# Descrizione:" "$description" "# Autore:" "$name" "# Data:" "$data" "# Licenza:" "$license" "# Versione:" "$version" "# Note:" "$notes" "# Versione bash:" "$BASH_VERSION";
+}
 
-# rendi eseguibile lo script
-chmod +x "$path_to_store/$title";
+# crea un file, inserisce l'header e lo apre con un edito di testo
+function create_header_file {
+    file="$rescue_path/$title";
 
-$clear;
+    echo "$header" > "$file";
 
-select_editor;
+    # rendi eseguibile lo script
+    chmod +x "$file";
+
+    return $?;
+}
+
+# inserisce l'header all'inizio del file
+function push_header {
+    tmp_file='/dev/shm/tmp';
+    echo "$header" | cat - "$file" > "$tmp_file" &&
+    mv "$tmp_file" "$file";
+
+    return $?;
+}
+
+# rimuovi vecchio header
+# arg1-arg2 --> intervallo di strinche commentate da rimuovere
+# sed 'n,md' $file --> rimuovere da n a m righe del file
+function remove_header {
+    # controllo sul numero di argomenti ricevuti
+    ([ ${#1} == 0 ] || [ ${#2} == 0 ]) &&
+    printf "Errore interno nella funzione \"${FUNCNAME[0]}\".\n" &&
+    return $EXIT_FAILURE;
+
+    sed -i ''$1','$2'd' "$file";
+
+    return $?;
+}
+
+
+
+# controllo preliminare sull'input dell'utente
+preliminar_input_check $@;
+
+# parsing input
+! parse_input $@ && exit $EXIT_FAILURE;
+
+# TODO --> inserimento headers su più files
+# TODO --> inserimento header da file di configurazione
+# TODO --> correggere l'inserimento dei dati quando alcuni char vengono cancellati con il tasto per cancellare (vedi man read)
+
+# controllo risorse
+check_res || exit $EXIT_FAILURE;
+
+# esecuzione operazioni
+for ((i = 0; i < ${#operations}; ++i)); do
+    if [ "${operations[$i]}" == "remove_header" ]; then
+        # passaggio argomenti operazione remove_header
+        ${operations[$i]} ${operations[++i]} ${operations[++i]};
+    else
+        ${operations[$i]};
+    fi
+
+    [ $? != $EXIT_SUCCESS ] && exit $EXIT_FAILURE;
+done
+
+
 
 exit $EXIT_SUCCESS;
