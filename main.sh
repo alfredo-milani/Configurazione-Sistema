@@ -282,6 +282,164 @@ function on_exit {
     exit $1;
 }
 
+# controllo se l'utente ha inserito il flag -h o se ha specificato l'opzione --all
+function preliminar_input_check {
+    for arg in $@; do
+        case "$arg" in
+            -[hH] | --[hH] | -help | -HELP | --help | --HELP )
+                give_help;
+                ;;
+
+            --[aA][lL][lL] )
+                for script in $absolute_script_path/$relative_path_scripts/*; do
+                    tmp_script=`basename $script`;
+                    ext=".sh"; ext_lenght=${#ext}; lenght_tmp_script=${#script};
+                    lenght=$(($lenght_tmp_script - $ext_lenght));
+                    # l'estensione di $script deve essere .sh
+                    # per effettuare operazioni aritmetiche si usa l'espressione: var3=$(($var1 + $var2));
+                    tmp_ext=`echo $script | cut -c $(($lenght + 1))-$lenght_tmp_script`;
+
+                    # aggiunta script corrente all array scripts_array
+                    [ "$tmp_ext" == "$ext" ] &&
+                    [ "$current_script_name" != "$tmp_script" ] &&
+                    scripts_array+=("$script");
+                done
+
+                break;
+                ;;
+        esac
+    done
+}
+
+# parsing input utente
+function parse_input {
+    # -gt --> greater than
+    # il comando shift;; n sposta il parametro posizionale di n posti (default n = 1)
+    # si possono usare pattern del tipo: -h|--help) per selezione multipla
+    # i pattern del tipo --action* : The * (wildcard) is for the case where
+    #   someone types --action=[ACTION] as well as the case where someone types
+    #   --action [ACTION]
+    # si usa l'operatore [xX] per avere scelte multiple
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --all | --ALL )
+                shift;
+                ;;
+
+            -[aA] )
+                shift;
+                # configurazione aspetto
+                current_script="appearance_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -[bB] )
+                shift;
+                # configurazione del file .bashrc
+                current_script="bashrc_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -[cC] )
+                shift;
+                # path file di configurazione
+                if [ ${#1} != 0 ] && [ -f "$1" ]; then
+                    realpath_conf=`realpath $1`;
+                    printf "${G}Utilizzo di --> $realpath_conf <-- come file di configurazione\n${NC}";
+                    conf_file=$1;
+                else
+                    printf "${Y}File specificato dal flag -c / -C --> $1 <-- non trovato.\nSarà usato il file: $conf_file\n${NC}";
+                fi
+                shift;
+                ;;
+
+            -[fF] )
+                shift;
+                # configurazione file /etc/fstab
+                current_script="fstab_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -gpu | -GPU )
+                shift;
+                # configurazione bumblebee
+                current_script="gpu_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -jdk | -JDK )
+                shift;
+                # configurazione JDK Oracle
+                current_script="jdk_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -[lL] )
+                shift;
+                # configurazione link simbolici
+                current_script="symbolic_link_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -[mM] )
+                shift;
+                # tmp_code viene impostata ad 1 --> è possibile creare più istanze contemporaneamente dello script
+                tmp_code=0;
+                ;;
+
+            -[nN] )
+                shift;
+                # configurazione di rete
+                current_script="network_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -[sS] )
+                shift;
+                # configurazione keyboard shortcuts
+                current_script="kb_shortcut_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -tr | -TR )
+                shift;
+                # disabilitazione tracker-*
+                current_script="tracker_disable_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -[uU] )
+                shift;
+                # aggiornamento tools sistema
+                current_script="tools_upgrade_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            --[wW] )
+                shift;
+                # disabilitazine warnings
+                warnings=1;
+                ;;
+
+            * )
+                printf "${R}Comando $1 non risconosciuto\n${NC}";
+                echo "Usa il flag -h per ottenere più informazioni";
+                shift;
+                ;;
+        esac
+    done
+}
+
 # flag -f per esportare le funzioni
 export -f check_mount;
 export -f check_tool;
@@ -314,12 +472,12 @@ absolute_current_script_path=`realpath $0`;
 lenght=${#current_script_name};
 # path relativo che serve per comporre il path assoluto per i veri moduli di configurazione
 relative_path_scripts=modules;
-# sintassi: ${string::-n} --> taglia gli ultimi (-n) n elementi di string
-export absolute_script_path=${absolute_current_script_path::-$lenght};
+# sintassi: ${string::-n} --> taglia gli ultimi (-n) elementi di string
+export absolute_script_path=${absolute_current_script_path::-$((lenght+1))};
 # contiene i moduli invocati dall'utente
 scripts_array=();
 # file di default contenuto nella stessa directory dello script corrente
-conf_file=$absolute_script_path"sys.conf";
+conf_file=$absolute_script_path/"sys.conf";
 # apt-manager di default
 apt_manager=apt-get;
 # verifica rimozione files di autenticazione
@@ -334,166 +492,10 @@ export warnings conf_file;
 # array contenete i nomi delle variabili da parsare contenute nel file di configurazione
 var_array=(UUID_backup themes_backup icons_backup software script_path scripts_backup UUID_data driver_backup extensions_id sdk theme_scelto icon_scelto);
 
-
-
-# controllo se l'utente ha inserito il flag -h o se ha specificato l'opzione --all
-for arg in $@; do
-    if [ "$arg" == "-h" ] ||
-        [ "$arg" == "-H" ] ||
-        [ "$arg" == "-help" ] ||
-        [ "$arg" == "-HELP" ] ||
-        [ "$arg" == "--h" ] ||
-        [ "$arg" == "--H" ] ||
-        [ "$arg" == "--help" ] ||
-        [ "$arg" == "--HELP" ]; then
-            give_help;
-    elif [ "$arg" == "--all" ] ||
-        [ "$arg" == "--ALL" ]; then
-            for script in $absolute_script_path$relative_path_scripts/*; do
-                tmp_script=`basename $script`;
-                ext=".sh"; ext_lenght=${#ext}; lenght_tmp_script=${#script};
-                lenght=$(($lenght_tmp_script - $ext_lenght));
-                # l'estensione di $script deve essere .sh
-                # per effettuare operazioni aritmetiche si usa l'espressione: var3=$(($var1 + $var2));
-                tmp_ext=`echo $script | cut -c $(($lenght + 1))-$lenght_tmp_script`;
-
-                # aggiunta script corrente all array scripts_array
-                [ "$tmp_ext" == "$ext" ] &&
-                [ "$current_script_name" != "$tmp_script" ] &&
-                scripts_array+=("$script");
-            done
-
-            break;
-    fi
-done
-
-# -gt --> greater than
-# il comando shift;; n sposta il parametro posizionale di n posti (default n = 1)
-# si possono usare pattern del tipo: -h|--help) per selezione multipla
-# i pattern del tipo --action* : The * (wildcard) is for the case where
-#   someone types --action=[ACTION] as well as the case where someone types
-#   --action [ACTION]
-# si usa l'operatore [xX] per avere scelte multiple
-while [ $# -gt 0 ]; do
-    case "$1" in
-        --all | --ALL )
-            shift;
-            ;;
-
-        -[aA] )
-            shift;
-            # configurazione aspetto
-            current_script="appearance_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -[bB] )
-            shift;
-            # configurazione del file .bashrc
-            current_script="bashrc_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -[cC] )
-            shift;
-            # path file di configurazione
-            if [ ${#1} != 0 ] && [ -f "$1" ]; then
-                realpath_conf=`realpath $1`;
-                printf "${G}Utilizzo di --> $realpath_conf <-- come file di configurazione\n${NC}";
-                conf_file=$1;
-            else
-                printf "${Y}File specificato dal flag -c / -C --> $1 <-- non trovato.\nSarà usato il file: $conf_file\n${NC}";
-            fi
-            shift;
-            ;;
-
-        -[fF] )
-            shift;
-            # configurazione file /etc/fstab
-            current_script="fstab_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -gpu | -GPU )
-            shift;
-            # configurazione bumblebee
-            current_script="gpu_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -jdk | -JDK )
-            shift;
-            # configurazione JDK Oracle
-            current_script="jdk_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -[lL] )
-            shift;
-            # configurazione link simbolici
-            current_script="symbolic_link_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -[mM] )
-            shift;
-            # tmp_code viene impostata ad 1 --> è possibile creare più istanze contemporaneamente dello script
-            tmp_code=0;
-            ;;
-
-        -[nN] )
-            shift;
-            # configurazione di rete
-            current_script="network_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -[sS] )
-            shift;
-            # configurazione keyboard shortcuts
-            current_script="kb_shortcut_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -tr | -TR )
-            shift;
-            # disabilitazione tracker-*
-            current_script="tracker_disable_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        -[uU] )
-            shift;
-            # aggiornamento tools sistema
-            current_script="tools_upgrade_conf.sh";
-            ! check_script $absolute_script_path$relative_path_scripts/$current_script &&
-            scripts_array+=($absolute_script_path$relative_path_scripts/$current_script);
-            ;;
-
-        --[wW] )
-            shift;
-            # disabilitazine warnings
-            warnings=1;
-            ;;
-
-        * )
-            printf "${R}Comando $1 non risconosciuto\n${NC}";
-            echo "Usa il flag -h per ottenere più informazioni";
-            shift;
-            ;;
-    esac
-done
-
-
+# controllo preliminare dell'user input
+preliminar_input_check $@;
+# parsing input utente
+parse_input $@;
 
 # controllo se l'utente ha specificato un modulo da avviare
 [ ${#scripts_array[@]} == 0 ] &&

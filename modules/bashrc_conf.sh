@@ -23,8 +23,7 @@ father_file=$2;
 
 
 
-# declare -r bashrc="~/.bashrc";
-declare -r bashrc="/dev/shm/dio";
+declare -r bashrc="~/.bashrc";
 printf "Aggiungere gli alias in $bashrc?\n$choise_opt";
 read choise;
 if [ "$choise" == "y" ]; then
@@ -40,7 +39,9 @@ alias gpu='primusrun'
 bumblebee_conf='/etc/bumblebee/bumblebee.conf';
 display_key='VirtualDisplay';
 [ -f \$bumblebee_conf ] && while IFS='=' read -r key value; do
-	[ \"\$key\" == \"\$display_key\" ] && declare -r display=\"\$value\";
+	[ \"\$key\" == \"\$display_key\" ] &&
+	declare -r display=\"\$value\" &&
+	break;
 done < \$bumblebee_conf;
 alias gpui=\"gpu nvidia-settings -c \$display\";
 
