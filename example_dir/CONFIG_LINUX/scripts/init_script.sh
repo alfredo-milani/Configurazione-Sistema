@@ -35,7 +35,7 @@ declare file="";
 # path di salvataggio dell'header file
 declare rescue_path='.';
 # header da completare
-declare header;
+declare header="null";
 # array contenente le funzioni da eseguire
 declare operations=();
 
@@ -229,7 +229,16 @@ function parse_input {
                 shift;
                 ;;
 
+            -header )
+                shift;
+                ! [ -f "$1" ] && printf "File \"$1\" non valido.\n" && exit $EXIT_FAILURE;
+                header=`cat "$1"`;
+                operations+=("push_header");
+                shift;
+                ;;
+
             -i )
+                [ "$header" != "null" ] && continue;
                 operations+=("fill_header" "push_header");
                 shift;
                 ;;
@@ -306,6 +315,9 @@ function check_input {
 
 # funzione deputata a riempire l'header con le informazioni inserite dall'utente
 function fill_header {
+    # se è stato già passato un header come argomento dall'utente uscire
+    [ "$header" != "null" ] && return;
+
     select_shell;
 
     select_title;
@@ -360,6 +372,8 @@ function create_header_file {
 
 # inserisce l'header all'inizio del file
 function push_header {
+    ! [ -f "$file" ] && printf "File \"$file\" non valido.\n";
+
     tmp_file='/dev/shm/tmp';
     echo "$header" | cat - "$file" > "$tmp_file" &&
     mv "$tmp_file" "$file";
@@ -390,8 +404,6 @@ preliminar_input_check $@;
 ! parse_input $@ && exit $EXIT_FAILURE;
 
 # TODO --> inserimento headers su più files
-# TODO --> inserimento header da file di configurazione
-# TODO --> correggere l'inserimento dei dati quando alcuni char vengono cancellati con il tasto per cancellare (vedi man read)
 
 # controllo risorse
 check_res || exit $EXIT_FAILURE;

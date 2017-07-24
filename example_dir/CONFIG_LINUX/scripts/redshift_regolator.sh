@@ -18,26 +18,16 @@ declare -r tool="redshift";
 
 declare -r lat=41.6;
 declare -r long=13.4;
-declare -r daytime1=5000;
-declare -r nighttime1=3000;
-declare -r daytime2=5500;
-declare -r nighttime2=4000;
-declare daytime=$daytime2;
-declare nighttime=$nighttime2;
+declare -i daytime;
+declare -i nighttime;
 
 declare -r tool_is_on=(`ps -A | grep -w $tool`);
 declare -r pid="${tool_is_on[0]}";
 
 
 
-while [ $# -gt 0 ]; do
-    case "$1" in
-        -d )
-            shift;
-            daytime=$1;
-            break;
-            ;;
-
+for arg in $@; do
+    case "$arg" in
         -[hH] | --[hH] | -help | -HELP | --help | --HELP )
             echo -e "./`basename $0`  [options]";
             echo -e "";
@@ -49,6 +39,16 @@ while [ $# -gt 0 ]; do
             echo -e "Nota: Se il seguente script è già stato avviato in precedenza una successiva esecuzione causerà la chiusura del processo precedente";
             exit 1;
             ;;
+    esac
+done
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -d )
+            shift;
+            daytime=$1;
+            break;
+            ;;
 
         -n )
             shift;
@@ -56,9 +56,15 @@ while [ $# -gt 0 ]; do
             break;
             ;;
 
-        1 | 2 )
-            daytime=$daytime$1;
-            nighttime=$nighttime$1;
+        1 )
+            daytime=5000;
+            nighttime=3000;
+            break;
+            ;;
+
+        2 )
+            daytime=5500;
+            nighttime=4000;
             break;
             ;;
 
