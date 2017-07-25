@@ -1,12 +1,16 @@
 #!/bin/bash
+# ============================================================================
 
-# Configurazione sistema Debian based.
-# Testato su Linux debian 4.9.0-3-amd64 #1 SMP x86_64 GNU/Linux.
-#
-# Autore: Alfredo Milani
-# Data: 10 - 06 - 2017
-#
-# (script in utils/gnomeshell_extension_manage.sh di N. Bernaerts)
+# Titolo:           main.sh
+# Descrizione:      Configurazione di un sistema Debian based
+# Autore:           Alfredo Milani  (alfredo.milani.94@gmail.com)
+# Data:             mar 25 lug 2017, 16.45.44, CEST
+# Licenza:          MIT License
+# Versione:         1.5.0
+# Note:             Testato su Linux debian 4.9.0-3-amd64 #1 SMP x86_64 GNU/Linux.
+#                   Script in utils/gnomeshell_extension_manage.sh prodotto da N. Bernaerts
+# Versione bash:    4.4.12(1)-release
+# ============================================================================
 
 
 

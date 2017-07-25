@@ -175,7 +175,7 @@ function select_shell {
 
 # controllo consistenza risorse
 function check_res {
-    for el in ${operations[@]}; do
+    for el in "${operations[@]}"; do
         case "$el" in
             create_header_file )
                 ! [ -d "$rescue_path" ] &&
@@ -185,7 +185,7 @@ function check_res {
 
             push_header | remove_header )
                 ! [ -f "$file" ] &&
-                printf "File \"$file\" non valido.\n" &&
+                printf "Non è stato specificato alcun file per l'operazione specificata.\nUtilizza il flag -f per specificare il file.\n" &&
                 return $EXIT_FAILURE;
                 ;;
         esac
@@ -203,19 +203,35 @@ function usage {
     echo -e "\t-f ../path/file:\tfile a cui aggiungere/rimuovere l'header";
     echo -e "\t      -rm n1-n2:\trimuove da n1 a n2 righe nel file specificato con il flag -f";
     echo -e "\t            -i :\tinserisce un header nel file specificato dal flag -f";
+    echo -e "\t       -header :\tutilizza il contenuto del file specificato dopo questo flag come header";
     echo "";
     echo -e "Nota: se non vine specificato alcun argomento lo script provvederà a creare un file ed a inserire l'header specificato";
 
     exit $EXIT_FAILURE;
 }
 
+# controllo operazioni duplicate nell'array operations
+function check_from_array {
+    for el in "${operations[@]}"; do
+        [ "$el" == "$1" ] &&
+        return $EXIT_SUCCESS;
+    done
+    return $EXIT_FAILURE;
+}
+
+# elimina un elemnto dall'array operations
+function remove_el_from_array {
+    operations=("${operations[@]/$1}");
+}
+
 # controllo preliminare sull'input dell'utente
 function preliminar_input_check {
-    for arg in $@; do
+    for arg in "$@"; do
         case "$arg" in
             -[hH] | --[hH] | -help | -HELP | --help | --HELP ) usage ;;
         esac
     done
+    return $EXIT_SUCCESS;
 }
 
 # parsing input
@@ -224,30 +240,34 @@ function parse_input {
         case $1 in
             -f )
                 shift;
-                ! [ -f "$1" ] && printf "File \"$1\" non valido.\n" && exit $EXIT_FAILURE;
-                file="$1";
+                file=`realpath $1`;
                 shift;
                 ;;
 
             -header )
                 shift;
-                ! [ -f "$1" ] && printf "File \"$1\" non valido.\n" && exit $EXIT_FAILURE;
-                header=`cat "$1"`;
-                operations+=("push_header");
+                check_from_array "fill_header" && remove_el_from_array "fill_header";
+                ! check_from_array "push_header" && operations+=("push_header");
+                ! [ -f "$1" ] && printf "File \"$1\" non valido.\n" && return $EXIT_FAILURE;
+                header=`cat $1`;
                 shift;
                 ;;
 
             -i )
-                [ "$header" != "null" ] && continue;
-                operations+=("fill_header" "push_header");
+                ! check_from_array "fill_header" && operations+=("fill_header");
+                ! check_from_array "push_header" && operations+=("push_header");
                 shift;
                 ;;
 
             -p )
                 shift;
-                ! [ -d "$1" ] && printf "Directory \"$1\" non valida.\n" && exit $EXIT_FAILURE;
+                warning="Flag -p ignorato.\n";
+                (
+                check_from_array "push_header" ||
+                check_from_array "remove_header"
+                ) && printf "$warning";
                 rescue_path="$1";
-                printf "Directory selezionata: `realpath -e "$rescue_path"`\n\n";
+                printf "Directory selezionata: `realpath "$rescue_path"`\n\n";
                 shift;
                 ;;
 
@@ -264,24 +284,12 @@ function parse_input {
 
                 # se l'operazione push_header è presente nell'elenco delle operazioni
                 # inserisco l'operazione remove_header prima di push_header
-                for op in "${operations[@]}"; do
-                    if [ "$op" == "push_header" ]; then
-                        new_array=();
-                        for op in "${operations[@]}"; do
-                            if [ "$op" == "push_header" ]; then
-                                new_array+=("remove_header $n $m" "push_header");
-                            else
-                                new_array+=("$op");
-                            fi
-                        done
-
-                        operations=(${new_array[@]});
-                        el_founded=0;
-                        break;
-                    fi
-                done
-
-                [ "$el_founded" != 0 ] && operations+=("remove_header $n $m");
+                if check_from_array "push_header"; then
+                    remove_el_from_array "push_header";
+                    operations+=("remove_header $n $m" "push_header");
+                else
+                    operations+=("remove_header $n $m");
+                fi
                 shift;
                 ;;
 
@@ -298,17 +306,6 @@ function parse_input {
     else
         operations+=("select_editor");
     fi
-}
-
-# controllo sull'input dell'utente
-function check_input {
-    [ $# -gt 1 ] && return $EXIT_FAILURE;
-
-    for arg in $@; do
-        case "$arg" in
-            ? | -[hH] | --[hH] | -help | --help | -HELP | --HELP ) return $EXIT_FAILURE ;;
-        esac
-    done
 
     return $EXIT_SUCCESS;
 }
@@ -372,8 +369,6 @@ function create_header_file {
 
 # inserisce l'header all'inizio del file
 function push_header {
-    ! [ -f "$file" ] && printf "File \"$file\" non valido.\n";
-
     tmp_file='/dev/shm/tmp';
     echo "$header" | cat - "$file" > "$tmp_file" &&
     mv "$tmp_file" "$file";
@@ -399,12 +394,8 @@ function remove_header {
 
 # controllo preliminare sull'input dell'utente
 preliminar_input_check $@;
-
 # parsing input
 ! parse_input $@ && exit $EXIT_FAILURE;
-
-# TODO --> inserimento headers su più files
-
 # controllo risorse
 check_res || exit $EXIT_FAILURE;
 

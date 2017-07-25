@@ -1,7 +1,17 @@
 #!/bin/bash
+# ============================================================================
 
-# Autore: Alfredo Milani
-# Data: 10 - 06 - 2017
+# Titolo:           network_conf.sh
+# Descrizione:      Ottimizzazione configurazione protocollo TCP e correzione vari bugs relativi alle NICs
+# Autore:           Alfredo Milani  (alfredo.milani.94@gmail.com)
+# Data:             mar 25 lug 2017, 16.57.19, CEST
+# Licenza:          MIT License
+# Versione:         1.5.0
+# Note:             --/--
+# Versione bash:    4.4.12(1)-release
+# ============================================================================
+
+
 
 # per evitare che lo script sia lanciato in modo diretto, cioè non lanciato dal main script
 # applico l'algorimto di hashing sul numero casuale generato dal modulo

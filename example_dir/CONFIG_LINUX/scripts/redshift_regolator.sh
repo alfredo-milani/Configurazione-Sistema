@@ -18,8 +18,8 @@ declare -r tool="redshift";
 
 declare -r lat=41.6;
 declare -r long=13.4;
-declare -i daytime;
-declare -i nighttime;
+declare -i daytime=5500;
+declare -i nighttime=4000;
 
 declare -r tool_is_on=(`ps -A | grep -w $tool`);
 declare -r pid="${tool_is_on[0]}";
