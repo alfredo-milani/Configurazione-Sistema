@@ -62,6 +62,10 @@ function config_profile {
 		sudo /bin/su -c "echo 'export JRE_HOME' >> $file_profile";
 		sudo /bin/su -c "echo 'export PATH' >> $file_profile";
 		check_error "Modifica file $file_profile";
+
+		echo "Blocco aggiornamento OpenJDK";
+		sudo apt-mark hold openjdk*
+		check_error "Blocco aggiornamenti OpenJDK";
 	fi
 
 	# riavvio richiesto

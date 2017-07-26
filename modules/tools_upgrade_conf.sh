@@ -140,6 +140,16 @@ if [ "$choise" = "y" ] && check_connection; then
 		printf "${DG}${U}Il tool prelink non è stato installato${NC}\n\n";
 	fi
 
+	printf "Vuoi installare il tool ulatency per migliore le prestazioni del sistema?\n";
+	printf "(Maggiori informazioni al sito: https://github.com/poelzi/ulatencyd/wiki/Faq#how-can-i-see-if-it-s-working)\n$choise_opt";
+	read choise;
+	if [ "$choise" == "y" ] && check_connection; then
+		$apt_manager install ulatency ulatencyd;
+		check_error "Installazione ulatency\n" && printf "Il demone si avvierà in automatico al prossimo riavvio del sistema\n";
+	else
+		printf "${DG}${U}Il tool ulatency non è stato installato${NC}\n\n";
+	fi
+
 	# riavvio richiesto
 	reboot_req "$father_file";
 else
