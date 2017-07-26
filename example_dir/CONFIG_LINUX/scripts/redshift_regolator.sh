@@ -34,7 +34,9 @@ for arg in $@; do
             echo -e "\tOptions:";
             echo -e "\t\t-d=value )  valore intero che indica la temperatura (in gradi K) dello schermo durante il giorno";
             echo -e "\t\t-n=value )  valore intero che indica la temperatura (in gradi K) dello schermo durante la notte";
-            echo -e "\t\t   1 | 2 )  indicano i sets di default per la temeratura di giorno e di notte";
+            echo -e "\t\t   1 | 2 )  indicano i sets di default per la temeratura di giorno e di notte:";
+            echo -e "\t\t                1  -->  daytime=5000 / nighttime=3000";
+            echo -e "\t\t                2  -->  daytime=5500 / nighttime=4000";
             echo -e "";
             echo -e "Nota: Se il seguente script è già stato avviato in precedenza una successiva esecuzione causerà la chiusura del processo precedente";
             exit 1;
