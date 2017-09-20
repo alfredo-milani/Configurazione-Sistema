@@ -20,6 +20,8 @@ I moduli sono:
     * imposta il set di icone specificato dalla chiave *`icon_scelto`* locato in *`icons_backup`*;
 - **modules/bashrc_conf.sh** - configurazione del file `~/.bashrc`:
     * aggiunge gli alias di alcuni comandi nel file ~/.bashrc;
+- **modules/crontab_conf.sh** - configurazione jobs:
+    * configurazione dei jobs di crontabs;
 - **modules/fstab.sh** - configurazione del file `/etc/fstab`:
     * crea ramdisk nelle locazioni: /var/tmp; /var/log; /tmp;
     * monta su ramdisk le cache dei principali browser (Chrome, Firefox, Chromium);
