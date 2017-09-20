@@ -61,11 +61,7 @@ alias emu2='primusrun /opt/Sdk/tools/emulator -avd device2 -netdelay none -netsp
 alias emu3='primusrun /opt/Sdk/tools/emulator -avd device3 -netdelay none -netspeed full -qemu -m 1536 -enable-kvm'
 
 # alias per impostare i diritti in lettura/scrittura su /dev/ttyACM0 per Arduino
-alias setele='sudo chmod a+rw /dev/ttyACM0'
-
-# creazione directory Trash in ~/Scaricati/shm
-# trash_dir=`xdg-user-dir DOWNLOAD`/shm/Trash;
-# ! [ -e $trash_dir ] && mkdir $trash_dir" >> $bashrc;
+alias setele='sudo chmod a+rw /dev/ttyACM0'" >> $bashrc;
 
 	check_error "Inserimento alias in $bashrc";
 

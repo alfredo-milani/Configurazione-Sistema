@@ -243,6 +243,7 @@ function give_help {
     echo -e "\t-c | -C )\t\tIndirizzo file di configurazione sys.conf";
     echo -e "\t-f | -F )\t\tConfigurazione del file /etc/fstab";
     echo -e "\t-gpu | -GPU\t\tConfigurazione bumblebee per gestione GPU NVIDIA";
+    echo -e "\t-j | -J\t\tAggiornamento definizioni crontabs";
     echo -e "\t-jdk | -JDK )\t\tConfigurazione della JDK Oracle";
     echo -e "\t-l | -L )\t\tCreazione link simbolici";
     echo -e "\t-m | -M )\t\tPer creare più istanze contemporaneamente";
@@ -374,6 +375,14 @@ function parse_input {
                 shift;
                 # configurazione bumblebee
                 current_script="gpu_conf.sh";
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
+                ;;
+
+            -j | -J )
+                shift;
+                # configurazione crontabs
+                current_script="crontab_conf.sh";
                 ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
                 scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script);
                 ;;
