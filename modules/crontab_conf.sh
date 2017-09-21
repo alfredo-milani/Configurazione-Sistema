@@ -6,7 +6,7 @@
 # Autore:           Alfredo Milani (alfredo.milani.94@gmail.com)
 # Data:             mer 20 set 2017, 17.39.07, CEST
 # Licenza:          MIT License
-# Versione:         1.0.0
+# Versione:         1.1.0
 # Note:             --/--
 # Versione bash:    4.4.12(1)-release
 # ============================================================================
@@ -61,6 +61,7 @@ if [ "$choise" == "y" ]; then
     crontabs_path="/var/spool/cron/crontabs";
     current_username=`whoami`;
     root_username=`sudo /bin/su -c "whoami"`;
+    group="crontab";
 
     # Inizializzazione fle con header se non dovessro esistere già
     cd $_dev_shm_;
@@ -69,16 +70,30 @@ if [ "$choise" == "y" ]; then
     ! [ -e "$crontabs_path/$root_username" ] && echo "$header_crontab" > $root_username;
 
     # User job
-    # Creazione cartella Trash nella directory di download all'avvio
     trash_dir=`xdg-user-dir DOWNLOAD`/shm/Trash;
-    echo -e "\n\n\n# Creazione directory Trash in ~/Scaricati/shm con frequenza giornaliera\n@reboot\t! [ -e $trash_dir ] && mkdir $trash_dir\n" >> $current_username;
+    # Creazione cartella Trash nella directory di download all'avvio
+    echo -e "\n\n\n# Creazione directory Trash in ~/Scaricati/shm con frequenza giornaliera\n@reboot\t! [ -e $trash_dir ] && mkdir $trash_dir;\n" >> $current_username;
+    # Avvio del tool redshift per regolare l'emissione di blue ray
+    echo -e "\n# Avvio tool redshift at boot-time\n@reboot\t/opt/scripts/redshift_regolator.sh;\n" >> $current_username;
+
+
     sudo cp $current_username $crontabs_path;
+    # Cambio permessi/proprietario/gruppo
+    sudo chown $current_username:$group $crontabs_path/$current_username;
+    sudo chmod 600 $crontabs_path/$current_username;
+    check_error "Configurazione dei proncipali jobs per l'utente: $current_username";
 
-    # Root job to avoid to receive notification from crontabs about jobs
-    echo -e "\n\n\n# To disable default behaviour's cron that send mail to user account about executing cronjob.\n* * * * * > $null 2>&1\n" >> $root_username;
+    # Root job
+    # Per evitare di ricevere notifiche sui job in esecuzione
+    echo -e "\n\n\n# To disable default behaviour's cron that send mail to user account about executing cronjob.\n* * * * * > $null 2>&1;\n" >> $root_username;
+
     sudo cp $root_username $crontabs_path;
+    # Cambio permessi/proprietario/gruppo
+    sudo chown $root_username:$group $crontabs_path/$root_username;
+    sudo chmod 600 $crontabs_path/$root_username;
+    check_error "Configurazione dei proncipali jobs per l'utente: $root_username";
 
-    # Rimozione file temporanei
+    # Rimozione files temporanei
     rm -rf $_tmp_crontabs;
 else
     printf "${DG}${U}Definizioni crontabs non aggiorante${NC}\n";

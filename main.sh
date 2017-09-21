@@ -242,8 +242,8 @@ function give_help {
     echo -e "\t-b | -B )\t\tConfigurazione del file .bashrc";
     echo -e "\t-c | -C )\t\tIndirizzo file di configurazione sys.conf";
     echo -e "\t-f | -F )\t\tConfigurazione del file /etc/fstab";
-    echo -e "\t-gpu | -GPU\t\tConfigurazione bumblebee per gestione GPU NVIDIA";
-    echo -e "\t-j | -J\t\tAggiornamento definizioni crontabs";
+    echo -e "\t-gpu | -GPU )\t\tConfigurazione bumblebee per gestione GPU NVIDIA";
+    echo -e "\t-j | -J )\t\tAggiornamento definizioni crontabs";
     echo -e "\t-jdk | -JDK )\t\tConfigurazione della JDK Oracle";
     echo -e "\t-l | -L )\t\tCreazione link simbolici";
     echo -e "\t-m | -M )\t\tPer creare più istanze contemporaneamente";
