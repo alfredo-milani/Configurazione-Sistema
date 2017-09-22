@@ -128,7 +128,7 @@ tmp | Direzione files temporanei (default /dev/shm).
 ```markdown
 # Utilizzo
 
-    ./main.sh -[options]
+    ./main.sh [Options]
 
 # Options
 
@@ -138,6 +138,7 @@ tmp | Direzione files temporanei (default /dev/shm).
     -c | -C )           Indirizzo file di configurazione sys.conf
     -f | -F )           Configurazione del file /etc/fstab
     -gpu | -GPU )       Configurazione bumblebee per gestione GPU NVIDIA
+    -j | -J )           Aggiornamento definizioni crontabs
     -jdk | -JDK )       Configurazione della JDK Oracle
     -l | -L )           Creazione link simbolici
     -m | -M )           Per creare più istanze contemporaneamente
