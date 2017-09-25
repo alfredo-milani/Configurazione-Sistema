@@ -74,7 +74,8 @@ if [ "$choise" == "y" ]; then
     # Creazione cartella Trash nella directory di download all'avvio
     echo -e "\n\n\n# Creazione directory Trash in ~/Scaricati/shm con frequenza giornaliera\n@reboot\t! [ -e $trash_dir ] && mkdir $trash_dir;\n" >> $current_username;
     # Avvio del tool redshift per regolare l'emissione di blue ray
-    echo -e "\n# Avvio tool redshift at boot-time\n@reboot\t/opt/scripts/redshift_regolator.sh;\n" >> $current_username;
+    echo -e "\n# Lancio del tool redshift per la correzione della temperatura dei colori dello schermo\nDISPLAY=:0.0;\n30 15 * * * redshift -l 41.6:13.4 -t 5000:3500;\n" >> $current_username;
+
 
 
     sudo cp $current_username $crontabs_path;

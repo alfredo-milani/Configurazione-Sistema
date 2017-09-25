@@ -78,6 +78,8 @@ if [ "$choise" == "y" ] && check_mount $UUID_backup; then
 	# redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
 	# copia di tutti gli scripts
 	sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
+	# creazione link simbolici in /usr/bin
+	sudo ln -s $script_path/* /usr/bin;
 
 	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
 	# is very similar to the backticks ``.
