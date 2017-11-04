@@ -147,6 +147,7 @@ if [ "$choise" == "y" ]; then
 	arr_lib_usr_path=(`ls $lib_usr_path | grep $libstd`);
 	sdk_path=$sdk/emulator/lib64/libstdc++;
 	arr_sdk_path=(`ls $sdk_path | grep $libstd`);
+	old_libs="old_libs";
 
 	echo "Checking delle librerie in $lib_usr_path e $sdk_path";
 	if [ -d "$lib_usr_path" ] && [ -d "$sdk_path" ]; then
@@ -163,6 +164,13 @@ if [ "$choise" == "y" ]; then
 		for lib in ${arr_sdk_path[@]}; do
 			sudo mv $lib $lib"_orig";
 		done
+
+		# copia vecchie libs in old_libs dir
+		sudo mkdir $sdk_path/$old_libs;
+		for file in $sdk_path/*; do
+			[ -f $file ] && sudo mv $file $sdk_path/$old_libs;
+		done
+
 		# link simbolico della versione più recente delle lib
 		sudo ln -s $lib_usr_path/$libstd$current_latest $sdk_path;
 		check_error "Correzione errore libstdc++.so.6: version 'GLIBCXX_3.4.21'";
