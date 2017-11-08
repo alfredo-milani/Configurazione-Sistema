@@ -72,92 +72,92 @@ other_shortcut_array=("$maximize" "$minimize" "$move_ne" "$move_nw" "$move_se" "
 printf "Vuoi impostare i keyboard shortcuts?\n$choise_opt";
 read choise;
 if [ "$choise" == "y" ] && check_mount $UUID_backup; then
-	# modo alternativo per esprimere uno if statement...
-	# il comando "[]" server per valutare espressioni
-	! [ -d "$script_path" ] && sudo mkdir $script_path;
-	# redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
-	# copia di tutti gli scripts
-	sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
-	# creazione link simbolici in /usr/bin
-	sudo ln -s $script_path/* /usr/bin;
+    # modo alternativo per esprimere uno if statement...
+    # il comando "[]" server per valutare espressioni
+    ! [ -d "$script_path" ] && sudo mkdir $script_path;
+    # redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
+    # copia di tutti gli scripts
+    sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null;
+    # creazione link simbolici in /usr/bin
+    sudo ln -s $script_path/* /usr/bin;
 
-	# The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
-	# is very similar to the backticks ``.
-	# It's called command substitution (posix specification) and it invokes a
-	# subshell. The command in the braces of $() or beween the backticks (``)
-	# is executed in a subshell and the output is then placed in the original command.
+    # The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
+    # is very similar to the backticks ``.
+    # It's called command substitution (posix specification) and it invokes a
+    # subshell. The command in the bracnes of $() or beween the backticks (``)
+    # is executed in a subshell and the output is then placed in the original command.
 
-	# elementi in org.gnome.settings-daemon.plugins.media-keys
-	for el in "${shortcuts_array[@]}"; do
-		# The characters in the value of the IFS variable are used to split the input line into words or tokens
-		# <<< --> It redirects the string to stdin of the command.
-		IFS=';' read -ra tmp_array <<< $el;
-		# flag -v: simile alla sprintf, stampa su una stringa
-		printf -v str "$str_esito" "${tmp_array[0]}" "${tmp_array[1]}";
-		$gs set "$media_keys" "${tmp_array[0]}" "${tmp_array[1]}";
-		check_error "$str";
-	done
+    # elementi in org.gnome.settings-daemon.plugins.media-keys
+    for el in "${shortcuts_array[@]}"; do
+        # The characters in the value of the IFS variable are used to split the input line into words or tokens
+        # <<< --> It redirects the string to stdin of the command.
+        IFS=';' read -ra tmp_array <<< $el;
+        # flag -v: simile alla sprintf, stampa su una stringa
+        printf -v str "$str_esito" "${tmp_array[0]}" "${tmp_array[1]}";
+        $gs set "$media_keys" "${tmp_array[0]}" "${tmp_array[1]}";
+        check_error "$str";
+    done
 
-	# costruzione valore della chiave in org.gnome.settings-daemon.plugins.media-keys custom-keybindings
-	# NOTA: array[@] --> espande tutti gli elementi dell'array
-	# 		# --> per contare il numero di elementi dell'array
-	index=$(( ${#custom_kb_array[*]} - 1 ));
-	last=${custom_kb_array[$index]};
-	# NOTA: le virgolette sono NECESSARIE
-	for el in "${custom_kb_array[@]}"; do
-		IFS=';' read -ra tmp_array <<< $el;
+    # costruzione valore della chiave in org.gnome.settings-daemon.plugins.media-keys custom-keybindings
+    # NOTA: array[@] --> espande tutti gli elementi dell'array
+    #       # --> per contare il numero di elementi dell'array
+    index=$(( ${#custom_kb_array[*]} - 1 ));
+    last=${custom_kb_array[$index]};
+    # NOTA: le virgolette sono NECESSARIE
+    for el in "${custom_kb_array[@]}"; do
+        IFS=';' read -ra tmp_array <<< $el;
 
-		# eliminazione spazi
-		tmp=`echo "${tmp_array[0]}" | tr " " "-"`;
-		printf -v tmp "'%s'" "$path_custom_sc$tmp/";
-		# se è l'ultimo elemento non inserire ", "
-		if [ "$el" == "$last" ]; then
-			custom_list+="$tmp";
-		else
-			custom_list+="$tmp, ";
-		fi
-	done
-	# inizializzazione valore della chiave custom-keybindings
-	printf -v custom_list "[%s]" "$custom_list";
-	$gs set "$media_keys" $custom_kb"s" "$custom_list";
-	check_error "Impostazione chiave per abilitare una custom-list";
+        # eliminazione spazi
+        tmp=`echo "${tmp_array[0]}" | tr " " "-"`;
+        printf -v tmp "'%s'" "$path_custom_sc$tmp/";
+        # se è l'ultimo elemento non inserire ", "
+        if [ "$el" == "$last" ]; then
+            custom_list+="$tmp";
+        else
+            custom_list+="$tmp, ";
+        fi
+    done
+    # inizializzazione valore della chiave custom-keybindings
+    printf -v custom_list "[%s]" "$custom_list";
+    $gs set "$media_keys" $custom_kb"s" "$custom_list";
+    check_error "Impostazione chiave per abilitare una custom-list";
 
-	# inizializzazione valore sottochiavi custom
-	for el in "${custom_kb_array[@]}"; do
-		IFS=';' read -ra tmp_array <<< $el;
+    # inizializzazione valore sottochiavi custom
+    for el in "${custom_kb_array[@]}"; do
+        IFS=';' read -ra tmp_array <<< $el;
 
-		# eliminazione spazi
-		tmp=`echo "${tmp_array[0]}" | tr " " "-"`;
-		tmp_array[0]="$tmp";
+        # eliminazione spazi
+        tmp=`echo "${tmp_array[0]}" | tr " " "-"`;
+        tmp_array[0]="$tmp";
 
-		# set name
-		printf -v str "$str_esito2" "${tmp_array[0]}" "set name" "${tmp_array[0]}";
-		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" name "${tmp_array[0]}";
-		check_error "$str";
+        # set name
+        printf -v str "$str_esito2" "${tmp_array[0]}" "set name" "${tmp_array[0]}";
+        $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" name "${tmp_array[0]}";
+        check_error "$str";
 
-		# set command
-		printf -v str "$str_esito2" "${tmp_array[0]}" "set command" "${tmp_array[1]}";
-		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" command "${tmp_array[1]}";
-		check_error "$str";
+        # set command
+        printf -v str "$str_esito2" "${tmp_array[0]}" "set command" "${tmp_array[1]}";
+        $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" command "${tmp_array[1]}";
+        check_error "$str";
 
-		# set key binding
-		printf -v str "$str_esito2" "${tmp_array[0]}" "set binding" "${tmp_array[2]}";
-		$gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" binding "${tmp_array[2]}";
-		check_error "$str";
-	done
+        # set key binding
+        printf -v str "$str_esito2" "${tmp_array[0]}" "set binding" "${tmp_array[2]}";
+        $gs set "$media_keys.$custom_kb:$path_custom_sc${tmp_array[0]}/" binding "${tmp_array[2]}";
+        check_error "$str";
+    done
 
-	for el in "${other_shortcut_array[@]}"; do
-		IFS=';' read -ra tmp_array <<< $el;
+    for el in "${other_shortcut_array[@]}"; do
+        IFS=';' read -ra tmp_array <<< $el;
 
-		printf -v str "$str_esito" "${tmp_array[0]}" "${tmp_array[1]}";
-		$gs set "$keybindings" "${tmp_array[0]}" "${tmp_array[1]}";
-		check_error "$str";
-	done
+        printf -v str "$str_esito" "${tmp_array[0]}" "${tmp_array[1]}";
+        $gs set "$keybindings" "${tmp_array[0]}" "${tmp_array[1]}";
+        check_error "$str";
+    done
 
-	# riavvio richiesto
-	reboot_req "$father_file";
+    # riavvio richiesto
+    reboot_req "$father_file";
 else
-	printf "${DG}${U}Keyboard shortcuts non impostati${NC}\n";
+    printf "${DG}${U}Keyboard shortcuts non impostati${NC}\n";
 fi
 
 

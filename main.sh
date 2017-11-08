@@ -30,7 +30,7 @@ if [ "$line_acc1" != "$cmd_acc" ]; then
     cmd_acc=`echo $cmd_line | cut -c 1-${#line_acc2}`;
     if [ "$line_acc2" != "$cmd_acc" ]; then
         echo "Lo script corrente deve essere eseguito da una shell bash e NON sh";
-    	exit 1;
+        exit 1;
     fi
 fi
 ##### Fine controllo preliminare #####
@@ -201,36 +201,36 @@ function check_tool {
 # "$*" --> joins positional parameters with the first character in IFS (or space if IFS is unset or nothing if IFS is empty).
 # funzione per verificare l'esito di una azione
 function check_error {
-	if [ $? == 0 ]; then
-		printf "${G}$check_error_str${NC}" "$@" "$success";
+    if [ $? == 0 ]; then
+        printf "${G}$check_error_str${NC}" "$@" "$success";
         return $EXIT_SUCCESS;
-	else
-		printf "${R}***$check_error_str${NC}" "$@" "$failure";
+    else
+        printf "${R}***$check_error_str${NC}" "$@" "$failure";
         return $EXIT_FAILURE;
-	fi
+    fi
 }
 
 ##### controllo connessione
 function get_header {
-	host_to_check="google.com";
-	# -q --> cut output
-	# --spider --> get only header
-	wget -q --spider $host_to_check;
+    host_to_check="google.com";
+    # -q --> cut output
+    # --spider --> get only header
+    wget -q --spider $host_to_check;
 }
 function check_connection {
-	# una funzione (o comando) risulta verificata se rotorna il codice 0 --> non ha riscontrato problemi
-	# mentre get_header ritorna una valore maggiore di 0 ()--> mentre wget riscontra errori) chiedi all'utente come procedere
+    # una funzione (o comando) risulta verificata se rotorna il codice 0 --> non ha riscontrato problemi
+    # mentre get_header ritorna una valore maggiore di 0 ()--> mentre wget riscontra errori) chiedi all'utente come procedere
     echo "Controllo accesso ad Internet. Attendere...";
-	while ! get_header; do
-		printf "${Y}Connessione assente.\n$choise_opt_net${NC}";
-		read choise;
-		if [ "$choise" == "j" ]; then
-			return $EXIT_FAILURE;
-		fi
-	done
+    while ! get_header; do
+        printf "${Y}Connessione assente.\n$choise_opt_net${NC}";
+        read choise;
+        if [ "$choise" == "j" ]; then
+            return ${EXIT_FAILURE};
+        fi
+    done
 
-	printf "${G}Connessione internet presente${NC}\n";
-    return $EXIT_SUCCESS;
+    printf "${G}Connessione internet presente${NC}\n";
+    return ${EXIT_SUCCESS};
 }
 
 # uso
