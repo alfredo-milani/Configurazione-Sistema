@@ -177,6 +177,8 @@ if [ "$choise" = "y" ] && check_connection; then
 	check_error "Installazione broswer google-chrome";
 
 	# se l'installazione di google-chrome è andata a buon fine
+	echo "Il modulo fstab_conf.sh provvederà a montare la directory di default di Google-Chrome su RAMDISK";
+: '
 	if [ $? == 0 ]; then
 		printf "${Y}Sposta la cache di Google-Chrome su RAMDISK con alacarte${NC}\n";
 		alacarte 2> $null;
@@ -184,6 +186,7 @@ if [ "$choise" = "y" ] && check_connection; then
 		read choise;
 		printf "\n";
 	fi
+'
 
 	# riavvio richiesto
 	reboot_req "$father_file";

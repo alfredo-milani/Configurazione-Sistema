@@ -61,7 +61,7 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 tmpfs /tmp tmpfs defaults,noatime 0 0
 
 # tmpfs $home/.cache/google-chrome/Default tmpfs defaults,noatime 0 0
-# tmpfs $home/.cache/google-chrome/ tmpfs defaults,noatime 0 0
+tmpfs $home/.cache/google-chrome/ tmpfs defaults,noatime 0 0
 # tmpfs $home/.cache/chromium/Default tmpfs defaults,noatime 0 0
 # tmpfs $home/.cache/mozilla/firefox/k7t3gsx4.default/cache2 tmpfs defaults,noatime 0 0
 
