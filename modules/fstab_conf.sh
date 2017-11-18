@@ -60,9 +60,10 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 # File di log, cache di browser e temporanei montati su ramdisk
 tmpfs /tmp tmpfs defaults,noatime 0 0
 
-#tmpfs $home/.cache/google-chrome/Default tmpfs defaults,noatime 0 0
-#tmpfs $home/.cache/chromium/Default tmpfs defaults,noatime 0 0
-#tmpfs $home/.cache/mozilla/firefox/k7t3gsx4.default/cache2 tmpfs defaults,noatime 0 0
+# tmpfs $home/.cache/google-chrome/Default tmpfs defaults,noatime 0 0
+# tmpfs $home/.cache/google-chrome/ tmpfs defaults,noatime 0 0
+# tmpfs $home/.cache/chromium/Default tmpfs defaults,noatime 0 0
+# tmpfs $home/.cache/mozilla/firefox/k7t3gsx4.default/cache2 tmpfs defaults,noatime 0 0
 
 tmpfs /var/tmp tmpfs defaults,noatime 0 0
 tmpfs /var/log tmpfs defaults,noatime 0 0
