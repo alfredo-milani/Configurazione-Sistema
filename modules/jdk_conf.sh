@@ -45,7 +45,9 @@ function config_profile {
 	else
 		f_path_jdk="$1";
 		f_new_jdk="$2";
-		file_profile="/etc/profile";
+		script_profile="/etc/profile.d/";
+		script_name="exported_vars.sh";
+		java_var="JAVA_HOME=\"$f_path_jdk$f_new_jdk\"\nJRE_HOME=\"$f_path_jdk$f_new_jdk/jre\"\n\nexport JAVA_HOME\nexport JRE_HOME\n\nif [ \"\`id -u\`\" -eq 1000 ]; then\n\tPATH=\"$PATH:$JAVA_HOME/bin:$JRE_HOME/bin\"\nfi\n";
 
 		echo "Impostazione di java e javaws come default di sistema";
 		sudo update-alternatives --install "/usr/bin/java" "java" "$f_path_jdk$f_new_jdk/bin/java" 1;
@@ -54,14 +56,11 @@ function config_profile {
 		sudo update-alternatives --set javaws "$f_path_jdk$f_new_jdk/bin/javaws";
 		check_error "Impostazione JDK Oracle come default di sistema";
 
-		echo "Impostazione variabili globali nel file $file_profile";
-		sudo /bin/su -c "echo JAVA_HOME=$f_path_jdk$f_new_jdk >> $file_profile";
-		sudo /bin/su -c "echo JRE_HOME=$f_path_jdk$f_new_jdk/jre >> $file_profile";
-		sudo /bin/su -c "echo 'PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin' >> $file_profile";
-		sudo /bin/su -c "echo 'export JAVA_HOME' >> $file_profile";
-		sudo /bin/su -c "echo 'export JRE_HOME' >> $file_profile";
-		sudo /bin/su -c "echo 'export PATH' >> $file_profile";
-		check_error "Modifica file $file_profile";
+		echo "Creazione script per il caricamneto automatico delle variabili globali in $script_profile";
+		echo -e ${java_var} > ${_dev_shm_}/${script_name};
+		sudo mv ${_dev_shm_}/${script_name} ${script_profile}/
+		sudo chmod +x ${script_profile}/${script_name};
+		check_error "Creazione file $script_profile";
 
 		echo "Blocco aggiornamento OpenJDK";
 		sudo apt-mark hold openjdk*
