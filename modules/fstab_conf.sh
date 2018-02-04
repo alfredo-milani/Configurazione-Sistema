@@ -43,7 +43,7 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 	echo "Configurazione file '/etc/fstab'";
 	user=`id -u`;
 	group=`id -g`;
-	printf "Utilizzare l'UUID di default (UUID default = $UUID_data)?\n$choise_opt";
+	printf "Utilizzare l'UUID di default (UUID default = $UUID_data) per motare il device secondario?\n$choise_opt";
 	read choise;
 	while ! [ "$choise" == "y" ]; do
 		echo "Esecuzione del comando 'lsblk -f' per vedere l'UUID del device...";
@@ -76,8 +76,6 @@ tmpfs /var/log tmpfs defaults,noatime 0 0
 # VEDI ~/INFORMATICA/ISTRUZIONI UTILI/Bash per maggiori informazioni
 UUID=\"$UUID_data\" /media/Data ntfs auto,uid=$user,gid=$group,umask=037,nls=utf8 0 0
 ####################################################################################################################";
-
-	echo "$fstab" >> /dev/shm/dio; exit 0;
 
 	# metodo alternativo all'uso del comando '/bin/su -c "cmd"'
 	cd $_dev_shm_;
