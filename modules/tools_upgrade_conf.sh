@@ -80,6 +80,9 @@ if [ "$choise" == "y" ] && check_connection; then
 	mirror_apt_fast="MIRRORS=( 'http://ftp.it.debian.org/debian/,http://mi.mirror.garr.it/mirrors/debian/,http://mirror.units.it/debian/,http://debian.e4a.it/debian/' )"
 	apt_fast_conf_file="/etc/apt-fast.conf"
 	sudo tee -a << EOF ${apt_fast_conf_file} 1> $null
+
+
+
 ################################################################
 ###	Configurazione con script $current_script_name    ###
 ################################################################

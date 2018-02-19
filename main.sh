@@ -236,25 +236,27 @@ function check_connection {
 function give_help {
     cat << EOF
 
-${current_script_name} -[options]
+# Utilizzo
 
-    Options
+    ${current_script_name} -[options]
 
-        --all | --ALL )     Configurazione completa del sistema
-        -a | -A )           Configurazione di tema ed icone
-        -b | -B )           Configurazione del file .bashrc
-        -c | -C )           Indirizzo file di configurazione sys.conf
-        -f | -F )           Configurazione del file /etc/fstab
-        -gpu | -GPU )       Configurazione bumblebee per gestione GPU NVIDIA
-        -j | -J )           Aggiornamento definizioni crontabs
-        -jdk | -JDK )       Configurazione della JDK Oracle
-        -l | -L )           Creazione link simbolici
-        -m | -M )           Per creare più istanze contemporaneamente
-        -n | -N )           Configurazione di rete
-        -s | -S )           Configurazione dei keyboard shortcuts
-        -tr | -TR )         Disabilitazione tracker-* tools
-        -u | -U )           Aggiornamento tools del sistema
-        --w | --W )         Disabilitazione warnings
+# Options
+
+    --all | --ALL )     Configurazione completa del sistema
+    -a | -A )           Configurazione di tema ed icone
+    -as | -AS )         Disabilitazione avvio automatico tools
+    -b | -B )           Configurazione del file .bashrc
+    -c | -C )           Indirizzo file di configurazione sys.conf
+    -f | -F )           Configurazione del file /etc/fstab
+    -gpu | -GPU )       Configurazione bumblebee per gestione GPU NVIDIA
+    -j | -J )           Aggiornamento definizioni crontabs
+    -jdk | -JDK )       Configurazione della JDK Oracle
+    -l | -L )           Creazione link simbolici
+    -m | -M )           Per creare più istanze contemporaneamente
+    -n | -N )           Configurazione di rete
+    -s | -S )           Configurazione dei keyboard shortcuts
+    -u | -U )           Aggiornamento tools del sistema
+    --w | --W )         Disabilitazione warnings
 
 EOF
 
@@ -348,6 +350,14 @@ function parse_input {
                 scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script)
                 ;;
 
+            -as | -AS )
+                shift;
+                # disabilitazione tracker-*
+                current_script="disable_autostart_software_conf.sh"
+                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
+                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script)
+                ;;
+
             -[bB] )
                 shift;
                 # configurazione del file .bashrc
@@ -427,14 +437,6 @@ function parse_input {
                 shift;
                 # configurazione keyboard shortcuts
                 current_script="kb_shortcut_conf.sh"
-                ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
-                scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script)
-                ;;
-
-            -tr | -TR )
-                shift;
-                # disabilitazione tracker-*
-                current_script="tracker_disable_conf.sh"
                 ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
                 scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script)
                 ;;
