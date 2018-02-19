@@ -35,8 +35,9 @@ if [ "$choise" == "y" ]; then
 
 # Creazione directory Trash in ~/Scaricati/shm con frequenza giornaliera
 @reboot ! [ -e $trash_dir ] && mkdir $trash_dir
+# NOTA: Lo script redshift_regolator.sh non viene chiamato
 # Lancio del tool redshift per la correzione della temperatura dei colori dello schermo con frequenza giornaliera
-@reboot /usr/bin/redshift_regolator.sh
+# @reboot /usr/bin/redshift_regolator.sh
 EOF
     check_error "Configurazione dei principali jobs per l'utente: $current_username"
     # Cambio permessi/proprietario/gruppo
