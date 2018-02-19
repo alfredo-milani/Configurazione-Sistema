@@ -29,7 +29,7 @@ if [ "$choise" == "y" ]; then
 
     # User job
     trash_dir=`xdg-user-dir DOWNLOAD`/shm/Trash
-    sudo tee << EOF ${crontabs_path}/${current_username} 1> $null
+    sudo tee -a << EOF ${crontabs_path}/${current_username} 1> $null
 
 
 
@@ -45,7 +45,7 @@ EOF
     sudo chmod 600 $crontabs_path/$current_username
 
     # Root job
-    sudo tee << EOF ${crontabs_path}/${root_username} 1> $null
+    sudo tee -a << EOF ${crontabs_path}/${root_username} 1> $null
 
 
 
