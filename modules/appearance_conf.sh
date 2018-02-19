@@ -1,19 +1,5 @@
 #!/bin/bash
-# ============================================================================
-
-# Titolo:           appearance_conf.sh
-# Descrizione:      Modifica aspetto sistema
-# Autore:           Alfredo Milani  (alfredo.milani.94@gmail.com)
-# Data:             mar 25 lug 2017, 16.50.52, CEST
-# Licenza:          MIT License
-# Versione:         1.5.0
-# Note:             --/--
-# Versione bash:    4.4.12(1)-release
-# ============================================================================
-
-
-
-# per evitare che lo script sia lanciato in modo diretto, cioè non lanciato dal main script
+# Per evitare che lo script sia lanciato in modo diretto, cioè non lanciato dal main script
 # applico l'algorimto di hashing sul numero casuale generato dal modulo
 # principale e lo confronto con il file tmp
 hash_check=`echo "$1" | md5sum`;
