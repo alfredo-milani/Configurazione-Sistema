@@ -59,7 +59,6 @@ declare -r EXIT_SUCCESS=0
 declare -r EXIT_FAILURE=1
 declare _dev_shm_="/dev/shm"
 
-# TODO SOURCING
 export null _dev_shm_
 export mod_start mod_end
 export choise_opt choise_opt_net

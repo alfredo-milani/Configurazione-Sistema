@@ -150,16 +150,16 @@ printf "Vuoi installare atom e google-chrome?\n$choise_opt"
 read choise
 if [ "$choise" = "y" ] && check_connection; then
 	sudo $apt_manager install git
-	mkdir $_dev_shm_"atom"
-	cd $_dev_shm_"atom"
+	mkdir $_dev_shm_"/atom"
+	cd $_dev_shm_"/atom"
 	atom_link="https://atom.io/download/deb"
 	wget $atom_link
 	sudo dpkg -i *deb
 	check_error "Installazione editor atom"
 
 	echo "Installazione google-chrome attraverso wget (molto simile a curl, ma wget è esclusivamente un command line tool)"
-	mkdir $_dev_shm_"google"
-	cd $_dev_shm_"google"
+	mkdir $_dev_shm_"/google"
+	cd $_dev_shm_"/google"
 	chrome_link="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
 	wget $chrome_link
 	sudo dpkg -i *deb
