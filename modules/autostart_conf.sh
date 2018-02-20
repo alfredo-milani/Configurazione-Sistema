@@ -91,6 +91,50 @@ else
 	printf "${DG}${U}$file tools non disabilitato${NC}\n"
 fi
 
+printf "Vuoi disabilitare il servizio speech-dispatcher?\n$choise_opt"
+read choise
+if [ "$choise" == "y" ]; then
+	file="speech-dispatcher.service"
+
+	sudo systemctl stop $file
+	sudo systemctl disable $file
+	check_error "Disattivazione servizio $file"
+
+	# sudo update-rc.d -f avahi-daemon default -> per riabilitarlo
+	sudo update-rc.d -f avahi-daemon remove
+
+	# riavvio richiesto
+	reboot_req "$father_file"
+else
+	printf "${DG}${U}$file service non disabilitato${NC}\n"
+fi
+
+printf "Vuoi disabilitare il servizio avahi-daemon o disinstallarlo (dal momento che software quali Firefox o Chrome potrebbero riavviarlo anche de è stato disabilitato)?\n$choise_opt"
+read choise
+if [ "$choise" == "y" ]; then
+	printf "Disabilitazione servizio\n"
+
+	file="avahi-daemon.service"
+	sudo systemctl stop $file
+	sudo systemctl disable $file
+	check_error "Disattivazione servizio $file"
+
+	file="avahi-daemon.socket"
+	sudo systemctl stop $file
+	sudo systemctl disable $file
+	check_error "Disattivazione servizio $file"
+
+	# riavvio richiesto
+	reboot_req "$father_file"
+else
+	printf "Disinstallazione tool avahi-daemon\n"
+
+	sudo apt-get --purge remove avahi-daemon
+
+	# riavvio richiesto
+	reboot_req "$father_file"
+fi
+
 printf "Vuoi impostare l'avvio automatico del tool redshift?\n$choise_opt"
 read choise
 if [ "$choise" == "y" ]; then
