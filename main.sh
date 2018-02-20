@@ -244,7 +244,7 @@ function give_help {
 
     --all | --ALL )     Configurazione completa del sistema
     -a | -A )           Configurazione di tema ed icone
-    -as | -AS )         Disabilitazione avvio automatico tools
+    -as | -AS )         Gestione dei tools in avvio automatico
     -b | -B )           Configurazione del file .bashrc
     -c | -C )           Indirizzo file di configurazione sys.conf
     -f | -F )           Configurazione del file /etc/fstab
@@ -353,7 +353,7 @@ function parse_input {
             -as | -AS )
                 shift;
                 # disabilitazione tracker-*
-                current_script="disable_autostart_software_conf.sh"
+                current_script="autostart_conf.sh"
                 ! check_script $absolute_script_path/$relative_path_scripts/$current_script &&
                 scripts_array+=($absolute_script_path/$relative_path_scripts/$current_script)
                 ;;

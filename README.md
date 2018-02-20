@@ -18,6 +18,11 @@ I moduli sono:
 - **modules/appearance_conf.sh** - configurazione del *tema* e delle *icone*:
     * imposta il tema specificato dalla chiave *`theme_scelto`* locato in *`themes_backup`*;
     * imposta il set di icone specificato dalla chiave *`icon_scelto`* locato in *`icons_backup`*;
+- **modules/autostart_conf.sh** - gestione dei tools in avvio automatico:
+    * disabilitazione tools di indicizzazione *tracker-\**;
+    * disabilitazione tool per accesso universale *orca*;
+    * disabilitazione tool per tastiera virtuale *caribou*;
+    * abilitazione tool *redshift*;
 - **modules/bashrc_conf.sh** - configurazione del file `~/.bashrc`:
     * aggiunge gli alias di alcuni comandi nel file ~/.bashrc;
 - **modules/crontab_conf.sh** - configurazione jobs:
@@ -53,8 +58,6 @@ I moduli sono:
     * installa le estensioni con identificativo *`extensions_id`*; <br/> l'identificativo in questione è ricavabile dal sito "https://extensions.gnome.org/"; <br/>
     e.g. vogliamo installare l'estensione dashToDock --> il suo URL è "https://extensions.gnome.org/extension/307/dash-to-dock/" --> *`extensions_id`*=307;
     * scarica ed installa le principali librerie mancanti del motore GTK;
-- **modules/tracker_disable_conf.sh** - disabilitazione _tracker-* tools_:
-    * disabilitazione dei tools di indicizzazione tracker-\*;
 - **utils/gnomeshell_extension_manage.sh** - download e installazione estensioni dal gnome-center (autore: *N. Bernaerts*);
 - **sys.conf** - definizione variabili:
     * *`tree_dir`*: directory radice; tutti gli altri indirizzi hanno questa radice. Il suo valore può essere nullo;
@@ -134,6 +137,7 @@ tmp | Direzione files temporanei (default /dev/shm).
 
     --all | --ALL )     Configurazione completa del sistema
     -a | -A )           Configurazione di tema ed icone
+    -as | -AS )         Gestione dei tools in avvio automatico
     -b | -B )           Configurazione del file .bashrc
     -c | -C )           Indirizzo file di configurazione sys.conf
     -f | -F )           Configurazione del file /etc/fstab
@@ -144,7 +148,6 @@ tmp | Direzione files temporanei (default /dev/shm).
     -m | -M )           Per creare più istanze contemporaneamente
     -n | -N )           Configurazione di rete
     -s | -S )           Configurazione dei keyboard shortcuts
-    -tr | -TR )         Disabilitazione tracker-* tools
     -u | -U )           Aggiornamento tools del sistema
     --w | --W )         Disabilitazione warnings
 
