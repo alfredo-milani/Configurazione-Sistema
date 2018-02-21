@@ -129,7 +129,8 @@ if [ "$choise" == "y" ]; then
 else
 	printf "Disinstallazione tool avahi-daemon\n"
 
-	sudo apt-get --purge remove avahi-daemon
+	file="avahi-daemon"
+	sudo apt-get remove $file
 
 	# riavvio richiesto
 	reboot_req "$father_file"
