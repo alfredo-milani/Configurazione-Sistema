@@ -42,14 +42,14 @@ function config_profile {
 		sudo update-alternatives --set javaws "$f_path_jdk$f_new_jdk/bin/javaws"
 
 		echo "Creazione script per il caricamento automatico delle variabili globali in $script_profile"
-		sudo tee << EOF ${script_profile}/${script_name} 1> $null
+		sudo tee <<EOF ${script_profile}/${script_name} 1> $null
 JAVA_HOME="$f_path_jdk$f_new_jdk"
 JRE_HOME="$f_path_jdk$f_new_jdk/jre"
 export JAVA_HOME
 export JRE_HOME
 
 if [ "`id -u`" -eq 1000 ]; then
-    PATH="$PATH:$JAVA_HOME/bin:$JRE_HOME/bin"
+    PATH="$PATH:$script_path:$JAVA_HOME/bin:$JRE_HOME/bin"
 fi
 EOF
 		sudo chmod +x ${script_profile}/${script_name}

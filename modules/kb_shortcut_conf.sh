@@ -58,14 +58,12 @@ other_shortcut_array=("$maximize" "$minimize" "$move_ne" "$move_nw" "$move_se" "
 printf "Vuoi impostare i keyboard shortcuts?\n$choise_opt"
 read choise;
 if [ "$choise" == "y" ] && check_mount $UUID_backup; then
-    # modo alternativo per esprimere uno if statement...
     # il comando "[]" server per valutare espressioni
     ! [ -d "$script_path" ] && sudo mkdir $script_path
     # redirezione verso /dev/null per evitare che il warning dovuto alla presenza di una directory
     # copia di tutti gli scripts
-    sudo cp $mount_point/$tree_dir/$scripts_backup/* $script_path 2> $null
-    # creazione link simbolici in /usr/bin
-    sudo ln -s $script_path/* /usr/bin
+    sudo cp $mount_point/$tree_dir/$scripts_backup/*.sh $script_path 2> $null
+    # NOTA: gli scripts contenuti in script_path sono inseriti in PATH a carico dello script jdk_conf.sh
 
     # The command str="$(printf "$str_esito" $browser_sc $browser_sc_val)"
     # is very similar to the backticks ``.
