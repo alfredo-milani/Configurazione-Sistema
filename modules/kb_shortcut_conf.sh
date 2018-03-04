@@ -34,14 +34,14 @@ path_custom_sc="/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings
 custom_kb="custom-keybinding"
 
 terminal="Terminal;gnome-terminal;'<Ctrl><Alt>T'"
-redshift="RedShift;$script_path/redshift_regolator.sh;'<Ctrl><Shift>F'"
+redshift="RedShift;redshift_regolator.sh;'<Ctrl><Shift>F'"
 home_sc="Home;nautilus;'<Ctrl>N'"
 home_sc2="Home 2;nautilus;'<Ctrl>M'"
 chrome_sc="Google Chrome;google-chrome;'<Ctrl>G'"
 ping_sc="Ping;gnome-terminal -e 'ping google.com';'<Ctrl><Shift>minus'"
-network_manager_sc="Network Manager Restart;$script_path/check_psw.sh service network-manager restart;'<Ctrl><Shift>R'"
-disable_threads="Disable Threads;$script_path/check_psw.sh $script_path/manage_threads.sh /;'<Ctrl><Shift>D'"
-enable_threads="Enable Threads;$script_path/check_psw.sh $script_path/manage_threads.sh °°;'<Ctrl><Shift>E'"
+network_manager_sc="Network Manager Restart;check_psw.sh service network-manager restart;'<Ctrl><Shift>R'"
+disable_threads="Disable Threads;check_psw.sh manage_threads.sh /;'<Ctrl><Shift>D'"
+enable_threads="Enable Threads;check_psw.sh manage_threads.sh °°;'<Ctrl><Shift>E'"
 system_monitor="System Monitor;gnome-system-monitor;'<Ctrl><Shift>M'"
 gpu_monitor="GPU Monitor;gpui;'<Ctrl><Shift>I'"
 # aggiungere le var che si vogliono attivare in quest'array
