@@ -42,7 +42,7 @@ if [ "$choise" == "y" ] && check_tool $xdg; then
 
     _etc_fstab_="/etc/fstab"
     sudo mv ${_etc_fstab_} ${_etc_fstab_}"_old"
-    sudo tee -a << EOF ${_etc_fstab_} 1> ${null}
+    sudo tee -a <<EOF ${_etc_fstab_} 1> ${null}
 
 
 

@@ -233,7 +233,7 @@ function check_connection {
 
 # uso
 function give_help {
-    cat << EOF
+    cat <<EOF
 
 # Utilizzo
 
