@@ -33,8 +33,8 @@ if [ "$choise" == "y" ]; then
 	done
 COMM
 
-	for file in "$path_as/"$file; do
-		sudo mv "$file" "$file"_old
+	for el in "$path_as/"$file; do
+		sudo mv "$el" "$el"_old
 	done
 	check_error "Modifica files $file in $path_as"
 
@@ -96,8 +96,8 @@ read choise
 if [ "$choise" == "y" ]; then
 	file="speech-dispatcher.service"
 
-	sudo systemctl stop $file
-	sudo systemctl disable $file
+	sudo systemctl stop "$file"
+	sudo systemctl disable "$file"
 	check_error "Disattivazione servizio $file"
 
 	# sudo update-rc.d -f avahi-daemon default -> per riabilitarlo
@@ -115,13 +115,13 @@ if [ "$choise" == "y" ]; then
 	printf "Disabilitazione servizio\n"
 
 	file="avahi-daemon.service"
-	sudo systemctl stop $file
-	sudo systemctl disable $file
+	sudo systemctl stop "$file"
+	sudo systemctl disable "$file"
 	check_error "Disattivazione servizio $file"
 
 	file="avahi-daemon.socket"
-	sudo systemctl stop $file
-	sudo systemctl disable $file
+	sudo systemctl stop "$file"
+	sudo systemctl disable "$file"
 	check_error "Disattivazione servizio $file"
 
 	# riavvio richiesto
@@ -130,7 +130,7 @@ else
 	printf "Disinstallazione tool avahi-daemon\n"
 
 	file="avahi-daemon"
-	sudo apt-get remove $file
+	sudo apt-get remove "$file"
 
 	# riavvio richiesto
 	reboot_req "$father_file"
@@ -141,7 +141,7 @@ read choise
 if [ "$choise" == "y" ]; then
 	file="redshift.desktop"
 
-	sudo tee << EOF "$path_as/$file" 1> $null
+	sudo tee <<EOF "$path_as/$file" 1> $null
 [Desktop Entry]
 Exec=/usr/bin/redshift_regolator.sh %f
 Terminal=false

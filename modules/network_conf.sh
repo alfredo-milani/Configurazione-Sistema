@@ -23,7 +23,7 @@ printf "Modificare impostazioni protocollo TCP?\n$choise_opt"
 read choise
 if [ "$choise" == "y" ]; then
 	net_conf_file="/etc/sysctl.conf"
-	sudo tee -a << EOF ${net_conf_file} 1> $null
+	sudo tee -a <<EOF ${net_conf_file} 1> $null
 
 
 
@@ -52,7 +52,7 @@ fi
 printf "Modificare il file /etc/modprob.d/iwlwifi.conf e il file /etc/default/crda con le impostazioni ottimali?\n$choise_opt"
 read choise
 if [ "$choise" == "y" ]; then
-    sudo tee -a << EOF "/etc/modprobe.d/iwlwifi.conf" 1> $null
+    sudo tee -a <<EOF "/etc/modprobe.d/iwlwifi.conf" 1> $null
 # Per rendere la connessione stabile
 options iwlwifi 11n_disable=1
 # options iwlwifi swcrypto=1
@@ -73,20 +73,20 @@ fi
 
 
 
-path_sys_driver=/lib/firmware/
+path_sys_driver="/lib/firmware/"
 printf "Copiare i drivers dalla partizione di backup a di sistema $path_sys_driver?\n$choise_opt"
 read choise
 if [ "$choise" == "y" ] && check_tool "sudo_dmidecode" "tr" && check_mount $UUID_backup; then
 	# scopro quale pc sto utilizzando e trasformo gli spazi in _ con il tool tr
 	# dmidecode è un tool che da informazioni sul terminale che si sta utilizzando
 	pc_version="`sudo dmidecode -s system-version | tr " " "_"`"
-	path_driver_backup=$mount_point/$tree_dir/$driver_backup/$pc_version
+	path_driver_backup="$mount_point/$tree_dir/$driver_backup/$pc_version"
 
 	if [ -d "$path_driver_backup" ]; then
-		for file in $path_driver_backup/*; do
+		for file in "$path_driver_backup"/*; do
 			tmp=`basename $file`
 			if [ "$tmp" != "INFO" ]; then
-				sudo cp -r $file $path_sys_driver
+				sudo cp -r "$file" "$path_sys_driver"
 				check_error "Aggiunta driver $file"
 
 				# riavvio richiesto
@@ -103,13 +103,13 @@ fi
 
 
 # modifica file /etc/nsswitch.conf per evitare bug di Avahi-daemon
-_etc_nsswitch=/etc/nsswitch.conf
+_etc_nsswitch="/etc/nsswitch.conf"
 printf "Modificare file $_etc_nsswitch per evitare il bug del software Avahi-daemon?\n$choise_opt"
 read choise
 if [ "$choise" == "y" ]; then
-	sudo cp $_etc_nsswitch $_etc_nsswitch"_old"
+	sudo cp "$_etc_nsswitch" "$_etc_nsswitch"_old
 	new_str="hosts:          files dns"
-	line_to_replace=hosts
+	line_to_replace="hosts"
 	# cerca il pattern $line_to_replace, sostituisci (s/) tutta la riga (.*) con $new_str
 	# -i (in-place) --> modifica direttamente nel file originale
 	sudo sed -i "/$line_to_replace/s/.*/$new_str/" "$_etc_nsswitch"
