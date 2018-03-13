@@ -45,7 +45,7 @@ enable_threads="Enable Threads;check_psw.sh manage_threads.sh °°;'<Ctrl><Shift
 system_monitor="System Monitor;gnome-system-monitor;'<Ctrl><Shift>M'"
 gpu_monitor="GPU Monitor;gpui;'<Ctrl><Shift>I'"
 # aggiungere le var che si vogliono attivare in quest'array
-custom_kb_array=("$terminal" "$redshift" "$home_sc2" "$ping_sc" "$system_monitor" "$network_manager_sc")
+custom_kb_array=("$terminal" "$redshift" "$home_sc2" "$ping_sc" "$system_monitor" "$network_manager_sc" "$gpu_monitor")
 
 keybindings="org.gnome.desktop.wm.keybindings"
 maximize="maximize;['<Super>Up']"
